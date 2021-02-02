@@ -1,3 +1,5 @@
+from lexar import Token
+
 class ASTNode:
 
     def __init__(self):
@@ -60,59 +62,105 @@ math_ops = {
 
 class Parser:
 
-    def __init__(self, tokens, parse_as_list=False, prec=0):
+    def __init__(self, tokens, parse_as_list=False):
         self.tokens = tokens
         self.root_node = ProgramNode()
         self.node = None
-        self.prec = prec
+
         self.parse_as_list = parse_as_list
         if parse_as_list:
             self.nodes = []
 
     def token_to_node(self, token):
         parent_type = type(self.node)
+        node = None
+
         if token.type == "Newline":
             return None
         if token.type == "Identifier":
-            return IdentifierNode(token.value)
+            node = IdentifierNode(token.value)
 
+
+        # create binary operation node
+        """
+        if token.type == "Operator" and token.value in math_ops:
+            if math_ops[token.value] == self.prec:
+                return BinaryNode(self.node, token, None)
+            elif math_ops[token.value] > self.prec:
+                return self.get_ast(1)
+        """
+
+        # literals like strings, ints, bools
+        if token.is_literal:
+            node = LiteralNode(token.value)
+
+        """
         # math:
         # append literal to right side of binary operation node
         if parent_type == BinaryNode and token.is_literal:
             node = self.node
             node.right = LiteralNode(token.value)
-            return node
+        """
 
-        # create binary operation node
-        if token.type == "Operator" and token.value in math_ops:
-            return BinaryNode(self.node, token, None)
+        if parent_type == BinaryNode:
+            root_node = self.node
+            root_node.right = node
+            node = root_node
 
-        # literals like strings, ints, bools
-        if token.is_literal:
-            return LiteralNode(token.value)
+        if len(self.tokens) > 0:
+            next_token = self.peak_token()
+            if next_token.has("Operator") and next_token.value in math_ops:
+                if math_ops[next_token.value] == self.prec:
+                    node = BinaryNode(node, self.eat_token(), None)
+                elif math_ops[next_token.value] > self.prec:
+                    new_node = node
+                    op = self.eat_token()
+                    new_node.right = BinaryNode(new_node.right, op, self.get_ast(1))
+                    print(new_node)
+                    self.prec = 0
+                    node = new_node
+
 
         # function call
         if token.type == "Set" and parent_type == IdentifierNode:
-            return CallNode(self.node, token.value)
+            node = CallNode(self.node, token.value)
+
+        return node
 
     def eat_token(self):
         token = self.tokens.pop(0)
 
         return token
 
+    def peak_token(self):
+
+        token = self.tokens[0]
+
+        return token
+
     def token_is(self, token, token_type, value):
         return token.type == token_type and token.value == value
 
-    def get_ast(self):
+    def get_ast(self, prec = 0):
+        self.node = None
+        self.prec = prec
         while len(self.tokens) > 0:
             token = self.eat_token()
 
             if token.type == "Newline":
                 continue
-            elif self.token_is(token, "Operator", ",") and self.parse_as_list:
+            elif self.parse_as_list and self.token_is(token, "Operator", ","):
                 self.nodes.append(self.node)
                 self.node = None
                 continue
+            elif prec > 0:
+                if token.has("Operator") and token.value in math_ops and math_ops[token.value] < prec:
+                    print("dsd", self.node)
+
+
+                    self.tokens.insert(0, token)
+                    print(self.tokens)
+                    return self.node
 
             current_node = self.token_to_node(token)
             self.node = current_node

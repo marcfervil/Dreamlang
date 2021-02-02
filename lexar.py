@@ -38,6 +38,8 @@ class Token:
     def __repr__(self):
         return f"({self.type} {self.value})"
 
+    def has(self, type, value=None):
+        return (value is None and self.type == type) or (self.value == value and self.type == type)
 
 class Tokenizer:
 

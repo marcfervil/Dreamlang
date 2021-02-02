@@ -3,7 +3,7 @@ from lexar import *
 
 #print("love is", true, 4, "ever")
 
-testData = """10+5*2-2"""
+testData = '1+2*3-5'
 tokens = Tokenizer(testData).tokenize()
 
 print(Parser(tokens).get_ast())
