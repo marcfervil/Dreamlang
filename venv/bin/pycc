@@ -1,0 +1,3 @@
+#!/Users/marcfervil/Documents/Programming/Dreamlang/venv/bin/python
+from numba.pycc import main
+main()

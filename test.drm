@@ -1,0 +1,11 @@
+class Dream {
+
+    var a = 5
+    int b = 10
+
+    init(a, b){
+        this.a = a
+        this.b = b
+    }
+
+}
