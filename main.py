@@ -3,10 +3,23 @@ from lexar import *
 
 #print("love is", true, 4, "ever")
 
-testData = '1+2*3-5'
-tokens = Tokenizer(testData).tokenize()
+testData = 'print("love is", true, 4, "ever")'
 
-print(Parser(tokens).get_ast())
+
+
+tokens = Tokenizer(testData).tokenize()
+result = str(Parser(tokens).get_ast())
+
+
+
+print(result)
+
+"""
+print("----------------")
+print(eval(testData))
+print(eval(result))
+"""
+
 """
 binary{
     num1 : 5 
