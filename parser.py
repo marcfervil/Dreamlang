@@ -53,10 +53,10 @@ class ProgramNode(ASTNode):
 
 
 math_ops = {
-    "+": 0,
-    "-": 0,
-    "*": 1,
-    "/": 1
+    "+": 1,
+    "-": 1,
+    "*": 2,
+    "/": 2
 }
 
 
@@ -88,6 +88,14 @@ class Parser:
             elif math_ops[token.value] > self.prec:
                 return self.get_ast(1)
         """
+        if token.type == "Operator" and token.value in math_ops:
+            if math_ops[token.value] > prec:
+                #print(">", self.tokens)
+                return BinaryNode(node, token, self.get_ast(math_ops[token.value]))
+            elif math_ops[token.value] == prec or math_ops[token.value] < prec:
+                #print("==", self.tokens)
+                #0 essentially
+                return 0
 
         # literals like strings, ints, bools
         if token.is_literal:
@@ -104,11 +112,7 @@ class Parser:
         # math:
         """
 
-        if token.has("Operator") and token.value in math_ops:
-            #node = BinaryNode()
-            #print()
-            return BinaryNode(self.prec_stack.pop(0), token, None)
-            #print(node)
+
 
 
 
@@ -130,25 +134,35 @@ class Parser:
     def token_is(self, token, token_type, value):
         return token.type == token_type and token.value == value
 
-    def get_ast(self, prec = 0):
+    def get_ast(self, prec=0):
         node = None
-        self.prec = prec
         while len(self.tokens) > 0:
             token = self.eat_token()
 
             if token.type == "Newline":
                 continue
-            elif self.parse_as_list and self.token_is(token, "Operator", ","):
+
+            current_node = self.token_to_node(token, node, prec)
+
+            if prec > 0 and (current_node == 0):
+                self.tokens.insert(0, token)
+                return node
+
+            if self.parse_as_list and self.token_is(token, "Operator", ","):
                 self.nodes.append(node)
                 node = None
                 continue
+
+            """
             elif prec > 0:
                 if token.has("Operator") and token.value in math_ops and math_ops[token.value] < prec:
                     self.tokens.insert(0, token)
                     #print(self.tokens)
                     return node
+            """
 
-            current_node = self.token_to_node(token, node, prec)
+
+
             node = current_node
             """
             if self.node is None:
