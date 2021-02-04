@@ -1,6 +1,7 @@
 from random import randrange
 
 from lexar import Token
+from runtime import *
 
 
 class ASTNode:
@@ -28,12 +29,17 @@ class BinaryNode(ASTNode):
         self.right = right
 
     def __repr__(self):
-
         return f"({self.left} {self.op.value} {self.right})"
 
     def eval(self):
-        return 0
-
+        if self.op.value == "+":
+            return self.left.eval().call("add", self.right.eval())
+        elif self.op.value == "-":
+            return self.left.eval().call("subtract", self.right.eval())
+        elif self.op.value == "*":
+            return self.left.eval().call("multiply", self.right.eval())
+        elif self.op.value == "/":
+            return self.left.eval().call("divide", self.right.eval())
 
 class IfNode(ASTNode):
     def __init__(self, test, body):
@@ -53,6 +59,9 @@ class LiteralNode(ASTNode):
         if type(self.value) == str:
             return f"'{str(self.value)}'"
         return str(self.value)
+
+    def eval(self):
+        return DreamObj.make_primitive(self.value)
 
 
 class AssignNode(ASTNode):
@@ -75,6 +84,7 @@ class CallNode(ASTNode):
 
 class BodyNode(ASTNode):
     def __init__(self, body=None):
+
         self.body = body
 
     def __repr__(self):
@@ -82,6 +92,12 @@ class BodyNode(ASTNode):
         for node in self.body:
             str_repr += f"\t{node}\n"
         return str_repr
+
+    def eval(self):
+        for node in self.body:
+            result = node.eval()
+        return result
+
 
 math_ops = {
     "==": 1,
@@ -91,7 +107,6 @@ math_ops = {
     "/": 3,
 
 }
-
 
 class Parser:
 

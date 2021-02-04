@@ -2,6 +2,8 @@ from parser import *
 from lexar import *
 
 # print("love is", true, 4, "ever")
+from runtime import Dream
+
 """
 AST TODO:
     - boolean logic:
@@ -25,6 +27,15 @@ IDEA:
     bool logic contains data
     
     (x == "true") -> left  returns x 
+    
+    
+    inline override
+    
+    "hey" {
+        toString(){
+            return "nope"
+        }
+    }
 """
 
 
@@ -34,8 +45,8 @@ def test(name, func):
     except Exception as e:
         print(name, f"Failed Horribly: {e}")
 
-
-def test_math(test_data='3*11-4+4-99*100/2/5-300-89-345*30', result=None):
+#TODO ensure all tokens are binary or literal
+def test_math(test_data='3*11-4+4-99*100/2/5-300-89/2-345*30', result=None):
     tokens = Tokenizer(test_data).tokenize()
     result = str(Parser(tokens).get_ast()) if result is None else result
     math = eval(test_data) == eval(result)
@@ -83,19 +94,11 @@ def print_results(test_data, debug_tokens=False):
     print(result)
 
 
-print_results("""
-x = 5
-if x == 5 {
-    x = 10 + "heyy"; print("hello world")
-    print(5*x)
-    if 10+10 == 3 {
-        print("gooooddd", 3*2)
-    }
-}
-print("luv", 4, "lyfe")
+#print(Dream("3*11-4+4-99*100/2").eval())
 
 
-""")
+print(Dream("3*11-4+4-99*100/2/5-300-89/2-345*30").eval())
+print(eval("3*11-4+4-99*100/2/5-300-89/2-345*30"))
 
 
 print("\n-------tests-------")

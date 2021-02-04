@@ -1,5 +1,5 @@
 ops = [",", "+", "-", "*", "/",  "=", "=="]
-special_chars = "!@#$%^&*,-+="
+special_chars = "!@#$%^&*,-+=/"
 
 class Token:
 
