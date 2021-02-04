@@ -7,6 +7,7 @@ class Token:
         self.value = value
         self.is_literal = False
         if type is None:
+
             if self.value.isnumeric():
                 self.type = "Number"
                 self.value = int(self.value)
@@ -49,11 +50,9 @@ class Tokenizer:
         self.token = ""
 
     def add_token(self, token=None):
-
         if token is None:
             if len(self.token.strip()) > 0:
                 new_token = Token(self.token)
-
                 self.tokens.append(new_token)
                 self.token = ""
         else:
@@ -72,7 +71,7 @@ class Tokenizer:
                     elif char in ops:
                         self.add_token(char)
                     continue
-                elif char == "\n":
+                elif char == "\n" or char == ";":
                     if len(self.tokens) > 0 and not self.tokens[-1].has("Newline"):
                         self.add_token()
                         self.add_token("\n")
@@ -97,7 +96,7 @@ class Tokenizer:
             elif char == match_end_token:
                 match_count -= 1
                 if match_count == 0:
-                    self.add_token(match_start_token+self.token+match_end_token)
+                    self.add_token(match_start_token + self.token+match_end_token)
                     self.token = ""
                     continue
             elif char == match_start_token:
@@ -105,5 +104,6 @@ class Tokenizer:
 
             self.token += char
         self.add_token()
+        #self.tokens.append(Token("", "EOF"))
         return self.tokens
 

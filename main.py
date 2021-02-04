@@ -79,15 +79,15 @@ def test_var():
 def print_results(test_data, debug_tokens=False):
     tokens = Tokenizer(test_data).tokenize()
     if debug_tokens: print(tokens)
-    result = Parser(tokens).get_ast()
+    result = Parser(tokens).get_ast(node=ProgramNode())
     print(result)
 
 
-print_results(""" 
-x="30"
-
-print(x)
-""", True)
+print_results("""
+greeting = "hello"
+place = "world"
+print(greeting+world)
+""")
 
 
 print("\n-------tests-------")

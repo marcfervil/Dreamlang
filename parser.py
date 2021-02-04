@@ -1,3 +1,5 @@
+from random import randrange
+
 from lexar import Token
 
 
@@ -53,16 +55,22 @@ class AssignNode(ASTNode):
         self.var = var
         self.value = value
 
+    def __repr__(self):
+        return f'{self.var} = {str(self.value)}'
+
 
 class CallNode(ASTNode):
     def __init__(self, caller, args):
         self.caller = caller
         self.args = Parser(args, True).get_ast()
 
+    def __repr__(self):
+        return f'{self.caller}({str(self.args)[1:-1]})'
+
 
 class ProgramNode(ASTNode):
-    def __init__(self):
-        self.body = []
+    def __init__(self, body=None):
+        self.body = body
 
 
 math_ops = {
@@ -88,17 +96,29 @@ class Parser:
     def token_to_node(self, token, node, prec):
         parent_type = type(node)
 
-        # skip newlines
-        if token.type == "Newline":
-            return None
+
+        if parent_type is ProgramNode:
+            next_node = -1
+            self.tokens.insert(0, token)
+            program_body = []
+            while True:
+                next_node = self.get_ast()
+                if next_node is not None:
+                    program_body.append(next_node)
+                else:
+                    return ProgramNode(program_body)
+
+
+
 
         # just return the identifier - it's probably fine lol
         if token.type == "Identifier":
             return IdentifierNode(token.value)
 
-        # returning 0 essentially stops the evaluation and returns the precedence to it's previous state
-        if prec > 0 and (token.has("Operator", ",")):
-            # if you're parsing math and you've hit a comma - you've gone too far
+        # if you're parsing math and you've hit a comma - you've gone too far
+        # if you're
+        if (prec > 0 and (token.has("Operator", ","))) or (prec==0 and token.has("Newline")) :
+            # returning 0 essentially stops the evaluation and returns the precedence to it's previous state
             return 0
 
         # handles math operations
@@ -111,7 +131,10 @@ class Parser:
 
         # variable assignment
         if token.has("Operator", "="):
-            return AssignNode(node, self.get_ast())
+            value = self.get_ast()
+            #print("assign",AssignNode(node, value))
+            return AssignNode(node, value)
+
 
         # literals like strings, ints, bools
         if token.is_literal:
@@ -140,13 +163,21 @@ class Parser:
     def token_is(self, token, token_type, value):
         return token.type == token_type and token.value == value
 
-    def get_ast(self, prec=0):
-        node = None
+    def get_ast(self, prec=0, node=None):
+        id = randrange(1000,9000)
         while len(self.tokens) > 0:
+            #print(self.tokens)
             token = self.eat_token()
 
+
             if token.type == "Newline":
-                continue
+                #print("return newline", id)
+                if node is not None:
+                    self.tokens.insert(0, token)
+                    return node
+                else:
+                    continue
+
 
             current_node = self.token_to_node(token, node, prec)
 
