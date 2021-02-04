@@ -71,6 +71,13 @@ class DreamStr(DreamObj):
     def __repr__(self):
         return str(self.value)
 
+    @dreamfunc
+    def add(self, string):
+        return DreamStr(self.value + string.value)
+
+    @dreamfunc
+    def subtract(self, string):
+        return DreamStr(self.value.replace(string.value, ""))
 
 class DreamBool(DreamObj):
     def __init__(self, value):

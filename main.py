@@ -97,7 +97,15 @@ def print_results(test_data, debug_tokens=False):
 #print(Dream("3*11-4+4-99*100/2").eval())
 
 
-Dream('print(4, 5+5, "truee")').eval()
+Dream("""
+
+    name = "john"
+    greeting = "hello, " + name
+    
+    print(greeting)
+    print(greeting - name + "adam")
+
+""").eval()
 
 
 print("\n-------tests-------")

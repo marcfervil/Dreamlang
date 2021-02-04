@@ -74,6 +74,8 @@ class AssignNode(ASTNode):
     def __repr__(self):
         return f'{self.var} = {str(self.value)}'
 
+    def eval(self, context):
+        context.vars[self.var.name] = self.value.eval(context)
 
 class CallNode(ASTNode):
     def __init__(self, caller, args):
