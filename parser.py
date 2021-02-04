@@ -21,6 +21,8 @@ class IdentifierNode(ASTNode):
 
         return self.name
 
+    def eval(self, context):
+        return context.vars[self.name]
 
 class BinaryNode(ASTNode):
     def __init__(self, left, op, right):
@@ -31,15 +33,15 @@ class BinaryNode(ASTNode):
     def __repr__(self):
         return f"({self.left} {self.op.value} {self.right})"
 
-    def eval(self):
+    def eval(self, context):
         if self.op.value == "+":
-            return self.left.eval().call("add", self.right.eval())
+            return self.left.eval(context).call("add", self.right.eval(context))
         elif self.op.value == "-":
-            return self.left.eval().call("subtract", self.right.eval())
+            return self.left.eval(context).call("subtract", self.right.eval(context))
         elif self.op.value == "*":
-            return self.left.eval().call("multiply", self.right.eval())
+            return self.left.eval(context).call("multiply", self.right.eval(context))
         elif self.op.value == "/":
-            return self.left.eval().call("divide", self.right.eval())
+            return self.left.eval(context).call("divide", self.right.eval(context))
 
 class IfNode(ASTNode):
     def __init__(self, test, body):
@@ -60,7 +62,7 @@ class LiteralNode(ASTNode):
             return f"'{str(self.value)}'"
         return str(self.value)
 
-    def eval(self):
+    def eval(self, context):
         return DreamObj.make_primitive(self.value)
 
 
@@ -81,6 +83,10 @@ class CallNode(ASTNode):
     def __repr__(self):
         return f'{self.caller}({str(self.args)[1:-1]})'
 
+    def eval(self, context):
+        args = [arg.eval(context) for arg in self.args]
+        return self.caller.eval(context)(*args)
+
 
 class BodyNode(ASTNode):
     def __init__(self, body=None):
@@ -93,9 +99,10 @@ class BodyNode(ASTNode):
             str_repr += f"\t{node}\n"
         return str_repr
 
-    def eval(self):
+    def eval(self, context):
+
         for node in self.body:
-            result = node.eval()
+            result = node.eval(context)
         return result
 
 

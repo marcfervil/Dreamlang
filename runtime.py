@@ -9,10 +9,11 @@ def dreamfunc(func):
     func.dreamy = True
     return func
 
+
 class DreamObj:
-    def __init__(self, value):
+    def __init__(self, value=None):
         self.value = value
-        self.functions = {}
+        self.vars = {}
 
     @staticmethod
     def make_primitive(obj):
@@ -26,8 +27,8 @@ class DreamObj:
     def call(self, name, params=None):
         if params is not list:
             params = [params]
-        if name in self.functions:
-            return self.functions[name](params)
+        if name in self.vars:
+            return self.vars[name](params)
         elif hasattr(self, name) and hasattr(getattr(self, name), "dreamy"):
             if params is not None:
                 return getattr(self, name)(*params)
@@ -36,6 +37,8 @@ class DreamObj:
         else:
             return None
 
+    def add_var(self, name, value):
+        self.vars[name] = value
 
 class DreamInt(DreamObj):
     def __init__(self, value):
@@ -63,13 +66,18 @@ class DreamInt(DreamObj):
 
 class DreamStr(DreamObj):
     def __init__(self, value):
-        super.__init__(self, value)
+        super().__init__(value)
+
+    def __repr__(self):
+        return str(self.value)
 
 
 class DreamBool(DreamObj):
     def __init__(self, value):
-        super.__init__(self, value)
+        super().__init__(value)
 
+    def __repr__(self):
+        return str(self.value)
 
 class Dream:
     def __init__(self, text_input):
@@ -77,9 +85,18 @@ class Dream:
         tokens = Tokenizer(text_input).tokenize()
         self.tokens = tokens
         self.ast = parser.Parser(tokens).get_ast(node=parser.BodyNode())
+        self.context = self.get_context()
+
+    def get_context(self):
+        dream_globals = DreamObj()
+        dream_globals.vars["print"] = print
+        return dream_globals
+
+    def print(self, args):
+        print(*args)
 
     def eval(self):
-        return self.ast.eval()
+        return self.ast.eval(self.context)
 
 
 
