@@ -98,13 +98,10 @@ def print_results(test_data, debug_tokens=False):
 
 
 Dream("""
-
-    name = "john"
-    greeting = "hello, " + name
-    
-    print(greeting)
-    print(greeting - name + "adam")
-
+    x = 2
+    if x is 2 {
+        print("had to double check")
+    }
 """).eval()
 
 

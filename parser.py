@@ -24,6 +24,7 @@ class IdentifierNode(ASTNode):
     def eval(self, context):
         return context.vars[self.name]
 
+
 class BinaryNode(ASTNode):
     def __init__(self, left, op, right):
         self.left = left
@@ -34,14 +35,19 @@ class BinaryNode(ASTNode):
         return f"({self.left} {self.op.value} {self.right})"
 
     def eval(self, context):
+        left = self.left.eval(context)
+        right = self.right.eval(context)
         if self.op.value == "+":
-            return self.left.eval(context).call("add", self.right.eval(context))
+            return left.call("add", right)
         elif self.op.value == "-":
-            return self.left.eval(context).call("subtract", self.right.eval(context))
+            return left.call("subtract", right)
         elif self.op.value == "*":
-            return self.left.eval(context).call("multiply", self.right.eval(context))
+            return left.call("multiply", right)
         elif self.op.value == "/":
-            return self.left.eval(context).call("divide", self.right.eval(context))
+            return left.call("divide", right)
+        elif self.op.value == "is":
+            return left.call("equals", right)
+
 
 class IfNode(ASTNode):
     def __init__(self, test, body):
@@ -51,6 +57,10 @@ class IfNode(ASTNode):
     def __repr__(self):
         body_str = str(self.body).replace('\t', '\t\t')
         return f"if {self.test} {body_str}"
+
+    def eval(self, context):
+        if self.test.eval(context).value:
+            self.body.eval(context)
 
 
 class LiteralNode(ASTNode):
@@ -110,6 +120,7 @@ class BodyNode(ASTNode):
 
 math_ops = {
     "==": 1,
+    "is": 1,
     "+": 2,
     "-": 2,
     "*": 3,

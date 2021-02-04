@@ -37,8 +37,13 @@ class DreamObj:
         else:
             return None
 
+    @dreamfunc
+    def equals(self, other):
+        return DreamBool(other.value == self.value)
+
     def add_var(self, name, value):
         self.vars[name] = value
+
 
 class DreamInt(DreamObj):
     def __init__(self, value):
