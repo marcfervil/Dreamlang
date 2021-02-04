@@ -1,5 +1,5 @@
-ops = [",", "+", "-", "*", "/"]
-
+ops = [",", "+", "-", "*", "/",  "=", "=="]
+special_chars = "!@#$%^&*,-+="
 
 class Token:
 
@@ -62,10 +62,13 @@ class Tokenizer:
         match_count = 0
         for char in self.data:
             if match_count == 0:
-                if char == " " or char in ops:
+                if char == " " or char in special_chars:
                     self.add_token()
-                    if char in ops:
+                    if len(self.tokens) > 0 and str(self.tokens[-1].value) + char in ops:
+                        self.add_token(str(self.tokens.pop(-1).value) + char)
+                    elif char in ops:
                         self.add_token(char)
+
                     continue
                 elif char == "\n":
                     self.add_token()

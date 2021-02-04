@@ -32,6 +32,10 @@ class BinaryNode(ASTNode):
     def eval(self):
         return 0
 
+class IfNode(ASTNode):
+    def __init__(self, test):
+        self.test = test
+
 class LiteralNode(ASTNode):
     def __init__(self, value):
         self.value = value
@@ -56,10 +60,12 @@ class ProgramNode(ASTNode):
 
 
 math_ops = {
-    "+": 1,
-    "-": 1,
-    "*": 2,
-    "/": 2
+    "==": 1,
+    "+": 2,
+    "-": 2,
+    "*": 3,
+    "/": 3,
+
 }
 
 
@@ -89,11 +95,9 @@ class Parser:
 
         if token.type == "Operator" and token.value in math_ops:
             if math_ops[token.value] > prec:
-                #print(">", self.tokens)
                 return BinaryNode(node, token, self.get_ast(math_ops[token.value]))
             elif math_ops[token.value] == prec or math_ops[token.value] < prec:
-                #print("==", self.tokens)
-                #0 essentially
+                # returning 0 essentially stops the evaluation and returns the precidence to it's previous state
                 return 0
 
         # literals like strings, ints, bools
@@ -106,16 +110,8 @@ class Parser:
         if token.type == "Set" and parent_type == IdentifierNode:
             return CallNode(node, token.value)
 
-
-        """
-        # math:
-        """
-
-
-
-
-
-
+        if token.has("Identifier", "if"):
+            return None
 
         return None
 
