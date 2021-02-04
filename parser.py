@@ -32,26 +32,32 @@ class BinaryNode(ASTNode):
     def eval(self):
         return 0
 
+
 class IfNode(ASTNode):
     def __init__(self, test):
         self.test = test
+
 
 class LiteralNode(ASTNode):
     def __init__(self, value):
         self.value = value
 
     def __repr__(self):
-
         if type(self.value) == str:
             return f"'{str(self.value)}'"
         return str(self.value)
+
+
+class AssignNode(ASTNode):
+    def __init__(self, var, value):
+        self.var = var
+        self.value = value
 
 
 class CallNode(ASTNode):
     def __init__(self, caller, args):
         self.caller = caller
         self.args = Parser(args, True).get_ast()
-
 
 
 class ProgramNode(ASTNode):
@@ -82,29 +88,34 @@ class Parser:
     def token_to_node(self, token, node, prec):
         parent_type = type(node)
 
-
+        # skip newlines
         if token.type == "Newline":
             return None
+
+        # just return the identifier - it's probably fine lol
         if token.type == "Identifier":
             return IdentifierNode(token.value)
 
-
-
-        if prec > 0 and (token.has("Operator", ",")  ):
+        # returning 0 essentially stops the evaluation and returns the precedence to it's previous state
+        if prec > 0 and (token.has("Operator", ",")):
+            # if you're parsing math and you've hit a comma - you've gone too far
             return 0
 
+        # handles math operations
         if token.type == "Operator" and token.value in math_ops:
             if math_ops[token.value] > prec:
                 return BinaryNode(node, token, self.get_ast(math_ops[token.value]))
             elif math_ops[token.value] == prec or math_ops[token.value] < prec:
-                # returning 0 essentially stops the evaluation and returns the precidence to it's previous state
+                # if you're parsing math and you hit an operator w/ a lower precedence - you've gone too far
                 return 0
+
+        # variable assignment
+        if token.has("Operator", "="):
+            return AssignNode(node, self.get_ast())
 
         # literals like strings, ints, bools
         if token.is_literal:
-
             return LiteralNode(token.value)
-            #self.prec_stack.append(node)
 
         # function call
         if token.type == "Set" and parent_type == IdentifierNode:
@@ -150,7 +161,6 @@ class Parser:
                 return node
 
             node = current_node
-
 
         if self.parse_as_list and prec == 0:
             self.nodes.append(node)

@@ -5,16 +5,23 @@ from lexar import *
 """
 AST TODO:
     - boolean logic:
-        equals
+        equals [done]
         not equals
         greater than
         less than     
     - variables
+        dot calling
     - multiline ast generation
     - control flow:
         if statements
         while loop
     
+    
+IDEA:
+
+    bool logic contains data
+    
+    (x == "true") -> left  returns x 
 """
 
 
@@ -30,6 +37,7 @@ def test_math(test_data='3*11-4+4-99*100/2/5-300-89-345*30', result=None):
 
 
 # TODO: test w/ different positional args
+# TODO: test w/ nested calls
 def test_args():
     test_data = 'print(8, "test", 3*11-4+4-99*100/2, "lz", true, 4+4*10-22)'
     tokens = Tokenizer(test_data).tokenize()
@@ -52,6 +60,16 @@ def test_bool():
     return setup and bool
 
 
+def test_var():
+    tokens = Tokenizer('x="abc" +  123 ').tokenize()
+    result = Parser(tokens).get_ast()
+    setup = type(result) is AssignNode
+    name = result.var.name == "x"
+    binary = type(result.value) is BinaryNode
+    args = result.value.left.value == "abc" and result.value.right.value == 123
+    return setup and name and binary and args
+
+
 def print_results(test_data, debug_tokens=False):
     tokens = Tokenizer(test_data).tokenize()
     if debug_tokens: print(tokens)
@@ -59,22 +77,11 @@ def print_results(test_data, debug_tokens=False):
     print(result)
 
 
-
-#print_results('happy(2*8+49*39==10+33/5)')
+print_results('x = 5 +5 ')
 
 
 print("\n-------tests-------")
 test("Math:", test_math)
 test("Bool:", test_bool)
 test("Func Call:", test_args)
-
-
-
-
-"""
-binary{
-    num1 : 5 
-    op : 
-}
-
-"""
+test("Var Declaration:", test_var)
