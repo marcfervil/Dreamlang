@@ -49,9 +49,12 @@ class Tokenizer:
         self.token = ""
 
     def add_token(self, token=None):
+
         if token is None:
             if len(self.token.strip()) > 0:
-                self.tokens.append(Token(self.token))
+                new_token = Token(self.token)
+
+                self.tokens.append(new_token)
                 self.token = ""
         else:
             self.tokens.append(Token(token))
@@ -68,11 +71,11 @@ class Tokenizer:
                         self.add_token(str(self.tokens.pop(-1).value) + char)
                     elif char in ops:
                         self.add_token(char)
-
                     continue
                 elif char == "\n":
-                    self.add_token()
-                    self.add_token("\n")
+                    if len(self.tokens) > 0 and not self.tokens[-1].has("Newline"):
+                        self.add_token()
+                        self.add_token("\n")
                     continue
                 elif char == '"':
                     match_end_token = '"'

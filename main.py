@@ -6,9 +6,12 @@ from lexar import *
 AST TODO:
     - boolean logic:
         equals [done]
+        or 
+        and
         not equals
         greater than
-        less than     
+        less than
+    -parenthesis math evaluation     
     - variables
         dot calling
     - multiline ast generation
@@ -26,7 +29,10 @@ IDEA:
 
 
 def test(name, func):
-    print(name, "Passed" if func() else "Failed")
+    try:
+        print(name, "Passed" if func() else "Failed")
+    except Exception as e:
+        print(name, f"Failed Horribly: {e}")
 
 
 def test_math(test_data='3*11-4+4-99*100/2/5-300-89-345*30', result=None):
@@ -77,7 +83,11 @@ def print_results(test_data, debug_tokens=False):
     print(result)
 
 
-print_results('x = 5 +5 ')
+print_results(""" 
+x="30"
+
+print(x)
+""", True)
 
 
 print("\n-------tests-------")
