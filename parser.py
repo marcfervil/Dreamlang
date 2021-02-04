@@ -1,5 +1,6 @@
 from lexar import Token
 
+
 class ASTNode:
 
     def __init__(self):
@@ -28,6 +29,8 @@ class BinaryNode(ASTNode):
 
         return f"({self.left} {self.op.value} {self.right})"
 
+    def eval(self):
+        return 0
 
 class LiteralNode(ASTNode):
     def __init__(self, value):
@@ -80,14 +83,10 @@ class Parser:
             return IdentifierNode(token.value)
 
 
-        # create binary operation node
-        """
-        if token.type == "Operator" and token.value in math_ops:
-            if math_ops[token.value] == self.prec:
-                return BinaryNode(self.node, token, None)
-            elif math_ops[token.value] > self.prec:
-                return self.get_ast(1)
-        """
+
+        if prec > 0 and (token.has("Operator", ",")  ):
+            return 0
+
         if token.type == "Operator" and token.value in math_ops:
             if math_ops[token.value] > prec:
                 #print(">", self.tokens)
@@ -144,35 +143,20 @@ class Parser:
 
             current_node = self.token_to_node(token, node, prec)
 
+            if self.parse_as_list and self.token_is(token, "Operator", ","):
+                if prec == 0:
+                    self.nodes.append(node)
+                    node = None
+                    continue
+
             if prec > 0 and (current_node == 0):
                 self.tokens.insert(0, token)
                 return node
 
-            if self.parse_as_list and self.token_is(token, "Operator", ","):
-                self.nodes.append(node)
-                node = None
-                continue
-
-            """
-            elif prec > 0:
-                if token.has("Operator") and token.value in math_ops and math_ops[token.value] < prec:
-                    self.tokens.insert(0, token)
-                    #print(self.tokens)
-                    return node
-            """
-
-
-
             node = current_node
-            """
-            if self.node is None:
-                self.node = current_node
-            elif type(current_node) == CallNode:
-                self.node = current_node
-            """
 
-        if self.parse_as_list:
 
+        if self.parse_as_list and prec == 0:
             self.nodes.append(node)
             node = self.nodes
 
