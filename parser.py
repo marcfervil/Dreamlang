@@ -36,8 +36,13 @@ class BinaryNode(ASTNode):
 
 
 class IfNode(ASTNode):
-    def __init__(self, test):
+    def __init__(self, test, body):
         self.test = test
+        self.body = Parser(body.value).get_ast(node = BodyNode())
+
+    def __repr__(self):
+        body_str = str(self.body).replace('\t', '\t\t')
+        return f"if {self.test} {body_str}"
 
 
 class LiteralNode(ASTNode):
@@ -68,10 +73,15 @@ class CallNode(ASTNode):
         return f'{self.caller}({str(self.args)[1:-1]})'
 
 
-class ProgramNode(ASTNode):
+class BodyNode(ASTNode):
     def __init__(self, body=None):
         self.body = body
 
+    def __repr__(self):
+        str_repr = ":\n"
+        for node in self.body:
+            str_repr += f"\t{node}\n"
+        return str_repr
 
 math_ops = {
     "==": 1,
@@ -87,7 +97,7 @@ class Parser:
 
     def __init__(self, tokens, parse_as_list=False):
         self.tokens = tokens
-        self.root_node = ProgramNode()
+        self.root_node = BodyNode()
         self.prec_stack = []
         self.parse_as_list = parse_as_list
         if parse_as_list:
@@ -96,9 +106,9 @@ class Parser:
     def token_to_node(self, token, node, prec):
         parent_type = type(node)
 
-
-        if parent_type is ProgramNode:
-            next_node = -1
+        # if a program node is passed in that means it's going to be a multiline affair
+        # collect all of the lines and turn them into an AST
+        if parent_type is BodyNode:
             self.tokens.insert(0, token)
             program_body = []
             while True:
@@ -106,18 +116,19 @@ class Parser:
                 if next_node is not None:
                     program_body.append(next_node)
                 else:
-                    return ProgramNode(program_body)
+                    return BodyNode(program_body)
 
+        if token.has("Identifier", "if"):
+            test = self.get_ast()
+            body = self.eat_token()
+            return IfNode(test, body)
 
-
-
-        # just return the identifier - it's probably fine lol
+        # just return the identifier
         if token.type == "Identifier":
             return IdentifierNode(token.value)
 
         # if you're parsing math and you've hit a comma - you've gone too far
-        # if you're
-        if (prec > 0 and (token.has("Operator", ","))) or (prec==0 and token.has("Newline")) :
+        if prec > 0 and token.has("Operator", ","):
             # returning 0 essentially stops the evaluation and returns the precedence to it's previous state
             return 0
 
@@ -132,9 +143,7 @@ class Parser:
         # variable assignment
         if token.has("Operator", "="):
             value = self.get_ast()
-            #print("assign",AssignNode(node, value))
             return AssignNode(node, value)
-
 
         # literals like strings, ints, bools
         if token.is_literal:
@@ -144,8 +153,7 @@ class Parser:
         if token.type == "Set" and parent_type == IdentifierNode:
             return CallNode(node, token.value)
 
-        if token.has("Identifier", "if"):
-            return None
+
 
         return None
 
@@ -164,20 +172,16 @@ class Parser:
         return token.type == token_type and token.value == value
 
     def get_ast(self, prec=0, node=None):
-        id = randrange(1000,9000)
         while len(self.tokens) > 0:
-            #print(self.tokens)
+
             token = self.eat_token()
 
-
-            if token.type == "Newline":
-                #print("return newline", id)
+            if token.type == "Newline" or token.type == "Block":
                 if node is not None:
                     self.tokens.insert(0, token)
                     return node
                 else:
                     continue
-
 
             current_node = self.token_to_node(token, node, prec)
 

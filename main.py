@@ -79,14 +79,22 @@ def test_var():
 def print_results(test_data, debug_tokens=False):
     tokens = Tokenizer(test_data).tokenize()
     if debug_tokens: print(tokens)
-    result = Parser(tokens).get_ast(node=ProgramNode())
+    result = Parser(tokens).get_ast(node=BodyNode())
     print(result)
 
 
 print_results("""
-greeting = "hello"
-place = "world"
-print(greeting+world)
+x = 5
+if x == 5 {
+    x = 10 + "heyy"; print("hello world")
+    print(5*x)
+    if 10+10 == 3 {
+        print("gooooddd", 3*2)
+    }
+}
+print("luv", 4, "lyfe")
+
+
 """)
 
 
