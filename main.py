@@ -29,7 +29,7 @@ IDEA:
     (x == "true") -> left  returns x 
     
     
-    inline override
+    examples override
     
     "hey" {
         toString(){
@@ -94,62 +94,42 @@ def print_results(test_data, debug_tokens=False):
     print(result)
 
 
-#print(Dream("3*11-4+4-99*100/2").eval())
-
-
-
 class_test = ("""
-    
-    class three{
-        previous = two()
-        func init(){
-            
-        }
-        func value(m){
-            return (previous.value(1) + 1) * m
-        }
-        func getPrevious(){
-            return previous
-        }
+
+
+class test{
+    c = "wow"
+    func init(a, b){
+        print(c)
+        c = "tree"
+        print(c)
     }
-    
-    class two {
-        previous = one()
-        func value(m){
-        
-            return (previous.value(1) + 1) * m
-        }
-        func getPrevious(){
-            return previous
-        }
-    }
-    
-    class one {
-        func value(m){
-            return 1 * m
-        }
-    }
-    
-    number = three()
-    print("Three: ", number.value(1))
-    print("First number ", number.previous.previous.value(1))
-    print("First number times ten: ", number.getPrevious().getPrevious().value(10))
-    
+}
+x = test(1, 2)
+print(x.c)
+
 """)
 
-subtract_test = """
-greeting = "hello, world"
+q = """
+    class yuh {
+        a = 0
+        b = 0
+        c = 0
+        func init(a, b, c)
+        func trust()
 
-func swapGreeting(greet, name){
-    return greet - "world" + name
-}
-
-print(swapGreeting(greeting, "marc"))
+    }
+    
+    x = yuh(1, 2, 3)
+    print(x.a, x.b, x.c)
+    x.trust()
+    func trust()
 
 """
 
 
-dream = Dream(class_test)
+
+dream = Dream(q)
 #print(dream.tokens)
 #print(dream.ast)
 dream.eval()

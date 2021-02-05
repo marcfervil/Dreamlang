@@ -1,0 +1,7 @@
+greeting = "hello, world"
+
+func swapGreeting(greet, name){
+    return greet - "world" + name
+}
+
+print(swapGreeting(greeting, "marc"))

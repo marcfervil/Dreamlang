@@ -25,13 +25,16 @@ class IdentifierNode(ASTNode):
     def eval(self, context):
         try:
 
-            return context.vars[self.name]
+            #return context.vars[self.name]
+            return context.get_var(self.name)
         except KeyError:
             print(self.name, "does not exist!")
             exit()
 
     def assign(self, context, value):
-        context.vars[self.name] = value
+        #context.vars[self.name] = value
+        context.add_var(self.name, value)
+
 
 class AssignNode(ASTNode):
     def __init__(self, var, value):
@@ -47,8 +50,8 @@ class AssignNode(ASTNode):
 
 class AttributeNode(ASTNode):
     def __init__(self, obj, attr):
-        self.obj = obj  # dog
-        self.attr = attr  # name
+        self.obj = obj
+        self.attr = attr
 
     def eval(self, context):
         if type(self.obj) is AttributeNode or type(self.obj) is CallNode:
@@ -114,7 +117,6 @@ class LiteralNode(ASTNode):
         return DreamObj.make_primitive(self.value)
 
 
-
 class FuncNode(ASTNode):
     def __init__(self, name, params, body):
         self.name = name
@@ -122,13 +124,10 @@ class FuncNode(ASTNode):
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
     def call(self, *params):
-        #print(params)
-        #body =
         new_scope = self.context.copy()
-
         for i, param in enumerate(self.params):
-            #print(param.name)
-            new_scope.vars[param.name] = params[i]
+            #new_scope.vars[param.name] = params[i]
+            new_scope.add_var(param.name, params[i])
         return self.body.eval(new_scope)
 
     def eval(self, context):
@@ -160,6 +159,7 @@ class ClassNode(ASTNode):
         context.vars[self.name.value] = self.init
         return self.init
 
+
 class ReturnNode(ASTNode):
     def __init__(self, value):
         self.value = value
@@ -168,13 +168,10 @@ class ReturnNode(ASTNode):
         return self.value.eval(context)
 
 
-
-
 class CallNode(ASTNode):
     def __init__(self, caller, args):
         self.caller = caller
         self.args = Parser(args, True).get_ast()
-
 
     def __repr__(self):
         return f'{self.caller}({str(self.args)[1:-1]})'
@@ -256,7 +253,11 @@ class Parser:
         if token.has("Identifier", "func"):
             name = self.eat_token()
             params = self.eat_token()
-            body = self.eat_token()
+            if len(self.tokens) == 0 or self.peak_token().type == "Newline":
+                body = Token("{}")
+            elif self.peak_token().type == "Block":
+                body = self.eat_token()
+
             return FuncNode(name, params, body)
 
         if token.has("Identifier", "class"):
@@ -290,7 +291,7 @@ class Parser:
             value = self.get_ast()
             return AssignNode(node, value)
 
-        # operator
+        # attribute assignment ex: dog.name
         if token.has("Operator", "."):
             attribute = self.eat_token()
             return AttributeNode(node, IdentifierNode(attribute.value))
@@ -301,10 +302,10 @@ class Parser:
 
         # function call
         if token.type == "Set":
-            if parent_type == IdentifierNode or parent_type == AttributeNode:
+            if parent_type == IdentifierNode or parent_type == AttributeNode or parent_type == ClassNode:
                 return CallNode(node, token.value)
             else:
-                #precidance
+                # precedence ex: (5+5) * 2
                 return Parser(token.value).get_ast()
 
 

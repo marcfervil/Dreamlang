@@ -1,0 +1,7 @@
+examples = (class appender {
+    func append(string1, string2){
+        return string1 + " " + string2
+    }
+})().append("hello", "world")
+
+print(examples)

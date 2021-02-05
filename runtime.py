@@ -5,15 +5,18 @@ from lexar import *
 from parser import *
 import copy
 
+
 def dreamfunc(func):
     func.dreamy = True
     return func
+
 
 
 class DreamObj:
     def __init__(self, value=None):
         self.value = value
         self.vars = {}
+        self.parent_context = None
 
     @staticmethod
     def make_primitive(obj):
@@ -29,6 +32,7 @@ class DreamObj:
         copy_obj = DreamObj()
         copy_obj.vars = copy.deepcopy(self.vars)
         copy_obj.value = copy.deepcopy(self.value)
+        copy_obj.parent_context = self
         return copy_obj
 
     def call(self, name, params=None):
@@ -48,8 +52,26 @@ class DreamObj:
     def equals(self, other):
         return DreamBool(other.value == self.value)
 
+    def get_var(self, name):
+        if self.parent_context is not None and name in self.parent_context.vars:
+            return self.parent_context.get_var(name)
+        if name not in self.vars: return Undefined()
+        return self.vars[name]
+
     def add_var(self, name, value):
-        self.vars[name] = value
+        if self.parent_context is not None and name in self.parent_context.vars:
+            self.parent_context.add_var(name, value)
+        else:
+            self.vars[name] = value
+
+
+class Undefined(DreamObj):
+    def __init__(self):
+        super().__init__(None)
+
+    def __repr__(self):
+        return "[Undefined]"
+
 
 
 class DreamInt(DreamObj):
