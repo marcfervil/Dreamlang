@@ -100,11 +100,25 @@ def print_results(test_data, debug_tokens=False):
 
 dream = Dream("""
 
-    func b (a, b, c){
-        print(a, b, c)
+    func opinion (a) {
+        if a is "cats"{
+            return a +" cool"
+        }
+        if a is "dogs"{
+            if 3 is 3 {
+                return a +" not cool"
+            }
+        }
+        return "????"
     }
-    wow="2"
-    b(5+10, "func", "heyy"+wow)
+    print(opinion("cats"))
+    print(opinion("dogs"))
+    print(opinion("mice"))
+
+
+   
+  
+    
 """)
 #print(dream.ast)
 dream.eval()
