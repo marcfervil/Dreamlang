@@ -100,12 +100,20 @@ def print_results(test_data, debug_tokens=False):
 
 dream = Dream("""
     
-    func luv(abc){
-        print(abc+1)
-    }
-    luv(123)
-    print(abc)
+    class home {
     
+        func init(a, b){
+            print("here?",a,2)
+        }
+    }
+    
+    func fix(){
+        return "look ma, no params"
+    }
+
+    house = home(1, 2)
+    print(house)
+    print(fix(),(2+2)*3)
 """)
 #print(dream.ast)
 dream.eval()

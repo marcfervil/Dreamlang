@@ -2,6 +2,7 @@ from random import randrange
 
 from lexar import Token
 from runtime import *
+from runtime import DreamObj
 
 
 class ASTNode:
@@ -102,6 +103,7 @@ class FuncNode(ASTNode):
         #print(params)
         #body =
         new_scope = self.context.copy()
+
         for i, param in enumerate(self.params):
             #print(param.name)
             new_scope.vars[param.name] = params[i]
@@ -110,6 +112,31 @@ class FuncNode(ASTNode):
     def eval(self, context):
         self.context = context
         context.vars[self.name.value] = self.call
+
+
+class ClassNode(ASTNode):
+    def __init__(self, name, body):
+        self.name = name
+        self.body = Parser(body.value).get_ast(node=BodyNode())
+
+    def init(self, *params):
+        class_context = self.context.copy()
+
+        for node in self.body.body:
+            node.eval(class_context)
+            if type(node) is FuncNode and node.name.value == "init":
+                init = node
+
+
+        init.call(*params)
+
+        return class_context
+
+    def eval(self, context):
+        self.context = context
+        self.self_ref = DreamObj()
+        context.vars[self.name.value] = self.init
+
 
 class ReturnNode(ASTNode):
     def __init__(self, value):
@@ -127,7 +154,9 @@ class CallNode(ASTNode):
         return f'{self.caller}({str(self.args)[1:-1]})'
 
     def eval(self, context):
+
         args = [arg.eval(context) for arg in self.args]
+
         return self.caller.eval(context)(*args)
 
 
@@ -202,6 +231,11 @@ class Parser:
             params = self.eat_token()
             body = self.eat_token()
             return FuncNode(name, params, body)
+
+        if token.has("Identifier", "class"):
+            name = self.eat_token()
+            body = self.eat_token()
+            return ClassNode(name, body)
 
         if token.has("Identifier", "return"):
             value = self.get_ast()
@@ -287,5 +321,6 @@ class Parser:
         if self.parse_as_list and prec == 0:
             self.nodes.append(node)
             node = self.nodes
-
+            if len(node) == 1 and node[0] is None:
+                node = []
         return node
