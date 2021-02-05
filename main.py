@@ -112,18 +112,35 @@ print(x.c)
 
 q = """
     class yuh {
-        a = 0
+        a = 1
         b = 0
         c = 0
-        func init(a, b, c)
-        func trust()
+        func init(a, b, c){
+            print(this.a)
+            
+           
+        }
+        
+        func post_init(){
+            
+            print("this.a =", this.a)
+            this.a = "foskf"
+            
+        }
+        
+        func post_post_init(){
+            
+            print("this.a =", this.a)
+        }
 
     }
     
-    x = yuh(1, 2, 3)
+    x = yuh(100, 2, 3)
     print(x.a, x.b, x.c)
-    x.trust()
-    func trust()
+    x.post_init()
+    x.post_post_init()
+
+
 
 """
 

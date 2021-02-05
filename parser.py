@@ -126,7 +126,6 @@ class FuncNode(ASTNode):
     def call(self, *params):
         new_scope = self.context.copy()
         for i, param in enumerate(self.params):
-            #new_scope.vars[param.name] = params[i]
             new_scope.add_var(param.name, params[i])
         return self.body.eval(new_scope)
 
@@ -142,6 +141,12 @@ class ClassNode(ASTNode):
 
     def init(self, *params):
         class_context = self.context.copy()
+
+        # support for 'this' var
+        this_context = class_context.copy()
+        this_context.parent_context = class_context
+        this_context.this = True
+        class_context.add_var("this", this_context)
 
         init = None
         for node in self.body.body:

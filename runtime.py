@@ -17,6 +17,7 @@ class DreamObj:
         self.value = value
         self.vars = {}
         self.parent_context = None
+        self.this = False
 
     @staticmethod
     def make_primitive(obj):
@@ -59,9 +60,13 @@ class DreamObj:
         return self.vars[name]
 
     def add_var(self, name, value):
-        if self.parent_context is not None and name in self.parent_context.vars:
+        if self.this or (self.parent_context is not None and name in self.parent_context.vars):
             self.parent_context.add_var(name, value)
+            #if self.this:
+
+                #print("THIS MOD",name,"TO",value)
         else:
+
             self.vars[name] = value
 
 
@@ -71,7 +76,6 @@ class Undefined(DreamObj):
 
     def __repr__(self):
         return "[Undefined]"
-
 
 
 class DreamInt(DreamObj):
