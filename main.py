@@ -98,23 +98,32 @@ def print_results(test_data, debug_tokens=False):
 
 
 
-dream = Dream("""
+class_test = ("""
     
-    class home {
+    class Dumb {
+        stupid="yerp"
+        func init(){}
+    }
     
-        func init(a, b){
-            print("here?",a,2)
+    class Home {
+        exists = true
+    
+        func init(number, street){
+            print("Home made at", number, street)
+            
         }
     }
     
-    func fix(){
-        return "look ma, no params"
-    }
-
-    house = home(1, 2)
-    print(house)
-    print(fix(),(2+2)*3)
+    house = Home(601, "Pawnee Lane")
+    print(house.exists)
+  
+    
 """)
+
+
+
+dream = Dream(class_test)
+#print(dream.tokens)
 #print(dream.ast)
 dream.eval()
 

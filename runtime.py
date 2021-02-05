@@ -104,17 +104,18 @@ class Dream:
         self.text_input = text_input
         tokens = Tokenizer(text_input).tokenize()
 
-        self.tokens = tokens
+        self.tokens = copy.deepcopy(tokens)
         self.ast = parser.Parser(tokens).get_ast(node=parser.BodyNode())
         self.context = self.get_context()
 
     def get_context(self):
         dream_globals = DreamObj()
         dream_globals.vars["print"] = print
+        dream_globals.vars["dict"] = self.get_dict
         return dream_globals
 
-    def print(self, args):
-        print(*args)
+    def get_dict(self, obj):
+        print(obj.__dict__)
 
     def eval(self):
         return self.ast.eval(self.context)

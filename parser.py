@@ -24,11 +24,39 @@ class IdentifierNode(ASTNode):
 
     def eval(self, context):
         try:
+
             return context.vars[self.name]
         except KeyError:
             print(self.name, "does not exist!")
             exit()
 
+    def assign(self, context, value):
+        context.vars[self.name] = value
+
+class AssignNode(ASTNode):
+    def __init__(self, var, value):
+        self.var = var
+        self.value = value
+
+    def __repr__(self):
+        return f'{self.var} = {str(self.value)}'
+
+    def eval(self, context):
+        #context.vars[self.var.name] = self.value.eval(context)
+        self.var.assign(context, self.value.eval(context))
+
+
+
+class AttributeNode(ASTNode):
+    def __init__(self, obj, attr):
+        self.obj = obj  # dog
+        self.attr = attr  # name
+
+    def eval(self, context):
+        return self.attr.eval(context.vars[self.obj.name])
+
+    def assign(self, context, value):
+        self.attr.assign(context.vars[self.obj.name], value)
 
 class BinaryNode(ASTNode):
     def __init__(self, left, op, right):
@@ -81,23 +109,12 @@ class LiteralNode(ASTNode):
         return DreamObj.make_primitive(self.value)
 
 
-class AssignNode(ASTNode):
-    def __init__(self, var, value):
-        self.var = var
-        self.value = value
-
-    def __repr__(self):
-        return f'{self.var} = {str(self.value)}'
-
-    def eval(self, context):
-        context.vars[self.var.name] = self.value.eval(context)
-
 
 class FuncNode(ASTNode):
     def __init__(self, name, params, body):
         self.name = name
         self.params = Parser(params.value, True).get_ast()
-        self.body =  Parser(body.value).get_ast(node=BodyNode())
+        self.body = Parser(body.value).get_ast(node=BodyNode())
 
     def call(self, *params):
         #print(params)
@@ -115,7 +132,9 @@ class FuncNode(ASTNode):
 
 
 class ClassNode(ASTNode):
+    a = 3
     def __init__(self, name, body):
+
         self.name = name
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
@@ -126,7 +145,6 @@ class ClassNode(ASTNode):
             node.eval(class_context)
             if type(node) is FuncNode and node.name.value == "init":
                 init = node
-
 
         init.call(*params)
 
@@ -144,6 +162,9 @@ class ReturnNode(ASTNode):
 
     def eval(self, context):
         return self.value.eval(context)
+
+
+
 
 class CallNode(ASTNode):
     def __init__(self, caller, args):
@@ -173,6 +194,7 @@ class BodyNode(ASTNode):
 
     def eval(self, context):
         scoped_context = context.copy()
+        if self.body is None: return None
         for node in self.body:
 
             result = node.eval(scoped_context)
@@ -225,7 +247,6 @@ class Parser:
             body = self.eat_token()
             return IfNode(test, body)
 
-
         if token.has("Identifier", "func"):
             name = self.eat_token()
             params = self.eat_token()
@@ -240,7 +261,6 @@ class Parser:
         if token.has("Identifier", "return"):
             value = self.get_ast()
             return ReturnNode(value)
-
 
         # just return the identifier
         if token.type == "Identifier":
@@ -263,6 +283,12 @@ class Parser:
         if token.has("Operator", "="):
             value = self.get_ast()
             return AssignNode(node, value)
+
+        # operator
+        if token.has("Operator", "."):
+
+            attribute = self.eat_token()
+            return AttributeNode(node, IdentifierNode(attribute.value))
 
         # literals like strings, ints, bools
         if token.is_literal:
