@@ -98,25 +98,18 @@ def print_results(test_data, debug_tokens=False):
 
 
 
-
-
 dream = Dream("""
-
- func opinion (a) {
-        if a is "cats"{
-            return a +" cool"
+    
+    func add(a, b, c, flip){
+        if flip {
+            return (a + b) * c
         }
-        if a is "dogs"{
-            if true {
-                return a +" not cool"
-            }
-        }
-        return "????"
+        return a+b*c
     }
-    print(opinion("cats"))
-    print(opinion("dogs"))
-    print(opinion("mice"))
-
+    
+    print(add(4, 6, 2, true))
+    print(add(4, 6, 2, false))
+    
 """)
 #print(dream.ast)
 dream.eval()

@@ -22,8 +22,11 @@ class IdentifierNode(ASTNode):
         return self.name
 
     def eval(self, context):
-        return context.vars[self.name]
-
+        try:
+            return context.vars[self.name]
+        except KeyError:
+            print(self.name, "does not exist!")
+            exit()
 
 
 class BinaryNode(ASTNode):
@@ -228,9 +231,11 @@ class Parser:
             return LiteralNode(token.value)
 
         # function call
-        if token.type == "Set" and parent_type == IdentifierNode:
-            return CallNode(node, token.value)
-
+        if token.type == "Set":
+            if parent_type == IdentifierNode:
+                return CallNode(node, token.value)
+            else:
+                return Parser(token.value).get_ast()
 
 
         return None
