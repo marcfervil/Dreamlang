@@ -100,13 +100,21 @@ def print_results(test_data, debug_tokens=False):
 
 class_test = ("""
     
+    class Dumber {
+        stupid  =  (10+20)*2+10
+        func init(x){
+            print("Dumber init ",x)
+        }
+    }
+    
     class Dumb {
-        stupid="yerp"
-        func init(){}
+        dumber = Dumber(3)
+        a = 12
+  
     }
     
     class Home {
-        exists = true
+        exists = Dumb()
     
         func init(number, street){
             print("Home made at", number, street)
@@ -115,7 +123,9 @@ class_test = ("""
     }
     
     house = Home(601, "Pawnee Lane")
-    print(house.exists)
+     print(house.exists.dumber.stupid)
+    house.exists.dumber.stupid = "la"
+    print(house.exists.dumber.stupid)
   
     
 """)

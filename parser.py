@@ -42,9 +42,7 @@ class AssignNode(ASTNode):
         return f'{self.var} = {str(self.value)}'
 
     def eval(self, context):
-        #context.vars[self.var.name] = self.value.eval(context)
         self.var.assign(context, self.value.eval(context))
-
 
 
 class AttributeNode(ASTNode):
@@ -53,10 +51,17 @@ class AttributeNode(ASTNode):
         self.attr = attr  # name
 
     def eval(self, context):
-        return self.attr.eval(context.vars[self.obj.name])
+        if type(self.obj) is AttributeNode:
+            return self.attr.eval(self.obj.eval(context))
+        else:
+            return self.attr.eval(context.vars[self.obj.name])
 
     def assign(self, context, value):
-        self.attr.assign(context.vars[self.obj.name], value)
+        if type(self.obj) is AttributeNode:
+            self.attr.assign(self.obj.eval(context), value)
+        else:
+            self.attr.assign(context.vars[self.obj.name], value)
+
 
 class BinaryNode(ASTNode):
     def __init__(self, left, op, right):
@@ -132,21 +137,21 @@ class FuncNode(ASTNode):
 
 
 class ClassNode(ASTNode):
-    a = 3
     def __init__(self, name, body):
-
         self.name = name
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
     def init(self, *params):
         class_context = self.context.copy()
 
+        init = None
         for node in self.body.body:
             node.eval(class_context)
             if type(node) is FuncNode and node.name.value == "init":
                 init = node
 
-        init.call(*params)
+        if init is not None:
+            init.call(*params)
 
         return class_context
 
@@ -154,7 +159,7 @@ class ClassNode(ASTNode):
         self.context = context
         self.self_ref = DreamObj()
         context.vars[self.name.value] = self.init
-
+        
 
 class ReturnNode(ASTNode):
     def __init__(self, value):
