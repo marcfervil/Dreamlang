@@ -97,12 +97,18 @@ def print_results(test_data, debug_tokens=False):
 #print(Dream("3*11-4+4-99*100/2").eval())
 
 
-Dream("""
-    x = 2
-    if x is 2 {
-        print("had to double check")
+
+dream = Dream("""
+
+    func b (a, b, c){
+        print(a, b, c)
     }
-""").eval()
+    wow="2"
+    b(5+10, "func", "heyy"+wow)
+""")
+#print(dream.ast)
+dream.eval()
+
 
 
 print("\n-------tests-------")

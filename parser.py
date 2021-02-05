@@ -25,6 +25,7 @@ class IdentifierNode(ASTNode):
         return context.vars[self.name]
 
 
+
 class BinaryNode(ASTNode):
     def __init__(self, left, op, right):
         self.left = left
@@ -86,6 +87,26 @@ class AssignNode(ASTNode):
 
     def eval(self, context):
         context.vars[self.var.name] = self.value.eval(context)
+
+
+class FuncNode(ASTNode):
+    def __init__(self, name, params, body):
+        self.name = name
+        self.params = Parser(params.value, True).get_ast()
+        self.body = body
+
+    def call(self, *params):
+        #print(params)
+        self.body = Parser(self.body.value).get_ast(node=BodyNode())
+        for i, param in enumerate(self.params):
+            #print(param.name)
+            self.context.vars[param.name] = params[i]
+        return self.body.eval(self.context)
+
+    def eval(self, context):
+        self.context = context
+        context.vars[self.name.value] = self.call
+
 
 class CallNode(ASTNode):
     def __init__(self, caller, args):
@@ -157,6 +178,14 @@ class Parser:
             test = self.get_ast()
             body = self.eat_token()
             return IfNode(test, body)
+
+
+        if token.has("Identifier", "func"):
+            name = self.eat_token()
+            params = self.eat_token()
+            body = self.eat_token()
+            return FuncNode(name, params, body)
+
 
         # just return the identifier
         if token.type == "Identifier":
