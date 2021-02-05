@@ -3,7 +3,7 @@ import parser
 
 from lexar import *
 from parser import *
-
+import copy
 
 def dreamfunc(func):
     func.dreamy = True
@@ -23,6 +23,13 @@ class DreamObj:
             return DreamStr(obj)
         elif type(obj) is bool:
             return DreamBool(obj)
+
+    def copy(self):
+
+        copy_obj = DreamObj()
+        copy_obj.vars = copy.deepcopy(self.vars)
+        copy_obj.value = copy.deepcopy(self.value)
+        return copy_obj
 
     def call(self, name, params=None):
         if params is not list:

@@ -101,10 +101,11 @@ class FuncNode(ASTNode):
     def call(self, *params):
         #print(params)
         #body =
+        new_scope = self.context.copy()
         for i, param in enumerate(self.params):
             #print(param.name)
-            self.context.vars[param.name] = params[i]
-        return self.body.eval(self.context)
+            new_scope.vars[param.name] = params[i]
+        return self.body.eval(new_scope)
 
     def eval(self, context):
         self.context = context
@@ -142,8 +143,11 @@ class BodyNode(ASTNode):
         return str_repr
 
     def eval(self, context):
+        scoped_context = context.copy()
         for node in self.body:
-            result = node.eval(context)
+
+            result = node.eval(scoped_context)
+
             if type(node) is ReturnNode:
                 return result
             elif type(node) is IfNode and result is not None:

@@ -100,15 +100,11 @@ def print_results(test_data, debug_tokens=False):
 
 dream = Dream("""
     
-    func add(a, b, c, flip){
-        if flip {
-            return (a + b) * c
-        }
-        return a+b*c
+    func luv(abc){
+        print(abc+1)
     }
-    
-    print(add(4, 6, 2, true))
-    print(add(4, 6, 2, false))
+    luv(123)
+    print(abc)
     
 """)
 #print(dream.ast)
