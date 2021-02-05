@@ -1,0 +1,30 @@
+
+func test(){
+    x = 10
+}
+
+print("x will be undefined", x)
+export test()
+print("x should be ten:", x)
+
+statement = if true {
+    export if true {
+        a = 10
+        b = 20
+        c = 30
+    }
+}
+
+print("a, b, c should be undefined ", a, b, b)
+export statement
+print("a, b, c should be ten twenty thirty: ", a, b, c)
+
+
+statement2 = if true {
+    export if false {
+        bad = "something went wrong!"
+    }
+}
+print("bad should be undefined ", bad)
+export statement2
+print("bad should be undefined ", bad)

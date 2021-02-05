@@ -94,61 +94,23 @@ def print_results(test_data, debug_tokens=False):
     print(result)
 
 
-class_test = ("""
-
-
-class test{
-    c = "wow"
-    func init(a, b){
-        print(c)
-        c = "tree"
-        print(c)
-    }
-}
-x = test(1, 2)
-print(x.c)
-
-""")
-
-q = """
-    class yuh {
-        a = 1
-        b = 0
-        c = 0
-        func init(a, b, c){
-            print(this.a)
-            
-           
-        }
-        
-        func post_init(){
-            
-            print("this.a =", this.a)
-            this.a = "foskf"
-            
-        }
-        
-        func post_post_init(){
-            
-            print("this.a =", this.a)
-        }
-
-    }
+test_eval = ("""
     
-    x = yuh(100, 2, 3)
-    print(x.a, x.b, x.c)
-    x.post_init()
-    x.post_post_init()
+    x = 30
+    if x is 30 {
+        print("suh")
+    }
 
+    """)
 
+export = open("examples/export.drm").read()
+oop = open("examples/oop.drm").read()
+scope = open("examples/scope.drm").read()
+inline = open("examples/inline.drm").read()
+subtract = open("examples/subtract.drm").read()
 
-"""
+dream = Dream(test_eval)
 
-
-
-dream = Dream(q)
-#print(dream.tokens)
-#print(dream.ast)
 dream.eval()
 
 

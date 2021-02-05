@@ -18,6 +18,8 @@ class DreamObj:
         self.vars = {}
         self.parent_context = None
         self.this = False
+        self.primitive = False
+        self.scoped_return = False
 
     @staticmethod
     def make_primitive(obj):
@@ -29,9 +31,13 @@ class DreamObj:
             return DreamBool(obj)
 
     def copy(self):
-
         copy_obj = DreamObj()
-        copy_obj.vars = copy.deepcopy(self.vars)
+        # we want a copy of primitives and a ref to actual objects
+        for name, value in self.vars.items():
+            if type(value) is DreamObj and value.primitive:
+                copy_obj.vars[name] = copy.deepcopy(value)
+            else:
+                copy_obj.vars[name] = value
         copy_obj.value = copy.deepcopy(self.value)
         copy_obj.parent_context = self
         return copy_obj
@@ -81,6 +87,7 @@ class Undefined(DreamObj):
 class DreamInt(DreamObj):
     def __init__(self, value):
         super().__init__(value)
+        self.primitive = True
 
     def __repr__(self):
         return str(self.value)
@@ -105,6 +112,7 @@ class DreamInt(DreamObj):
 class DreamStr(DreamObj):
     def __init__(self, value):
         super().__init__(value)
+        self.primitive = True
 
     def __repr__(self):
         return str(self.value)
@@ -121,6 +129,7 @@ class DreamStr(DreamObj):
 class DreamBool(DreamObj):
     def __init__(self, value):
         super().__init__(value)
+        self.primitive = True
 
     def __repr__(self):
         return str(self.value)

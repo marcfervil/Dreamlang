@@ -1,0 +1,50 @@
+class yuh {
+    a = 0
+    b = 0
+    c = 0
+    func init(a, b, c)
+    func test(){
+        print("class properties from inside", a, b, c)
+    }
+
+    func modify(amount){
+
+        a = a + amount
+        b = b + amount
+        c = c + amount
+        print("class properties should be incremented by five:", a, b, c)
+
+    }
+}
+
+func modify_outer(){
+    if true{
+        x.a = x.a * 10
+        x.b = x.b * 10
+        x.c = x.c * 10
+    }
+}
+
+func modify_outer2(x){
+    if true{
+        x.a = x.a * 10
+        x.b = x.b * 10
+        x.c = x.c * 10
+    }
+}
+
+x = yuh(1, 2, 3)
+print("class properties:", x.a, x.b, x.c)
+modify_outer()
+
+print("properties should be multiplied by ten from outer scope function:", x.a, x.b, x.c)
+x.test()
+x.modify(5)
+print("class after internal modification from outer scope:", x.a, x.b, x.c)
+x.a = x.a + 1
+x.b = x.b + 1
+x.c = x.c + 1
+print("class properties incremented by one from outermost scope:", x.a, x.b, x.c)
+modify_outer2(x)
+print("class properties should be multiplied by 10 thru ref", x.a, x.b, x.c)
+x.test()

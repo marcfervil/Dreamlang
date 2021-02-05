@@ -82,6 +82,8 @@ class Tokenizer:
                     match_count = 1
                     self.add_token()
                 elif char == '{':
+                    if self.tokens[-1].has("Newline"):
+                        self.tokens.pop(-1)
                     match_end_token = '}'
                     match_start_token = '{'
                     match_count = 1

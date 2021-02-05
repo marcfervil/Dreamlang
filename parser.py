@@ -117,6 +117,17 @@ class LiteralNode(ASTNode):
         return DreamObj.make_primitive(self.value)
 
 
+class ExportNode(ASTNode):
+    def __init__(self, var):
+        self.var = var
+
+    def eval(self, context):
+        var = self.var.eval(context)
+        if var is not None:
+            for name, value in var.vars.items():
+                context.add_var(name, value)
+
+
 class FuncNode(ASTNode):
     def __init__(self, name, params, body):
         self.name = name
@@ -209,10 +220,12 @@ class BodyNode(ASTNode):
 
             if type(node) is ReturnNode:
                 return result
-            elif type(node) is IfNode and result is not None:
+            elif result is not None and type(node) is IfNode and not result.scoped_return:
                 return result
+        scoped_context.scoped_return = True
 
-        return result
+        return scoped_context
+        #return result
 
 
 math_ops = {
@@ -254,6 +267,9 @@ class Parser:
             test = self.get_ast()
             body = self.eat_token()
             return IfNode(test, body)
+
+        if token.has("Identifier", "export"):
+            return ExportNode(self.get_ast())
 
         if token.has("Identifier", "func"):
             name = self.eat_token()
