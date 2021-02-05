@@ -125,7 +125,8 @@ class ExportNode(ASTNode):
         var = self.var.eval(context)
         if var is not None:
             for name, value in var.vars.items():
-                context.add_var(name, value)
+                if name not in context.vars:
+                    context.add_var(name, value)
 
 
 class FuncNode(ASTNode):

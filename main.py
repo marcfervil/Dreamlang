@@ -96,11 +96,22 @@ def print_results(test_data, debug_tokens=False):
 
 test_eval = ("""
     
-    x = 30
-    if x is 30 {
-        print("suh")
+    a = "hello"
+    b = "world"
+    
+    wild = if true {
+        a = "hello 1"
+        b = "world 2"
+        
+        func concat(){
+            return a + " " + b
+        }
     }
 
+    export wild
+    print(concat())
+    
+    print(wild.concat())
     """)
 
 export = open("examples/export.drm").read()
