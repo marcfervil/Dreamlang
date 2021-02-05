@@ -51,7 +51,7 @@ class AttributeNode(ASTNode):
         self.attr = attr  # name
 
     def eval(self, context):
-        if type(self.obj) is AttributeNode:
+        if type(self.obj) is AttributeNode or type(self.obj) is CallNode:
             return self.attr.eval(self.obj.eval(context))
         else:
             return self.attr.eval(context.vars[self.obj.name])
@@ -157,9 +157,8 @@ class ClassNode(ASTNode):
 
     def eval(self, context):
         self.context = context
-        self.self_ref = DreamObj()
         context.vars[self.name.value] = self.init
-        
+        return self.init
 
 class ReturnNode(ASTNode):
     def __init__(self, value):
@@ -176,6 +175,7 @@ class CallNode(ASTNode):
         self.caller = caller
         self.args = Parser(args, True).get_ast()
 
+
     def __repr__(self):
         return f'{self.caller}({str(self.args)[1:-1]})'
 
@@ -183,6 +183,7 @@ class CallNode(ASTNode):
 
         args = [arg.eval(context) for arg in self.args]
 
+        #print("call",self.caller.eval(context)(*args))
         return self.caller.eval(context)(*args)
 
 
@@ -291,7 +292,6 @@ class Parser:
 
         # operator
         if token.has("Operator", "."):
-
             attribute = self.eat_token()
             return AttributeNode(node, IdentifierNode(attribute.value))
 
@@ -301,9 +301,10 @@ class Parser:
 
         # function call
         if token.type == "Set":
-            if parent_type == IdentifierNode:
+            if parent_type == IdentifierNode or parent_type == AttributeNode:
                 return CallNode(node, token.value)
             else:
+                #precidance
                 return Parser(token.value).get_ast()
 
 

@@ -100,36 +100,53 @@ def print_results(test_data, debug_tokens=False):
 
 class_test = ("""
     
-    class Dumber {
-        stupid  =  (10+20)*2+10
-        func init(x){
-            print("Dumber init ",x)
-        }
-    }
-    
-    class Dumb {
-        dumber = Dumber(3)
-        a = 12
-  
-    }
-    
-    class Home {
-        exists = Dumb()
-    
-        func init(number, street){
-            print("Home made at", number, street)
+    class three{
+        previous = two()
+        func init(){
             
         }
+        func value(m){
+            return (previous.value(1) + 1) * m
+        }
+        func getPrevious(){
+            return previous
+        }
     }
     
-    house = Home(601, "Pawnee Lane")
-     print(house.exists.dumber.stupid)
-    house.exists.dumber.stupid = "la"
-    print(house.exists.dumber.stupid)
-  
+    class two {
+        previous = one()
+        func value(m){
+        
+            return (previous.value(1) + 1) * m
+        }
+        func getPrevious(){
+            return previous
+        }
+    }
+    
+    class one {
+        func value(m){
+            return 1 * m
+        }
+    }
+    
+    number = three()
+    print("Three: ", number.value(1))
+    print("First number ", number.previous.previous.value(1))
+    print("First number times ten: ", number.getPrevious().getPrevious().value(10))
     
 """)
 
+subtract_test = """
+greeting = "hello, world"
+
+func swapGreeting(greet, name){
+    return greet - "world" + name
+}
+
+print(swapGreeting(greeting, "marc"))
+
+"""
 
 
 dream = Dream(class_test)
