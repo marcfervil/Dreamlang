@@ -98,14 +98,16 @@ def print_results(test_data, debug_tokens=False):
 
 
 
+
+
 dream = Dream("""
 
-    func opinion (a) {
+ func opinion (a) {
         if a is "cats"{
             return a +" cool"
         }
         if a is "dogs"{
-            if 3 is 3 {
+            if true {
                 return a +" not cool"
             }
         }
@@ -115,10 +117,6 @@ dream = Dream("""
     print(opinion("dogs"))
     print(opinion("mice"))
 
-
-   
-  
-    
 """)
 #print(dream.ast)
 dream.eval()

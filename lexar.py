@@ -29,7 +29,7 @@ class Token:
                 self.value = Tokenizer(self.value[1:-1]).tokenize()
             elif self.value == "true" or self.value == "false":
                 self.type = "Boolean"
-                self.value = bool(self.value)
+                self.value = self.value == "true"
                 self.is_literal = True
             else:
                 self.type = "Identifier"

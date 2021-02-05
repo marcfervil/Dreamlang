@@ -84,6 +84,7 @@ class DreamStr(DreamObj):
     def subtract(self, string):
         return DreamStr(self.value.replace(string.value, ""))
 
+
 class DreamBool(DreamObj):
     def __init__(self, value):
         super().__init__(value)
@@ -95,6 +96,7 @@ class Dream:
     def __init__(self, text_input):
         self.text_input = text_input
         tokens = Tokenizer(text_input).tokenize()
+
         self.tokens = tokens
         self.ast = parser.Parser(tokens).get_ast(node=parser.BodyNode())
         self.context = self.get_context()
