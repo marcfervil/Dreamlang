@@ -42,12 +42,23 @@ class DreamObj:
         copy_obj.parent_context = self
         return copy_obj
 
-    def call(self, name, params=None):
+    #def __repr__(self):
+        #for name, value in self.vars.items():
+
+    def call(self, context, name, params=None):
+
         if params is not list:
             params = [params]
-        if name in self.vars:
-            return self.vars[name](params)
+
+        if name in self.vars :
+           # print(params[0].vars["x"],params[0].vars["y"], "<--")
+            #return self.vars[name](*params)
+            #print(self.get_var(name).)
+            #throw Exception
+            #print(self.vars["x"])
+            return self.vars[name](self, *params)
         elif hasattr(self, name) and hasattr(getattr(self, name), "dreamy"):
+
             if params is not None:
                 return getattr(self, name)(*params)
             else:
@@ -66,6 +77,9 @@ class DreamObj:
         return self.vars[name]
 
     def add_var(self, name, value):
+        #if name == "add":
+        #print(name)
+
         if self.this or (self.parent_context is not None and name in self.parent_context.vars):
             self.parent_context.add_var(name, value)
             #if self.this:
@@ -134,6 +148,7 @@ class DreamBool(DreamObj):
     def __repr__(self):
         return str(self.value)
 
+
 class Dream:
     def __init__(self, text_input):
         self.text_input = text_input
@@ -145,12 +160,16 @@ class Dream:
 
     def get_context(self):
         dream_globals = DreamObj()
-        dream_globals.vars["print"] = print
+        dream_globals.vars["print"] = self.get_print
         dream_globals.vars["dict"] = self.get_dict
         return dream_globals
 
     def get_dict(self, obj):
         print(obj.__dict__)
+
+    def get_print(self, *args):
+        print(*args[1:])
+        #print(args[1:])
 
     def eval(self):
         return self.ast.eval(self.context)

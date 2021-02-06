@@ -57,13 +57,14 @@ class AttributeNode(ASTNode):
         if type(self.obj) is AttributeNode or type(self.obj) is CallNode:
             return self.attr.eval(self.obj.eval(context))
         else:
-            return self.attr.eval(context.vars[self.obj.name])
+            node = self.attr.eval(context.get_var(self.obj.name))
+            return node
 
     def assign(self, context, value):
         if type(self.obj) is AttributeNode:
             self.attr.assign(self.obj.eval(context), value)
         else:
-            self.attr.assign(context.vars[self.obj.name], value)
+            self.attr.assign(context.get_var(self.obj.name), value)
 
 
 class BinaryNode(ASTNode):
@@ -79,15 +80,15 @@ class BinaryNode(ASTNode):
         left = self.left.eval(context)
         right = self.right.eval(context)
         if self.op.value == "+":
-            return left.call("add", right)
+            return left.call(context, "add", right)
         elif self.op.value == "-":
-            return left.call("subtract", right)
+            return left.call(context, "subtract", right)
         elif self.op.value == "*":
-            return left.call("multiply", right)
+            return left.call(context, "multiply", right)
         elif self.op.value == "/":
-            return left.call("divide", right)
+            return left.call(context, "divide", right)
         elif self.op.value == "is":
-            return left.call("equals", right)
+            return left.call(context, "equals", right)
 
 
 class IfNode(ASTNode):
@@ -135,15 +136,20 @@ class FuncNode(ASTNode):
         self.params = Parser(params.value, True).get_ast()
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
-    def call(self, *params):
-        new_scope = self.context.copy()
+    def call(self, context, *params):
+        #print(self.name)
+        self.scope = context.copy()
+        #print("function",self.name, self.params, params)
+
         for i, param in enumerate(self.params):
-            new_scope.add_var(param.name, params[i])
-        return self.body.eval(new_scope)
+            self.scope.add_var(param.name, params[i])
+        return self.body.eval(self.scope)
 
     def eval(self, context):
-        self.context = context
+        #self.context = context
+
         context.vars[self.name.value] = self.call
+
 
 
 class ClassNode(ASTNode):
@@ -151,23 +157,28 @@ class ClassNode(ASTNode):
         self.name = name
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
-    def init(self, *params):
-        class_context = self.context.copy()
+    def init(self, context, *params):
+        class_context = context.copy()
 
         # support for 'this' var
+
+        """
         this_context = class_context.copy()
         this_context.parent_context = class_context
         this_context.this = True
-        class_context.add_var("this", this_context)
+        class_context.add_var("this", this_context)"""
 
         init = None
         for node in self.body.body:
             node.eval(class_context)
-            if type(node) is FuncNode and node.name.value == "init":
-                init = node
+            node.class_context = class_context
+            if type(node) is FuncNode:
+                node.call.__annotations__["class_context"] = class_context
+                if node.name.value == "init":
+                    init = node
 
         if init is not None:
-            init.call(*params)
+            init.call(class_context, *params)
 
         return class_context
 
@@ -197,8 +208,13 @@ class CallNode(ASTNode):
 
         args = [arg.eval(context) for arg in self.args]
 
-        #print("call",self.caller.eval(context)(*args))
-        return self.caller.eval(context)(*args)
+
+        data = self.caller.eval(context)
+
+        if "class_context" in data.__annotations__:
+            context = data.__annotations__["class_context"]
+
+        return data(context, *args)
 
 
 class BodyNode(ASTNode):
@@ -226,7 +242,7 @@ class BodyNode(ASTNode):
         scoped_context.scoped_return = True
 
         return scoped_context
-        #return result
+        # return result <---- break in case of "exports are dumb"
 
 
 math_ops = {
