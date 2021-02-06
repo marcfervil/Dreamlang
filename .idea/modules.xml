@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Dreamlang.iml" filepath="$PROJECT_DIR$/.idea/Dreamlang.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../llvmstuff/.idea/llvmstuff.iml" filepath="$PROJECT_DIR$/../llvmstuff/.idea/llvmstuff.iml" />
     </modules>
   </component>
 </project>

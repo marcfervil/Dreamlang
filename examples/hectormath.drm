@@ -2,11 +2,14 @@
 class Hector {
     x = 0
     y = 0
+    c = 0
     func init(x, y)
 
     func add(other){
+
         return Hector(x + other.x, y + other.y)
     }
+
 
     func multiply(other){
         return Hector(x * other.x, y * other.y)
@@ -16,4 +19,7 @@ class Hector {
 
 
 hector = (Hector(10, 10) + Hector(3, 4)) * Hector(10, 10)
-print("(",hector.x, "," ,hector.y,")")
+print("( 130 , 140 ) ==", "(",hector.x, "," ,hector.y,")")
+
+
+

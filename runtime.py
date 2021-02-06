@@ -15,7 +15,7 @@ def dreamfunc(func):
 class DreamObj:
     def __init__(self, value=None):
         self.value = value
-        self.vars = {"classes":[]}
+        self.vars = {"by_value":[]}
         self.parent_context = None
         self.this = False
         self.primitive = False
@@ -78,8 +78,8 @@ class DreamObj:
 
     def get_var(self, name):
 
-        #if name == "x":
-            #print("got X ",self.parent_context is not None and name in self.parent_context.vars)
+        if "$" + name in self.vars:
+            return self.vars["$"+name]
 
         if self.parent_context is not None and name in self.parent_context.vars:
             return self.parent_context.get_var(name)
@@ -88,19 +88,20 @@ class DreamObj:
             return Undefined()
         var = self.vars[name]
 
-        if name in self.vars["classes"]:
+        if name in self.vars["by_value"]:
             return copy.deepcopy(var)
 
         return var
 
-    def add_var(self, name, value, var_type="Object"):
+    def add_var(self, name, value, store_value=False, update_parent=True):
 
-        if self.this or (self.parent_context is not None and name in self.parent_context.vars):
+        if self.this or (self.parent_context is not None and name in self.parent_context.vars and update_parent):
             self.parent_context.add_var(name, value)
 
         else:
-            if var_type == "Class":
-                self.vars["classes"].append(name)
+            if store_value:
+
+                self.vars["by_value"].append(name)
             self.vars[name] = value
 
 
@@ -178,7 +179,7 @@ class Dream:
         return dream_globals
 
     def get_dict(self, obj):
-        print("[RUNTIME DICT]:",obj.vars.keys(), "[PARENT]", obj.parent_context.vars.keys())
+        print("[RUNTIME DICT]:", obj.vars.keys(), "[PARENT]", obj.parent_context.vars.keys())
 
     def eval(self):
         return self.ast.eval(self.context)

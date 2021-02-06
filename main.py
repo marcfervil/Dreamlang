@@ -94,26 +94,46 @@ def print_results(test_data, debug_tokens=False):
     print(result)
 
 
-hopes = ("""
-    
+hopes = (("""
 
+    func f(test, r){
+        return test + r
+    }
     
- 
-    
-    """)
+    print(f("yuj", "em"))
+
+"""))
 
 export = open("examples/export.drm").read()
+comments = open("examples/comments.drm").read()
 hector = open("examples/hectormath.drm").read()
+this = open("examples/this.drm").read()
 oop = open("examples/oop.drm").read()
 scope = open("examples/scope.drm").read()
 inline = open("examples/inline.drm").read()
 subtract = open("examples/subtract.drm").read()
 
 
-dream = Dream(hector)
+def the_works():
+    print("--------THE WORKS--------")
+    dream = Dream(this).eval()
+    print("---------------------")
+    dream = Dream(comments).eval()
+    print("---------------------")
+    dream = Dream(hector).eval()
+    print("---------------------")
+    dream = Dream(oop).eval()
+    print("---------------------")
+    dream = Dream(scope).eval()
+    print("---------------------")
+    dream = Dream(export).eval()
+    print("---------------------")
+    dream = Dream(inline).eval()
+    print("---------------------")
+    dream = Dream(subtract).eval()
 
-dream.eval()
 
+Dream(this).eval()
 
 
 print("\n-------tests-------")

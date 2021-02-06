@@ -140,6 +140,8 @@ class FuncNode(ASTNode):
         new_scope = self.context.copy()
         for i, param in enumerate(self.params):
             new_scope.add_var(param.name, params[i])
+
+
         return self.body.eval(new_scope)
 
     def eval(self, context):
@@ -148,6 +150,7 @@ class FuncNode(ASTNode):
         context.add_var(self.name.value, self.call)
 
 class ClassNode(ASTNode):
+
     def __init__(self, name, body):
         self.name = name
         self.body = Parser(body.value).get_ast(node=BodyNode())
@@ -158,11 +161,11 @@ class ClassNode(ASTNode):
 
         # support for 'this' var
 
-        """
+        """"""
         this_context = class_context.copy()
         this_context.parent_context = class_context
         this_context.this = True
-        class_context.add_var("this", this_context)"""
+        class_context.add_var("this", this_context)
 
         init = None
         for node in self.body.body:
@@ -177,7 +180,8 @@ class ClassNode(ASTNode):
 
     def eval(self, context):
         self.context = context
-        context.add_var(self.name.value, self.init, "Class")
+
+        context.add_var(self.name.value, self.init, True)
         return self.init
 
 
@@ -251,6 +255,7 @@ class Parser:
         self.tokens = tokens
         self.root_node = BodyNode()
         self.prec_stack = []
+        self.token = ""
         self.parse_as_list = parse_as_list
         if parse_as_list:
             self.nodes = []

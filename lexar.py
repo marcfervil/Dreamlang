@@ -1,5 +1,5 @@
 ops = [",", "+", "-", "*", "/",  "=", "==", "is", "."]
-special_chars = "!@#$%^&*,-+=/."
+special_chars = "!@#%^&*,-+=/."
 
 class Token:
 
@@ -53,10 +53,16 @@ class Tokenizer:
         if token is None:
             if len(self.token.strip()) > 0:
                 new_token = Token(self.token)
+                if self.token[0] == "#":
+                    self.tokens.append(new_token)
                 self.tokens.append(new_token)
                 self.token = ""
         else:
             self.tokens.append(Token(token))
+
+    def newline(self):
+        if len(self.tokens) > 0 and not self.tokens[-1].has("Newline"):
+            self.add_token("\n")
 
     def tokenize(self):
         match_start_token = None
@@ -64,7 +70,17 @@ class Tokenizer:
         match_count = 0
         for char in self.data:
             if match_count == 0:
-                if char == " " or char in special_chars:
+
+                if char == '#':
+                    match_end_token = '\n'
+                    match_start_token = ""
+                    match_count = 1
+
+                    self.add_token()
+                    self.token = "#"
+                    continue
+
+                elif char == " " or char in special_chars:
                     self.add_token()
                     if len(self.tokens) > 0 and str(self.tokens[-1].value) + char in ops:
                         self.add_token(str(self.tokens.pop(-1).value) + char)
@@ -95,17 +111,25 @@ class Tokenizer:
                     match_count = 1
                     self.add_token()
                     continue
+
             elif char == match_end_token:
                 match_count -= 1
                 if match_count == 0:
-                    self.add_token(match_start_token + self.token+match_end_token)
+                    # comments should be the only token match with an empty string starting node
+                    if match_start_token == "":
+                        self.newline()
+                    else:
+                        self.add_token(match_start_token + self.token + match_end_token)
+
                     self.token = ""
                     continue
             elif char == match_start_token:
                 match_count += 1
 
             self.token += char
+        if not match_count == 0:
+            if match_start_token == "":
+                self.newline()
         self.add_token()
-        #self.tokens.append(Token("", "EOF"))
         return self.tokens
 

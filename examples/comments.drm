@@ -1,0 +1,17 @@
+print("line 1") #line 1
+print("#line 2") #line 2
+#print("#line 3")
+#print("line 4") #line3
+print("line 5")
+if true{
+    # print("line 6")
+    if true {
+        print("line 7") #line 7
+        #print("line 8")
+        f = 1 + 8 #or something
+        print("line #\n", f)
+    }
+}
+
+print("should see 'line 1', '#line 2', 'line 5', 'line 7', 'line #\n 9'")
+print("should see this") #print("shouldnt see this")

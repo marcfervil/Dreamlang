@@ -1,0 +1,15 @@
+class House {
+
+    owner = 0
+    address = 0
+
+    func init(owner, address)
+
+    func addOwner($owner){
+        this.owner = this.owner + ", " + owner
+    }
+}
+
+home = House("John", "601 Pawnee Lane")
+home.addOwner("Stacy")
+print("Home Owners:", home.owner, "live on", home.address)
