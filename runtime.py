@@ -15,11 +15,14 @@ def dreamfunc(func):
 class DreamObj:
     def __init__(self, value=None):
         self.value = value
-        self.vars = {}
+        self.vars = {"classes":[]}
         self.parent_context = None
         self.this = False
         self.primitive = False
         self.scoped_return = False
+        #self.type = None
+        self.classes = {}
+
 
     @staticmethod
     def make_primitive(obj):
@@ -33,20 +36,29 @@ class DreamObj:
     def copy(self):
         copy_obj = DreamObj()
         # we want a copy of primitives and a ref to actual objects
+
         for name, value in self.vars.items():
+            if name=="x":
+                pass
             if type(value) is DreamObj and value.primitive:
-                copy_obj.vars[name] = copy.deepcopy(value)
+                #copy_obj.vars[name] = copy.deepcopy(value)
+                copy_obj.add_var(name, copy.deepcopy(value))
             else:
-                copy_obj.vars[name] = value
-        copy_obj.value = copy.deepcopy(self.value)
+
+                #copy_obj.vars[name] = value
+                copy_obj.add_var(name, value)
+
+
+        copy_obj.value = self.value
         copy_obj.parent_context = self
         return copy_obj
+
 
     def call(self, name, params=None):
         if params is not list:
             params = [params]
         if name in self.vars:
-            return self.vars[name](params)
+            return self.get_var(name)(*params)
         elif hasattr(self, name) and hasattr(getattr(self, name), "dreamy"):
             if params is not None:
                 return getattr(self, name)(*params)
@@ -55,24 +67,52 @@ class DreamObj:
         else:
             return None
 
+    def call2(self, context, name, params=None):
+        if params is not list:
+            params = [params]
+        if name in self.vars:
+           # print(params[0].vars["x"])
+            return self.get_var(name)(*params)
+        elif hasattr(self, name) and hasattr(getattr(self, name), "dreamy"):
+            if params is not None:
+                return getattr(self, name)(*params)
+            else:
+                return getattr(self, name)()
+        else:
+            return None
+        
+        
+
+
     @dreamfunc
     def equals(self, other):
         return DreamBool(other.value == self.value)
 
     def get_var(self, name):
+
+        #if name == "x":
+            #print("got X ",self.parent_context is not None and name in self.parent_context.vars)
+
         if self.parent_context is not None and name in self.parent_context.vars:
             return self.parent_context.get_var(name)
-        if name not in self.vars: return Undefined()
-        return self.vars[name]
 
-    def add_var(self, name, value):
+        if name not in self.vars:
+            return Undefined()
+        var = self.vars[name]
+
+        if name in self.vars["classes"]:
+            return copy.deepcopy(var)
+
+        return var
+
+    def add_var(self, name, value, var_type="Object"):
+
         if self.this or (self.parent_context is not None and name in self.parent_context.vars):
             self.parent_context.add_var(name, value)
-            #if self.this:
 
-                #print("THIS MOD",name,"TO",value)
         else:
-
+            if var_type == "Class":
+                self.vars["classes"].append(name)
             self.vars[name] = value
 
 
@@ -150,7 +190,7 @@ class Dream:
         return dream_globals
 
     def get_dict(self, obj):
-        print(obj.__dict__)
+        print("[RUNTIME DICT]:",obj.vars.keys(), "[PARENT]", obj.parent_context.vars.keys())
 
     def eval(self):
         return self.ast.eval(self.context)

@@ -33,6 +33,7 @@ class IdentifierNode(ASTNode):
 
     def assign(self, context, value):
         #context.vars[self.name] = value
+
         context.add_var(self.name, value)
 
 
@@ -57,13 +58,13 @@ class AttributeNode(ASTNode):
         if type(self.obj) is AttributeNode or type(self.obj) is CallNode:
             return self.attr.eval(self.obj.eval(context))
         else:
-            return self.attr.eval(context.vars[self.obj.name])
+            return self.attr.eval(context.get_var(self.obj.name))
 
     def assign(self, context, value):
         if type(self.obj) is AttributeNode:
             self.attr.assign(self.obj.eval(context), value)
         else:
-            self.attr.assign(context.vars[self.obj.name], value)
+            self.attr.assign(context.get_var(self.obj.name), value)
 
 
 class BinaryNode(ASTNode):
@@ -79,7 +80,7 @@ class BinaryNode(ASTNode):
         left = self.left.eval(context)
         right = self.right.eval(context)
         if self.op.value == "+":
-            return left.call("add", right)
+            return left.call2(context, "add", right)
         elif self.op.value == "-":
             return left.call("subtract", right)
         elif self.op.value == "*":
@@ -143,8 +144,8 @@ class FuncNode(ASTNode):
 
     def eval(self, context):
         self.context = context
-        context.vars[self.name.value] = self.call
-
+        #context.vars[self.name.value] = self.call
+        context.add_var(self.name.value, self.call)
 
 class ClassNode(ASTNode):
     def __init__(self, name, body):
@@ -152,13 +153,16 @@ class ClassNode(ASTNode):
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
     def init(self, *params):
+
         class_context = self.context.copy()
 
         # support for 'this' var
+
+        """
         this_context = class_context.copy()
         this_context.parent_context = class_context
         this_context.this = True
-        class_context.add_var("this", this_context)
+        class_context.add_var("this", this_context)"""
 
         init = None
         for node in self.body.body:
@@ -173,7 +177,7 @@ class ClassNode(ASTNode):
 
     def eval(self, context):
         self.context = context
-        context.vars[self.name.value] = self.init
+        context.add_var(self.name.value, self.init, "Class")
         return self.init
 
 
@@ -197,7 +201,6 @@ class CallNode(ASTNode):
 
         args = [arg.eval(context) for arg in self.args]
 
-        #print("call",self.caller.eval(context)(*args))
         return self.caller.eval(context)(*args)
 
 
@@ -213,7 +216,10 @@ class BodyNode(ASTNode):
         return str_repr
 
     def eval(self, context):
+
         scoped_context = context.copy()
+        #if "this" in scoped_context.vars.keys():
+        #    print("hokay")
         if self.body is None: return None
         for node in self.body:
 
@@ -225,8 +231,8 @@ class BodyNode(ASTNode):
                 return result
         scoped_context.scoped_return = True
 
+        #return scoped_context
         return scoped_context
-        #return result
 
 
 math_ops = {

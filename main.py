@@ -94,24 +94,44 @@ def print_results(test_data, debug_tokens=False):
     print(result)
 
 
-test_eval = ("""
+hopes = ("""
     
-    a = "hello"
-    b = "world"
+   num = 0
     
-    wild = if true {
-        a = "hello 1"
-        b = "world 2"
+    class Vector {
+        x = 0
+        y = 0
+        func init(x, y)
         
-        func concat(){
-            return a + " " + b
+        func add(other){
+            "print(x,other.x)"
+            return Vector(x + other.x, y + other.y)
         }
+        
+        func fun(a, b, debug){
+            luv1 = x 
+            luv2 = y
+            
+            print("SO FUN IM", luv1, luv2)
+            
+        }
+        
     }
-
-    export wild
-    print(concat())
     
-    print(wild.concat())
+    class Hector {
+        x = 0
+        y = 0
+        func init(x, y)
+     
+    }
+    
+ 
+    newVec = Vector("REALLY", "GOOD") 
+    a = Vector(10, 20)
+    b = Vector(20, 30)
+    newVec.fun(a, b, true)
+
+    
     """)
 
 export = open("examples/export.drm").read()
@@ -120,7 +140,8 @@ scope = open("examples/scope.drm").read()
 inline = open("examples/inline.drm").read()
 subtract = open("examples/subtract.drm").read()
 
-dream = Dream(test_eval)
+
+dream = Dream(hopes)
 
 dream.eval()
 
