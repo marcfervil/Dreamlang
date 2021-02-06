@@ -96,52 +96,21 @@ def print_results(test_data, debug_tokens=False):
 
 hopes = ("""
     
-   num = 0
-    
-    class Vector {
-        x = 0
-        y = 0
-        func init(x, y)
-        
-        func add(other){
-            "print(x,other.x)"
-            return Vector(x + other.x, y + other.y)
-        }
-        
-        func fun(a, b, debug){
-            luv1 = x 
-            luv2 = y
-            
-            print("SO FUN IM", luv1, luv2)
-            
-        }
-        
-    }
-    
-    class Hector {
-        x = 0
-        y = 0
-        func init(x, y)
-     
-    }
+
     
  
-    newVec = Vector("REALLY", "GOOD") 
-    a = Vector(10, 20)
-    b = Vector(20, 30)
-    newVec.fun(a, b, true)
-
     
     """)
 
 export = open("examples/export.drm").read()
+hector = open("examples/hectormath.drm").read()
 oop = open("examples/oop.drm").read()
 scope = open("examples/scope.drm").read()
 inline = open("examples/inline.drm").read()
 subtract = open("examples/subtract.drm").read()
 
 
-dream = Dream(hopes)
+dream = Dream(hector)
 
 dream.eval()
 

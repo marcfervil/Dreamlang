@@ -67,19 +67,7 @@ class DreamObj:
         else:
             return None
 
-    def call2(self, context, name, params=None):
-        if params is not list:
-            params = [params]
-        if name in self.vars:
-           # print(params[0].vars["x"])
-            return self.get_var(name)(*params)
-        elif hasattr(self, name) and hasattr(getattr(self, name), "dreamy"):
-            if params is not None:
-                return getattr(self, name)(*params)
-            else:
-                return getattr(self, name)()
-        else:
-            return None
+
         
         
 

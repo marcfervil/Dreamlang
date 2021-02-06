@@ -80,7 +80,7 @@ class BinaryNode(ASTNode):
         left = self.left.eval(context)
         right = self.right.eval(context)
         if self.op.value == "+":
-            return left.call2(context, "add", right)
+            return left.call("add", right)
         elif self.op.value == "-":
             return left.call("subtract", right)
         elif self.op.value == "*":
