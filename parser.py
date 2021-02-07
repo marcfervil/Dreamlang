@@ -89,6 +89,10 @@ class BinaryNode(ASTNode):
             return left.call("divide", right)
         elif self.op.value == "is":
             return left.call("equals", right)
+        elif self.op.value == "is not":
+            result = left.call("equals", right)
+            result.value = not result.value
+            return result
 
 
 class IfNode(ASTNode):
@@ -258,6 +262,7 @@ class BodyNode(ASTNode):
 math_ops = {
     "==": 1,
     "is": 1,
+    "is not": 1,
     "+": 2,
     "-": 2,
     "*": 3,
@@ -291,11 +296,13 @@ class Parser:
                 else:
                     return BodyNode(program_body)
 
+        # if statement
         if token.has("Identifier", "if"):
             test = self.get_ast()
             body = self.eat_token()
             return IfNode(test, body)
 
+        # for loop
         if token.has("Identifier", "for"):
             var = self.eat_token()
             # this is the word in

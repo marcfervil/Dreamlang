@@ -105,6 +105,7 @@ hopes = (("""
 """))
 
 loop = open("examples/loop.drm").read()
+bools = open("examples/boollogic.drm").read()
 export = open("examples/export.drm").read()
 comments = open("examples/comments.drm").read()
 list = open("examples/list.drm").read()
@@ -135,7 +136,8 @@ def the_works():
     dream = Dream(subtract).eval()
 
 
-Dream(loop).eval()
+dream = Dream(bools)
+dream.eval()
 
 
 print("\n-------tests-------")

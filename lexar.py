@@ -1,4 +1,4 @@
-ops = [",", "+", "-", "*", "/",  "=", "==", "is", "."]
+ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", "."]
 special_chars = "!@#%^&*,-+=/."
 
 class Token:
@@ -42,6 +42,7 @@ class Token:
     def has(self, type, value=None):
         return (value is None and self.type == type) or (self.value == value and self.type == type)
 
+
 class Tokenizer:
 
     def __init__(self, data):
@@ -50,11 +51,21 @@ class Tokenizer:
         self.token = ""
 
     def add_token(self, token=None):
+
         if token is None:
             if len(self.token.strip()) > 0:
                 new_token = Token(self.token)
+
+                # ???? this is wrong but i'm too scared to delete it @ this point
                 if self.token[0] == "#":
                     self.tokens.append(new_token)
+
+                # TODO Make dynamic so that other operators can "merge"
+                if new_token.value == "not" and self.tokens[-1].has("Operator", "is"):
+                    self.tokens[-1].value = "is not"
+                    self.token = ""
+                    return
+
                 self.tokens.append(new_token)
                 self.token = ""
         else:

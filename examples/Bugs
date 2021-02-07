@@ -1,2 +1,3 @@
 Negative numbers are not tokenized
 "this" cannot be copied
+"not" cannot be first word in program
