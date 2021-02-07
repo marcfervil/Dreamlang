@@ -180,16 +180,20 @@ class Dream:
         dream_globals.vars["print"] = print
         dream_globals.vars["dict"] = self.get_dict
         dream_globals.vars["copy"] = self.copy
-        dream_globals.vars["next"] = self.next
+        dream_globals.vars["next"] = self.next_iter
         dream_globals.vars["hasnext"] = self.has_next
         return dream_globals
 
     def get_dict(self, obj):
         print("[RUNTIME DICT]:", obj.vars.keys(), "[PARENT]", obj.parent_context.vars.keys())
 
-    def next(self, obj):
+    def next_iter(self, params):
+        obj, first = params
+
+        obj.call("next", first)
         next_val = obj.call("get_next")
-        obj.call("next")
+        #if first.value:
+        #    print(next_val)
         return next_val
 
     def has_next(self, obj):

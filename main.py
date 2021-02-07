@@ -105,6 +105,7 @@ hopes = (("""
 """))
 
 loop = open("examples/loop.drm").read()
+listiter = open("examples/listiter.drm").read()
 bools = open("examples/boollogic.drm").read()
 export = open("examples/export.drm").read()
 comments = open("examples/comments.drm").read()
@@ -134,16 +135,25 @@ def the_works():
     dream = Dream(inline).eval()
     print("---------------------")
     dream = Dream(subtract).eval()
-"""
+    print("---------------------")
+    dream = Dream(listiter).eval()
+hopes = """
 
 
-for i in count(3) {
-    print("I CAN PRINT SEVERAL TIMMeemmmss ", i)
+x = $
+func t(){
+
+    return (x = 10)
 }
-print("so yeah that works")
+
+
+print(t(), x)
+
 """
 
-dream = Dream(loop)
+#the_works()
+
+dream = Dream(listiter)
 dream.eval()
 
 

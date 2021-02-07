@@ -1,0 +1,105 @@
+class count {
+    value = 0
+    max = $
+    func init(max)
+
+    func next(first){
+        if first {
+            value = 0 - 1
+        }
+
+        value = value + 1
+    }
+
+    func has_next(){
+        return value is not max + 1
+    }
+
+    func get_next(){
+        return value
+    }
+}
+
+
+
+class List {
+
+    head = $
+    last = $
+    length = 0
+
+    iter_count = 0
+
+    class Node {
+        value = $
+        next = $
+        func init(value)
+    }
+
+    func push(element){
+        node = Node(element)
+        length = length + 1
+        if head is $ {
+            head = node
+            last = head
+            return node.value
+        }
+        last.next = node
+        last = node
+        return node.value
+    }
+
+    func _get(node, index){
+        if index is 0 {
+            return node.value
+        }
+        return _get(node.next, index - 1)
+    }
+
+    func next(first){
+        if first is true {
+            iter_count = 0 - 1
+        }
+        iter_count = iter_count + 1
+    }
+
+    func has_next(){
+        return iter_count is not length
+    }
+
+    func get_next(){
+        #print("tier",iter_count)
+        return get(iter_count)
+    }
+
+    func get(index){
+        return _get(head, index)
+    }
+
+   func add(other){
+        #the new list should be a copy of this...unfortunatelty you cannot copy "this" atm
+        list = this
+        list.last.next = other.head
+
+        return list
+   }
+
+}
+
+animals = List()
+animals.push("dog")
+animals.push("cat")
+animals.push("bird")
+animals.push("bat")
+
+
+for animal in animals {
+    print("loop1 ", animal)
+}
+print()
+print()
+animals.push("cat")
+animals.push("mouse")
+for animal in animals {
+    print("loop2 ", animal)
+}

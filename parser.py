@@ -2,7 +2,7 @@ from random import randrange
 
 from lexar import Token
 from runtime import *
-from runtime import DreamObj
+from runtime import DreamObj, DreamBool
 
 
 class ASTNode:
@@ -117,18 +117,32 @@ class ForNode(ASTNode):
 
     def eval(self, context):
         iterator = self.iterator.eval(context)
-        result = context.call("next", iterator)
-        context.add_var(self.var.value, result)
+        first = True
         loop = None
-        while context.call("hasnext", iterator).value:
+        result = context.call("next", [iterator, DreamBool(True)])
+
+        context.add_var(self.var.value, result)
+
+
+        while True:
+
+            #print("Result",result)
+
             loop = self.body.eval(context)
 
             if loop is not None and not loop.scoped_return:
                 return loop
 
-            result = context.call("next", iterator)
+            result = context.call("next", [iterator, DreamBool(False)])
             context.add_var(self.var.value, result)
+
+            first = False
+
+            if not context.call("hasnext", iterator).value:
+                return loop
+
         return loop
+
 
 class LiteralNode(ASTNode):
     def __init__(self, value):

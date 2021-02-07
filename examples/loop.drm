@@ -3,7 +3,7 @@ class count {
     max = $
     func init(max)
 
-    func next(){
+    func next(first){
         value = value + 1
     }
 
