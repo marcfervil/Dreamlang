@@ -104,6 +104,7 @@ hopes = (("""
 
 """))
 
+loop = open("examples/loop.drm").read()
 export = open("examples/export.drm").read()
 comments = open("examples/comments.drm").read()
 list = open("examples/list.drm").read()
@@ -133,36 +134,8 @@ def the_works():
     print("---------------------")
     dream = Dream(subtract).eval()
 
-"""
-   class List {
 
-    head = -1
-    last = -1
-
-    class Node {
-        value = 0
-        next = -1
-        func init(value)
-    }
-    
-    func add(element){
-        node = Node(element)
-        if head is -1 {
-            head = node
-            return node
-        }
-    }
-
-    func init(){
-
-    }
-
-}
-animals = List("")
-#animals.add("dog")
-"""
-
-Dream(list).eval()
+Dream(loop).eval()
 
 
 print("\n-------tests-------")

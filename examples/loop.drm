@@ -1,0 +1,30 @@
+class count {
+    value = 0
+    max = $
+    func init(max)
+
+    func next(){
+        if value is max {
+            value = $
+        }
+        if value is $ {
+            return $
+        }
+
+        value = value + 1
+    }
+
+    func has_next(){
+
+    }
+
+    func get_next(){
+        return value
+    }
+}
+
+
+for i in count(3) {
+    print("I CAN PRINT SEVERAL TIMMeemmmss ", i)
+}
+print("so yeah that works")

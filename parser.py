@@ -105,6 +105,23 @@ class IfNode(ASTNode):
             return self.body.eval(context)
 
 
+class ForNode(ASTNode):
+    def __init__(self, var, iterator, body):
+        self.var = var
+        self.iterator = iterator
+        self.body = Parser(body.value).get_ast(node = BodyNode())
+
+    def eval(self, context):
+        iterator = self.iterator.eval(context)
+        result = context.call("next", iterator)
+        context.add_var(self.var.value, result)
+        while not result.is_undefined():
+
+            self.body.eval(context)
+            result = context.call("next", iterator)
+            context.add_var(self.var.value, result)
+
+
 class LiteralNode(ASTNode):
     def __init__(self, value):
         self.value = value
@@ -160,8 +177,6 @@ class ClassNode(ASTNode):
         class_context = self.context.copy()
 
         # support for 'this' var
-
-
         this_context = class_context.copy()
         this_context.parent_context = class_context
         this_context.this = True
@@ -236,7 +251,7 @@ class BodyNode(ASTNode):
                 return result
         scoped_context.scoped_return = True
 
-        #return scoped_context
+        # return result  <-- break in case people can't handle the future
         return scoped_context
 
 
@@ -281,6 +296,14 @@ class Parser:
             body = self.eat_token()
             return IfNode(test, body)
 
+        if token.has("Identifier", "for"):
+            var = self.eat_token()
+            # this is the word in
+            discard = self.eat_token()
+            test = self.get_ast()
+            body = self.eat_token()
+            return ForNode(var, test, body)
+
         if token.has("Identifier", "export"):
             return ExportNode(self.get_ast())
 
@@ -315,6 +338,7 @@ class Parser:
         # handles math operations
         if token.type == "Operator" and token.value in math_ops:
             if math_ops[token.value] > prec:
+
                 return BinaryNode(node, token, self.get_ast(math_ops[token.value]))
             elif math_ops[token.value] == prec or math_ops[token.value] < prec:
                 # if you're parsing math and you hit an operator w/ a lower precedence - you've gone too far

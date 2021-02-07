@@ -11,16 +11,17 @@ def dreamfunc(func):
     return func
 
 
-
 class DreamObj:
     def __init__(self, value=None):
         self.value = value
-        self.vars = {"by_value":[]}
+        self.vars = {
+            "by_value":[],
+
+        }
         self.parent_context = None
         self.this = False
         self.primitive = False
         self.scoped_return = False
-        #self.type = None
         self.classes = {}
 
 
@@ -33,26 +34,26 @@ class DreamObj:
         elif type(obj) is bool:
             return DreamBool(obj)
 
+
     def copy(self):
+
         copy_obj = DreamObj()
-        # we want a copy of primitives and a ref to actual objects
-
+        # we want a copy of primitives and a ref to actual objects for speed
         for name, value in self.vars.items():
-
             if type(value) is DreamObj and value.primitive:
-                #copy_obj.vars[name] = copy.deepcopy(value)
                 copy_obj.add_var(name, copy.deepcopy(value))
             else:
-
-                #copy_obj.vars[name] = value
                 copy_obj.add_var(name, value)
-
 
         copy_obj.value = self.value
         copy_obj.parent_context = self
         return copy_obj
 
+    def is_undefined(self):
+        return hasattr(self, "undefined")
+
     def call(self, name, params=None):
+
         if params is not list:
             params = [params]
         if name in self.vars:
@@ -68,7 +69,7 @@ class DreamObj:
     @dreamfunc
     def equals(self, other):
 
-        return DreamBool(not hasattr(other, "undefined")  and other.value == self.value)
+        return DreamBool(not hasattr(other, "undefined") and other.value == self.value)
 
     def get_var(self, name):
 
@@ -162,6 +163,7 @@ class DreamBool(DreamObj):
     def __repr__(self):
         return str(self.value)
 
+
 class Dream:
     def __init__(self, text_input):
         self.text_input = text_input
@@ -175,10 +177,26 @@ class Dream:
         dream_globals = DreamObj()
         dream_globals.vars["print"] = print
         dream_globals.vars["dict"] = self.get_dict
+        dream_globals.vars["copy"] = self.copy
+        dream_globals.vars["next"] = self.next
+        dream_globals.vars["has_next"] = self.next
         return dream_globals
 
     def get_dict(self, obj):
         print("[RUNTIME DICT]:", obj.vars.keys(), "[PARENT]", obj.parent_context.vars.keys())
+
+    def next(self, obj):
+        next_val = obj.call("get_next")
+        obj.call("next")
+        return next_val
+
+    def has_next(self, obj):
+        next_val = obj.call("get")
+        obj.call("get_next")
+        return next_val
+
+    def copy(self, obj):
+        return obj.copy()
 
     def eval(self):
         return self.ast.eval(self.context)
