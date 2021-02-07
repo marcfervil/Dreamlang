@@ -106,6 +106,7 @@ hopes = (("""
 
 export = open("examples/export.drm").read()
 comments = open("examples/comments.drm").read()
+list = open("examples/list.drm").read()
 hector = open("examples/hectormath.drm").read()
 this = open("examples/this.drm").read()
 oop = open("examples/oop.drm").read()
@@ -132,8 +133,36 @@ def the_works():
     print("---------------------")
     dream = Dream(subtract).eval()
 
+"""
+   class List {
 
-Dream(this).eval()
+    head = -1
+    last = -1
+
+    class Node {
+        value = 0
+        next = -1
+        func init(value)
+    }
+    
+    func add(element){
+        node = Node(element)
+        if head is -1 {
+            head = node
+            return node
+        }
+    }
+
+    func init(){
+
+    }
+
+}
+animals = List("")
+#animals.add("dog")
+"""
+
+Dream(list).eval()
 
 
 print("\n-------tests-------")

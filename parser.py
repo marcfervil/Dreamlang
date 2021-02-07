@@ -161,20 +161,21 @@ class ClassNode(ASTNode):
 
         # support for 'this' var
 
-        """"""
+
         this_context = class_context.copy()
         this_context.parent_context = class_context
         this_context.this = True
         class_context.add_var("this", this_context)
 
         init = None
-        for node in self.body.body:
-            node.eval(class_context)
-            if type(node) is FuncNode and node.name.value == "init":
-                init = node
+        if self.body.body is not None:
+            for node in self.body.body:
+                node.eval(class_context)
+                if type(node) is FuncNode and node.name.value == "init":
+                    init = node
 
-        if init is not None:
-            init.call(*params)
+            if init is not None:
+                init.call(*params)
 
         return class_context
 

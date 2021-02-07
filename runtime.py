@@ -38,8 +38,7 @@ class DreamObj:
         # we want a copy of primitives and a ref to actual objects
 
         for name, value in self.vars.items():
-            if name=="x":
-                pass
+
             if type(value) is DreamObj and value.primitive:
                 #copy_obj.vars[name] = copy.deepcopy(value)
                 copy_obj.add_var(name, copy.deepcopy(value))
@@ -52,7 +51,6 @@ class DreamObj:
         copy_obj.value = self.value
         copy_obj.parent_context = self
         return copy_obj
-
 
     def call(self, name, params=None):
         if params is not list:
@@ -67,14 +65,10 @@ class DreamObj:
         else:
             return None
 
-
-        
-        
-
-
     @dreamfunc
     def equals(self, other):
-        return DreamBool(other.value == self.value)
+
+        return DreamBool(not hasattr(other, "undefined")  and other.value == self.value)
 
     def get_var(self, name):
 
@@ -108,9 +102,14 @@ class DreamObj:
 class Undefined(DreamObj):
     def __init__(self):
         super().__init__(None)
+        self.undefined = True
 
     def __repr__(self):
         return "[Undefined]"
+
+    @dreamfunc
+    def equals(self, other):
+        return DreamBool(hasattr(other, "undefined"))
 
 
 class DreamInt(DreamObj):
