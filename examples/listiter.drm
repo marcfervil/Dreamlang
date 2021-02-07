@@ -1,28 +1,3 @@
-class count {
-    value = 0
-    start = 0
-    max = $
-    func init(max)
-
-    func next(first){
-        if first {
-            value = start-1
-        }
-
-        value = value + 1
-    }
-
-    func has_next(){
-        return value is not max
-    }
-
-    func get_next(){
-        return value
-    }
-}
-
-
-
 class List {
 
     head = $
@@ -51,39 +26,27 @@ class List {
     }
 
     func _get(node, index){
-        if index is 0 {
-            return node.value
-        }
+        if index is 0 -> return node.value
         return _get(node.next, index - 1)
     }
 
     func next(first){
-        if first is true {
-            iter_count = 0 - 1
-        }
+        if first is true -> iter_count = -1
         iter_count = iter_count + 1
     }
 
-    func has_next(){
-        return iter_count is not length
-    }
+    func has_next() -> return iter_count is not length
 
-    func get_next(){
-        #print("tier",iter_count)
-        return get(iter_count)
-    }
+    func get_next() -> return get(iter_count)
 
-    func get(index){
-        return _get(head, index)
-    }
+    func get(index) -> return _get(head, index)
 
-   func add(other){
+    func add(other){
         #the new list should be a copy of this...unfortunatelty you cannot copy "this" atm
         list = this
         list.last.next = other.head
-
         return list
-   }
+    }
 
 }
 

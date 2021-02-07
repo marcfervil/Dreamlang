@@ -1,6 +1,8 @@
 class count {
+
     value = 0
     max = $
+
     func init(max)
 
     func next(first){
