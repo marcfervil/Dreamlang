@@ -71,10 +71,22 @@ class Tokenizer:
                     self.token = ""
                     return
 
+                elif new_token.has("Number"):
+                    if self.get(-1).has("Operator", "-") and (self.get(-2).has("Operator") or self.get(-2).has("None")):
+                        #if not self.get(-2).has("None"):
+                        self.tokens.pop()
+                        new_token.value *= -1
+
+
                 self.tokens.append(new_token)
                 self.token = ""
         else:
             self.tokens.append(Token(token))
+
+    def get(self, index):
+        if abs(index) > len(self.tokens):
+            return Token("None", "None")
+        return self.tokens[index]
 
     def newline(self):
         if len(self.tokens) > 0 and not self.tokens[-1].has("Newline"):

@@ -1,11 +1,12 @@
 class count {
     value = 0
+    start = 0
     max = $
     func init(max)
 
     func next(first){
         if first {
-            value = 0 - 1
+            value = start-1
         }
 
         value = value + 1

@@ -140,22 +140,17 @@ def the_works():
     dream = Dream(listiter).eval()
 hopes = """
 
+a = - 3
+x = -10 - - a
+f = (-x + -1)
 
-x = $
-func t(){
-
-    return (x = 10)
-}
-
-
-print(t(), x)
 
 """
 
 #the_works()
 
 dream = Dream(sugar)
-
+#print(dream.tokens)
 dream.eval()
 
 

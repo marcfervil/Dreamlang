@@ -365,8 +365,13 @@ class Parser:
 
         # handles math operations
         if token.type == "Operator" and token.value in math_ops:
-            if math_ops[token.value] > prec:
+            # if there is no node, that means you are trying to negate an identifier ex: a = -b
+            if node is None:
+                # TODO: replace with UnaryNode @ some point for performance
+                new_node = BinaryNode(LiteralNode(0), token, self.get_ast(math_ops[token.value]))
+                return new_node
 
+            if math_ops[token.value] > prec:
                 return BinaryNode(node, token, self.get_ast(math_ops[token.value]))
             elif math_ops[token.value] == prec or math_ops[token.value] < prec:
                 # if you're parsing math and you hit an operator w/ a lower precedence - you've gone too far

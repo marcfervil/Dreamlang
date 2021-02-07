@@ -4,4 +4,9 @@ func swapGreeting(greet, name){
     return greet - "world" + name
 }
 
+a = - 3
+x = -10 - - a
+f = (-x + -1)
+
 print(swapGreeting(greeting, "marc"))
+print("12 ==",f)
