@@ -25,6 +25,7 @@ class DreamObj:
         self.classes = {}
 
 
+
     @staticmethod
     def make_primitive(obj):
         if type(obj) is int:
@@ -164,6 +165,7 @@ class DreamBool(DreamObj):
         return str(self.value)
 
 
+
 class Dream:
     def __init__(self, text_input):
         self.text_input = text_input
@@ -179,7 +181,7 @@ class Dream:
         dream_globals.vars["dict"] = self.get_dict
         dream_globals.vars["copy"] = self.copy
         dream_globals.vars["next"] = self.next
-        dream_globals.vars["has_next"] = self.next
+        dream_globals.vars["hasnext"] = self.has_next
         return dream_globals
 
     def get_dict(self, obj):
@@ -191,9 +193,7 @@ class Dream:
         return next_val
 
     def has_next(self, obj):
-        next_val = obj.call("get")
-        obj.call("get_next")
-        return next_val
+        return obj.call("has_next")
 
     def copy(self, obj):
         return obj.copy()

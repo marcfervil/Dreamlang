@@ -119,12 +119,16 @@ class ForNode(ASTNode):
         iterator = self.iterator.eval(context)
         result = context.call("next", iterator)
         context.add_var(self.var.value, result)
-        while not result.is_undefined():
+        loop = None
+        while context.call("hasnext", iterator).value:
+            loop = self.body.eval(context)
 
-            self.body.eval(context)
+            if loop is not None and not loop.scoped_return:
+                return loop
+
             result = context.call("next", iterator)
             context.add_var(self.var.value, result)
-
+        return loop
 
 class LiteralNode(ASTNode):
     def __init__(self, value):
@@ -228,6 +232,9 @@ class CallNode(ASTNode):
         return self.caller.eval(context)(*args)
 
 
+control_flow = [IfNode, ForNode]
+
+
 class BodyNode(ASTNode):
     def __init__(self, body=None):
 
@@ -242,8 +249,7 @@ class BodyNode(ASTNode):
     def eval(self, context):
 
         scoped_context = context.copy()
-        #if "this" in scoped_context.vars.keys():
-        #    print("hokay")
+
         if self.body is None: return None
         for node in self.body:
 
@@ -251,7 +257,8 @@ class BodyNode(ASTNode):
 
             if type(node) is ReturnNode:
                 return result
-            elif result is not None and type(node) is IfNode and not result.scoped_return:
+
+            elif result is not None and type(node) in control_flow and not result.scoped_return:
                 return result
         scoped_context.scoped_return = True
 

@@ -134,9 +134,16 @@ def the_works():
     dream = Dream(inline).eval()
     print("---------------------")
     dream = Dream(subtract).eval()
+"""
 
 
-dream = Dream(bools)
+for i in count(3) {
+    print("I CAN PRINT SEVERAL TIMMeemmmss ", i)
+}
+print("so yeah that works")
+"""
+
+dream = Dream(loop)
 dream.eval()
 
 

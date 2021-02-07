@@ -4,18 +4,11 @@ class count {
     func init(max)
 
     func next(){
-        if value is max {
-            value = $
-        }
-        if value is $ {
-            return $
-        }
-
         value = value + 1
     }
 
     func has_next(){
-
+        return value is not max + 1
     }
 
     func get_next(){
@@ -24,7 +17,41 @@ class count {
 }
 
 
-for i in count(3) {
-    print("I CAN PRINT SEVERAL TIMMeemmmss ", i)
+
+func p(num, num2){
+    if num is 2 {
+        print("gettin' there")
+        if num2 is 3 {
+            return "yesss"
+        }
+        print("but nah")
+        return "closse"
+    }
+    return "noooo"
 }
-print("so yeah that works")
+
+func stop(num){
+    for i in count(10) {
+        if i is num {
+            return i * 10
+        }
+    }
+}
+
+func bigBrainSquare(total, niceNum){
+    num = 0
+    for i in count(total){
+        for j in count(total){
+            num = num + 1
+        }
+        if num is niceNum {
+            return "nice"
+        }
+    }
+    return num
+}
+
+print(bigBrainSquare(69, 69))
+print(bigBrainSquare(69, 3))
+
+#p(2,5)
