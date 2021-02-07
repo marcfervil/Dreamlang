@@ -1,4 +1,4 @@
-ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", "."]
+ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", ".", "->"]
 special_chars = "!@#%^&*,-+=/."
 
 class Token:
@@ -63,6 +63,11 @@ class Tokenizer:
                 # TODO Make dynamic so that other operators can "merge"
                 if new_token.value == "not" and self.tokens[-1].has("Operator", "is"):
                     self.tokens[-1].value = "is not"
+                    self.token = ""
+                    return
+
+                elif new_token.value == ">" and self.tokens[-1].has("Operator", "-"):
+                    self.tokens[-1].value = "->"
                     self.token = ""
                     return
 

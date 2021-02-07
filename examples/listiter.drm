@@ -12,7 +12,7 @@ class count {
     }
 
     func has_next(){
-        return value is not max + 1
+        return value is not max
     }
 
     func get_next(){
@@ -98,8 +98,10 @@ for animal in animals {
 }
 print()
 print()
+
 animals.push("cat")
 animals.push("mouse")
+
 for animal in animals {
     print("loop2 ", animal)
 }

@@ -175,18 +175,18 @@ class FuncNode(ASTNode):
         self.params = Parser(params.value, True).get_ast()
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
+
     def call(self, *params):
         new_scope = self.context.copy()
         for i, param in enumerate(self.params):
             new_scope.add_var(param.name, params[i])
 
-
         return self.body.eval(new_scope)
 
     def eval(self, context):
         self.context = context
-        #context.vars[self.name.value] = self.call
         context.add_var(self.name.value, self.call)
+
 
 class ClassNode(ASTNode):
 
@@ -342,7 +342,7 @@ class Parser:
                 body = Token("{}")
             elif self.peak_token().type == "Block":
                 body = self.eat_token()
-
+               #print(name.value,"=",body)
             return FuncNode(name, params, body)
 
         if token.has("Identifier", "class"):
@@ -394,18 +394,30 @@ class Parser:
                 # precedence ex: (5+5) * 2
                 return Parser(token.value).get_ast()
 
-
         return None
 
     def eat_token(self):
         token = self.tokens.pop(0)
 
+        # the "->" operator returns a body token that consists of alll the tokens until newline
+        if token.has("Operator", "->"):
+            expression = []
+            while True:
+                expression_token = self.eat_token()
+                expression.append(expression_token)
+                if expression_token.has("Newline") or len(self.tokens) == 0:
+                    if len(self.tokens)>0: self.tokens.insert(0, expression_token)
+                    return Token(expression, "Block")
+
+            return Token(expression, "Block")
         return token
 
     def peak_token(self):
 
         token = self.tokens[0]
-
+        # if the "->" operator is used just return an empty block because it's the same thing
+        if token.has("Operator", "->"):
+            return Token([], "Block")
         return token
 
     def token_is(self, token, token_type, value):

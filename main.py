@@ -116,6 +116,7 @@ oop = open("examples/oop.drm").read()
 scope = open("examples/scope.drm").read()
 inline = open("examples/inline.drm").read()
 subtract = open("examples/subtract.drm").read()
+sugar = open("examples/sugar.drm").read()
 
 
 def the_works():
@@ -153,7 +154,8 @@ print(t(), x)
 
 #the_works()
 
-dream = Dream(listiter)
+dream = Dream(sugar)
+
 dream.eval()
 
 

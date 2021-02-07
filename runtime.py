@@ -172,7 +172,7 @@ class Dream:
         tokens = Tokenizer(text_input).tokenize()
 
         self.tokens = copy.deepcopy(tokens)
-        self.ast = parser.Parser(tokens).get_ast(node=parser.BodyNode())
+
         self.context = self.get_context()
 
     def get_context(self):
@@ -203,6 +203,7 @@ class Dream:
         return obj.copy()
 
     def eval(self):
+        self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
         return self.ast.eval(self.context)
 
 
