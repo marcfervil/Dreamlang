@@ -25,7 +25,7 @@ class List {
         return node.value
     }
 
-    func _get(node, index){
+    func _get(var node, var index){
         if index is 0 -> return node.value
         return _get(node.next, index - 1)
     }
@@ -35,14 +35,32 @@ class List {
         iter_count = iter_count + 1
     }
 
-    func has_next() -> return iter_count is not length
+     func has_next() -> return iter_count is not length
 
-    func get_next() -> return get(iter_count)
+     func get_next() -> return get(iter_count)
 
-    func get(index) -> return _get(head, index)
+     func get(index) -> return _get(head, index)
+
+    func get_iter(){
+        class Iter {
+            count = 0
+
+            func has_next() -> return count is not length
+
+            func get_next() -> return get(count)
+
+            func get(index) -> return _get(head, index)
+
+            func next(first){
+                if first is true -> count = -1
+                count = count + 1
+            }
+        }
+        return Iter()
+    }
 
     func add(other){
-        #the new list should be a copy of this...unfortunatelty you cannot copy "this" atm
+        #the new list should be a copy of this...unfortunately, you cannot copy "this" atm
         list = this
         list.last.next = other.head
         return list
@@ -51,21 +69,40 @@ class List {
 }
 
 animals = List()
+animals.push("cat")
 animals.push("dog")
-animals.push("cat")
 animals.push("bird")
-animals.push("bat")
 
 
-for animal in animals {
-    print("loop1 ", animal)
+house = if true {
+    export if true {
+         a = 32
+    }
 }
-print()
-print()
 
-animals.push("cat")
-animals.push("mouse")
+print(house.a)
 
-for animal in animals {
-    print("loop2 ", animal)
-}
+#for animal1 in animals {
+#    if true{
+#        for animal in animals {
+#            print(animal1, "thinks", animal, "is cool")
+#        }
+#    }
+
+#}
+
+
+#for animal1 in animals.get_iter() {
+#    if true{
+#        for animal in animals.get_iter() {
+#            if animal is not animal1{
+#                print(animal1, "thinks", animal, "is cool")
+#            }
+#        }
+#        print("---------------")
+#    }
+#}
+
+
+#print(animals.get(1))
+

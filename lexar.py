@@ -1,5 +1,5 @@
-ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", ".", "->", ">"]
-special_chars = "!@#%^&*,-+=/.>"
+ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", ".", "->", ">", "=>"]
+special_chars = "!@#%^&*,-+=/.>="
 
 class Token:
 
@@ -66,8 +66,8 @@ class Tokenizer:
                     self.token = ""
                     return
 
-                elif new_token.value == ">" and self.tokens[-1].has("Operator", "-"):
-                    self.tokens[-1].value = "->"
+                elif new_token.value == ">" and (self.get(-1).has("Operator", "-") or self.get(-1).has("Operator", "=")):
+                    self.tokens[-1].value += new_token.value
                     self.token = ""
                     return
 

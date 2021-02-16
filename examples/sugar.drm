@@ -10,9 +10,16 @@ class count {
         value = value + 1
     }
 
-    func has_next() -> return value is not max
-    func get_next() -> return value
+    func has_next() => value is not max
+
+    func get_next() => value
 }
 
-for i in count(10) -> print(i)
+
+x = count(30)
+
+
+for num in count(30){
+    print(num)
+}
 

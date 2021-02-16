@@ -149,7 +149,8 @@ f = (-x + -1)
 
 #the_works()
 
-dream = Dream(listiter)
+dream = Dream( listiter)
+#print(dream.tokens)
 #print(dream.tokens)
 dream.eval()
 

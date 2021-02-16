@@ -113,7 +113,7 @@ class ForNode(ASTNode):
     def __init__(self, var, iterator, body):
         self.var = var
         self.iterator = iterator
-        self.body = Parser(body.value).get_ast(node = BodyNode())
+        self.body = Parser(body.value).get_ast(node=BodyNode())
 
     def eval(self, context):
         iterator = self.iterator.eval(context)
@@ -404,16 +404,18 @@ class Parser:
     def eat_token(self):
         token = self.tokens.pop(0)
 
-        # the "->" operator returns a body token that consists of alll the tokens until newline
-        if token.has("Operator", "->"):
+        # the "->" operator returns a body token that consists of all the tokens until newline
+        if token.has("Operator", "->") or token.has("Operator", "=>"):
             expression = []
+            if token.value == "=>":
+                expression.append(Token("return"))
             while True:
                 expression_token = self.eat_token()
                 expression.append(expression_token)
                 if expression_token.has("Newline") or len(self.tokens) == 0:
-                    if len(self.tokens)>0: self.tokens.insert(0, expression_token)
+                    if len(self.tokens) > 0: self.tokens.insert(0, expression_token)
                     return Token(expression, "Block")
-
+            #print(expression)
             return Token(expression, "Block")
         return token
 
@@ -421,7 +423,7 @@ class Parser:
 
         token = self.tokens[0]
         # if the "->" operator is used just return an empty block because it's the same thing
-        if token.has("Operator", "->"):
+        if token.has("Operator", "->") or token.has("Operator", "=>"):
             return Token([], "Block")
         return token
 
