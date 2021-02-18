@@ -1,8 +1,76 @@
+import ctypes
+
 from parser import *
 from lexar import *
 
 # print("love is", true, 4, "ever")
 from runtime import Dream
+from ctypes import cdll
+
+hopes = cdll.LoadLibrary('./lib/dream.so')
+
+"""
+//struct that represents llvm data
+typedef struct LLVMData{
+    LLVMContext context;
+    Module * module;
+    Function *mainFunc;
+    BasicBlock *currentBlock;
+    ExecutionEngine* engine;
+    LLVMBuilder * builder;
+    std::unique_ptr<Module> owner;
+    
+} LLVMData;
+
+"""
+
+import ctypes
+from ctypes import *
+
+
+
+ObjPtr = ctypes.POINTER(ctypes.c_char)
+
+hopes.llvm_init.restype = ObjPtr
+
+hopes.llvmInt.argtypes = [ObjPtr, c_int]
+hopes.llvmInt.restype = ObjPtr
+
+hopes.num.argtypes = [ObjPtr, c_int]
+hopes.num.restype = ObjPtr
+
+hopes.add.restype = ObjPtr
+
+hopes.test2b.argtypes = [ObjPtr]
+
+hopes.int_type.restype = ObjPtr
+
+hopes.get_value.restype = ObjPtr
+
+hopes.call_standard.argtypes = [ObjPtr, ObjPtr, ObjPtr]
+hopes.call_standard.restype = ObjPtr
+
+
+context = hopes.llvm_init()
+num1 = hopes.num(context, 600)
+num2 = hopes.num(context, 30)
+
+result_obj = hopes.add(context, num1, num2)
+result = hopes.get_value(context, hopes.int_type(context), result_obj)
+
+
+
+#hopes.call_standard(context, "print".encode('utf-8'), num1)
+#hopes.llvmInt(context, 0)
+
+
+hopes.retVal(context, result)
+
+
+
+hopes.llvm_run(context)
+
+
 
 """
 AST TODO:
@@ -37,6 +105,7 @@ IDEA:
         }
     }
 """
+
 
 
 def test(name, func):
@@ -138,25 +207,20 @@ def the_works():
     dream = Dream(subtract).eval()
     print("---------------------")
     dream = Dream(listiter).eval()
-hopes = """
 
-a = - 3
-x = -10 - - a
-f = (-x + -1)
-
-
-"""
 
 #the_works()
 
-dream = Dream( listiter)
+#dream = Dream(listiter)
 #print(dream.tokens)
 #print(dream.tokens)
-dream.eval()
+#dream.eval()
 
 
+"""
 print("\n-------tests-------")
 test("Math:", test_math)
 test("Bool:", test_bool)
 test("Func Call:", test_args)
 test("Var Declaration:", test_var)
+"""
