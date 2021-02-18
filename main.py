@@ -50,6 +50,7 @@ hopes.get_value.restype = ObjPtr
 hopes.call_standard.argtypes = [ObjPtr, ObjPtr, ObjPtr]
 hopes.call_standard.restype = ObjPtr
 
+#hopes.call_standard(context, "print".encode('utf-8'), num1)
 
 context = hopes.llvm_init()
 num1 = hopes.num(context, 600)
@@ -57,12 +58,6 @@ num2 = hopes.num(context, 30)
 
 result_obj = hopes.add(context, num1, num2)
 result = hopes.get_value(context, hopes.int_type(context), result_obj)
-
-
-
-#hopes.call_standard(context, "print".encode('utf-8'), num1)
-#hopes.llvmInt(context, 0)
-
 
 hopes.retVal(context, result)
 
