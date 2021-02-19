@@ -1,4 +1,5 @@
 import ctypes
+import time
 
 from parser import *
 from lexar import *
@@ -7,7 +8,7 @@ from lexar import *
 from runtime import Dream
 from ctypes import cdll
 
-hopes = cdll.LoadLibrary('./lib/dream.so')
+dream = cdll.LoadLibrary('./lib/dream.so')
 
 """
 //struct that represents llvm data
@@ -31,41 +32,95 @@ from ctypes import *
 
 ObjPtr = ctypes.POINTER(ctypes.c_char)
 
-hopes.llvm_init.restype = ObjPtr
+dream.llvm_init.restype = ObjPtr
 
-hopes.llvmInt.argtypes = [ObjPtr, c_int]
-hopes.llvmInt.restype = ObjPtr
+dream.llvmInt.argtypes = [ObjPtr, c_int]
+dream.llvmInt.restype = ObjPtr
 
-hopes.num.argtypes = [ObjPtr, c_int]
-hopes.num.restype = ObjPtr
+dream.llvmStr.argtypes = [ObjPtr, ObjPtr]
+dream.llvmStr.restype = ObjPtr
 
-hopes.add.restype = ObjPtr
+dream.num.argtypes = [ObjPtr, c_int]
+dream.num.restype = ObjPtr
 
-hopes.test2b.argtypes = [ObjPtr]
+dream.str.argtypes = [ObjPtr, ctypes.c_char_p]
+dream.str.restype = ObjPtr
 
-hopes.int_type.restype = ObjPtr
+dream.add.restype = ObjPtr
 
-hopes.get_value.restype = ObjPtr
+dream.test2b.argtypes = [ObjPtr]
 
-hopes.call_standard.argtypes = [ObjPtr, ObjPtr, ObjPtr]
-hopes.call_standard.restype = ObjPtr
-
-#hopes.call_standard(context, "print".encode('utf-8'), num1)
-
-context = hopes.llvm_init()
-num1 = hopes.num(context, 600)
-num2 = hopes.num(context, 30)
-
-result_obj = hopes.add(context, num1, num2)
-result = hopes.get_value(context, hopes.int_type(context), result_obj)
-
-hopes.retVal(context, result)
+dream.int_type.restype = ObjPtr
 
 
+dream.get_value.restype = ObjPtr
 
-hopes.llvm_run(context)
+
+dream.call_standard_c.argtypes = [ObjPtr, ctypes.c_char_p, c_int, ctypes.Array]
+dream.call_standard_c.restype = ObjPtr
+
+context = None
+
+def call(context, name,  *valsOg):
+    vals = []
+    for val in valsOg:
+        if type(val) is str:
+            vals.append(dream.llvmStr(context, llvmStr(val)))
+        elif type(val) is int:
+            vals.append(dream.llvmInt(context, val))
+        else:
+            vals.append(val)
+    args = (ObjPtr * len(vals))(*vals)
+    ch = ctypes.c_char_p(name.encode('utf-8'))
+    dream.call_standard_c(context, ch, len(vals), args)
+dream.call = call
 
 
+def llvmStr(value):
+    return ctypes.c_char_p(value.encode('utf-8'))
+
+
+def timing_decorator(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        original_return_val = func(*args, **kwargs)
+        end = time.time()
+        print("time elapsed in ", func.__name__, ": ", end - start, sep='')
+        return original_return_val
+
+    return wrapper
+
+
+def dream_setup():
+    global context
+    context = dream.llvm_init()
+
+    num1 = dream.num(context, 453)
+    num2 = dream.num(context, 24)
+    msg = dream.str(context, llvmStr("453 + 24 = "))
+
+    math = dream.add(context, num1, num2)
+    dream.call(context, "print", msg)
+    dream.call(context, "print", math)
+
+    dream.retVal(context, dream.llvmInt(context, 0))
+    return context
+
+
+@timing_decorator
+def dream_test():
+    dream.llvm_run(context)
+
+@timing_decorator
+def py_test():
+    a = int(453)
+    b = int(24)
+    c = a+b
+    print(c)
+
+dream_setup()
+dream_test()
+py_test()
 
 """
 AST TODO:
