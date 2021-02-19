@@ -1,0 +1,31 @@
+AST TODO:
+    - boolean logic:
+        equals [done]
+        or
+        and
+        not equals
+        greater than
+        less than
+    -parenthesis math evaluation
+    - variables
+        dot calling
+    - multiline ast generation
+    - control flow:
+        if statements
+        while loop
+
+
+IDEA:
+
+    bool logic contains data
+
+    (x == "true") -> left  returns x
+
+
+    examples override
+
+    "hey" {
+        toString(){
+            return "nope"
+        }
+    }

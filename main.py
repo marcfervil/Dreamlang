@@ -3,158 +3,20 @@ import time
 
 from parser import *
 from lexar import *
-
-# print("love is", true, 4, "ever")
+from compile import LLVMBuilder
 from runtime import Dream
-from ctypes import cdll
-
-dream = cdll.LoadLibrary('./lib/dream.so')
-
-"""
-//struct that represents llvm data
-typedef struct LLVMData{
-    LLVMContext context;
-    Module * module;
-    Function *mainFunc;
-    BasicBlock *currentBlock;
-    ExecutionEngine* engine;
-    LLVMBuilder * builder;
-    std::unique_ptr<Module> owner;
-    
-} LLVMData;
-
-"""
-
-import ctypes
-from ctypes import *
 
 
-
-ObjPtr = ctypes.POINTER(ctypes.c_char)
-
-dream.llvm_init.restype = ObjPtr
-
-dream.llvmInt.argtypes = [ObjPtr, c_int]
-dream.llvmInt.restype = ObjPtr
-
-dream.llvmStr.argtypes = [ObjPtr, ObjPtr]
-dream.llvmStr.restype = ObjPtr
-
-dream.num.argtypes = [ObjPtr, c_int]
-dream.num.restype = ObjPtr
-
-dream.str.argtypes = [ObjPtr, ctypes.c_char_p]
-dream.str.restype = ObjPtr
-
-dream.add.restype = ObjPtr
-
-dream.test2b.argtypes = [ObjPtr]
-
-dream.int_type.restype = ObjPtr
+builder = LLVMBuilder()
+num1 = builder.init_num(10)
+num2 = builder.init_num(4)
+result = builder.add(num1, num2)
+builder.call("print", builder.init_str("10 + 4 = "))
+builder.call("print", result)
+builder.ret(0)
+builder.run()
 
 
-dream.get_value.restype = ObjPtr
-
-
-dream.call_standard_c.argtypes = [ObjPtr, ctypes.c_char_p, c_int, ctypes.Array]
-dream.call_standard_c.restype = ObjPtr
-
-context = None
-
-def call(context, name,  *valsOg):
-    vals = []
-    for val in valsOg:
-        if type(val) is str:
-            vals.append(dream.llvmStr(context, llvmStr(val)))
-        elif type(val) is int:
-            vals.append(dream.llvmInt(context, val))
-        else:
-            vals.append(val)
-    args = (ObjPtr * len(vals))(*vals)
-    ch = ctypes.c_char_p(name.encode('utf-8'))
-    dream.call_standard_c(context, ch, len(vals), args)
-dream.call = call
-
-
-def llvmStr(value):
-    return ctypes.c_char_p(value.encode('utf-8'))
-
-
-def timing_decorator(func):
-    def wrapper(*args, **kwargs):
-        start = time.time()
-        original_return_val = func(*args, **kwargs)
-        end = time.time()
-        print("time elapsed in ", func.__name__, ": ", end - start, sep='')
-        return original_return_val
-
-    return wrapper
-
-
-def dream_setup():
-    global context
-    context = dream.llvm_init()
-
-    num1 = dream.num(context, 453)
-    num2 = dream.num(context, 24)
-    msg = dream.str(context, llvmStr("453 + 24 = "))
-
-    math = dream.add(context, num1, num2)
-    dream.call(context, "print", msg)
-    dream.call(context, "print", math)
-
-    dream.retVal(context, dream.llvmInt(context, 0))
-    return context
-
-
-@timing_decorator
-def dream_test():
-    dream.llvm_run(context)
-
-@timing_decorator
-def py_test():
-    a = int(453)
-    b = int(24)
-    c = a+b
-    print(c)
-
-dream_setup()
-dream_test()
-py_test()
-
-"""
-AST TODO:
-    - boolean logic:
-        equals [done]
-        or 
-        and
-        not equals
-        greater than
-        less than
-    -parenthesis math evaluation     
-    - variables
-        dot calling
-    - multiline ast generation
-    - control flow:
-        if statements
-        while loop
-    
-    
-IDEA:
-
-    bool logic contains data
-    
-    (x == "true") -> left  returns x 
-    
-    
-    examples override
-    
-    "hey" {
-        toString(){
-            return "nope"
-        }
-    }
-"""
 
 
 
