@@ -19,22 +19,23 @@ class IdentifierNode(ASTNode):
         self.name = name
 
     def __repr__(self):
-
         return self.name
+
+    def visit(self, context):
+        return context.builder.get_var(self.name)
 
     def eval(self, context):
         try:
-
-            #return context.vars[self.name]
             return context.get_var(self.name)
         except KeyError:
             print(self.name, "does not exist!")
             exit()
 
     def assign(self, context, value):
-        #context.vars[self.name] = value
-
         context.add_var(self.name, value)
+
+    def assign_visit(self, context, value):
+        context.builder.set_var(self.name, value)
 
 
 class AssignNode(ASTNode):
@@ -44,6 +45,9 @@ class AssignNode(ASTNode):
 
     def __repr__(self):
         return f'{self.var} = {str(self.value)}'
+
+    def visit(self, context):
+        self.var.assign_visit(context, self.value.visit(context))
 
     def eval(self, context):
         self.var.assign(context, self.value.eval(context))
@@ -168,6 +172,8 @@ class LiteralNode(ASTNode):
     def visit(self, context):
         if type(self.value) is int:
             return context.builder.init_num(self.value)
+        elif type(self.value) is str:
+            return context.builder.init_str(self.value)
 
     def eval(self, context):
         return DreamObj.make_primitive(self.value)

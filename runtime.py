@@ -6,6 +6,7 @@ from parser import *
 import copy
 from compile import CompileContext
 
+
 def dreamfunc(func):
     func.dreamy = True
     return func
@@ -210,14 +211,13 @@ class Dream:
         self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
         return self.ast.eval(self.context)
 
-    def compile(self):
+    def compile(self, llvm_output = False):
         if len(self.tokens) == 0:
             self.tokenize()
         self.context = CompileContext()
         self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
 
-
         result = self.ast.visit(self.context)
         self.context.builder.ret(0)
-        self.context.builder.run()
+        self.context.builder.run(llvm_output)
         return result

@@ -64,15 +64,7 @@ def print_results(test_data, debug_tokens=False):
     print(result)
 
 
-hopes = (("""
 
-    func f(test, r){
-        return test + r
-    }
-    
-    print(f("yuj", "em"))
-
-"""))
 
 loop = open("examples/loop.drm").read()
 listiter = open("examples/listiter.drm").read()
@@ -111,10 +103,17 @@ def the_works():
 
 
 #the_works()
-
-dream = Dream("print((3*11-4+4-99)/2)")
+hopes = (("""
+    c = 5
+    a = c+5*2
+    print(a)
+"""))
+#dream = Dream("print((3*11-4+4-99)/2)")
+dream = Dream(hopes)
 dream.compile()
-dream.eval()
+#dream.eval()
+
+
 #print(dream.tokens)
 #print(dream.tokens)
 #dream.eval()

@@ -11,9 +11,10 @@ class LLVMBuilder:
     def __init__(self):
         self.map_bindings()
         self.context = dreamLib.llvm_init()
+        self.scope = self.init_str("[global scope]")
 
-    def run(self):
-        dreamLib.llvm_run(self.context, 1)
+    def run(self, llvm_output=False):
+        dreamLib.llvm_run(self.context, False, llvm_output)
 
     def map_bindings(self):
         ObjPtr = LLVMBuilder.ObjPtr
@@ -28,12 +29,13 @@ class LLVMBuilder:
         bind(dreamLib.llvmStr, ObjPtr, ObjPtr, ObjPtr)
         bind(dreamLib.num, ObjPtr, ObjPtr, c_int)
         bind(dreamLib.str, ObjPtr, ObjPtr, c_char_p)
+
         bind(dreamLib.add, ObjPtr)
         bind(dreamLib.sub, ObjPtr)
         bind(dreamLib.mul, ObjPtr)
         bind(dreamLib.divi, ObjPtr)
         bind(dreamLib.int_type, ObjPtr)
-        bind(dreamLib.get_value, ObjPtr)
+        bind(dreamLib.call_standard_c, ObjPtr)
 
     def c_str(self, value):
         return c_char_p(value.encode('utf-8'))
@@ -61,7 +63,7 @@ class LLVMBuilder:
 
         c_args = (ObjPtr * len(args))(*args)
 
-        dreamLib.call_standard_c(self.context, self.c_str(name), len(c_args), c_args)
+        return dreamLib.call_standard_c(self.context, self.c_str(name), len(c_args), c_args)
 
     def init_str(self, value):
         return dreamLib.str(self.context, self.c_str(value))
@@ -84,11 +86,31 @@ class LLVMBuilder:
     def ret(self, value):
         return dreamLib.retVal(self.context, self.py_to_c(value))
 
+    def set_var(self, key, value, obj=None):
+        if obj is None:
+            obj = self.scope
+        return self.call("set_var", obj, key, value)
+
+    def get_var(self, key, obj=None):
+        if obj is None:
+            obj = self.scope
+        return self.call("get_var", obj, key)
+
 
 class CompileContext:
 
     def __init__(self):
         self.builder = LLVMBuilder()
+
+"""
+builder = LLVMBuilder()
+builder.set_var("yup", builder.init_num(10))
+builder.set_var("heyy", builder.init_str("fwopek"))
+get = builder.get_var("heyy")
+builder.call("print", get)
+builder.ret(0)
+builder.run()
+"""
 
 """
 builder = LLVMBuilder()
