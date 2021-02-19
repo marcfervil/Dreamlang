@@ -4,7 +4,7 @@ import parser
 from lexar import *
 from parser import *
 import copy
-
+from compile import CompileContext
 
 def dreamfunc(func):
     func.dreamy = True
@@ -169,11 +169,12 @@ class DreamBool(DreamObj):
 class Dream:
     def __init__(self, text_input):
         self.text_input = text_input
-        tokens = Tokenizer(text_input).tokenize()
+        self.tokenize()
 
+    def tokenize(self):
+        tokens = Tokenizer(self.text_input).tokenize()
         self.tokens = copy.deepcopy(tokens)
 
-        self.context = self.get_context()
 
     def get_context(self):
         dream_globals = DreamObj()
@@ -203,8 +204,20 @@ class Dream:
         return obj.copy()
 
     def eval(self):
+        if len(self.tokens) ==0:
+            self.tokenize()
+        self.context = self.get_context()
         self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
         return self.ast.eval(self.context)
 
+    def compile(self):
+        if len(self.tokens) == 0:
+            self.tokenize()
+        self.context = CompileContext()
+        self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
 
 
+        result = self.ast.visit(self.context)
+        self.context.builder.ret(0)
+        self.context.builder.run()
+        return result

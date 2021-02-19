@@ -7,17 +7,6 @@ from compile import LLVMBuilder
 from runtime import Dream
 
 
-builder = LLVMBuilder()
-num1 = builder.init_num(10)
-num2 = builder.init_num(4)
-result = builder.add(num1, num2)
-builder.call("print", builder.init_str("10 + 4 = "))
-builder.call("print", result)
-builder.ret(0)
-builder.run()
-
-
-
 
 
 def test(name, func):
@@ -123,7 +112,9 @@ def the_works():
 
 #the_works()
 
-#dream = Dream(listiter)
+dream = Dream("print((3*11-4+4-99)/2)")
+dream.compile()
+dream.eval()
 #print(dream.tokens)
 #print(dream.tokens)
 #dream.eval()

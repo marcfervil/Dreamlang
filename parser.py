@@ -76,6 +76,18 @@ class BinaryNode(ASTNode):
     def __repr__(self):
         return f"({self.left} {self.op.value} {self.right})"
 
+    def visit(self, context):
+        left = self.left.visit(context)
+        right = self.right.visit(context)
+        if self.op.value == "+":
+            return context.builder.add(left, right)
+        elif self.op.value == "-":
+            return context.builder.sub(left, right)
+        elif self.op.value == "*":
+            return context.builder.mul(left, right)
+        elif self.op.value == "/":
+            return context.builder.div(left, right)
+
     def eval(self, context):
         left = self.left.eval(context)
         right = self.right.eval(context)
@@ -152,6 +164,10 @@ class LiteralNode(ASTNode):
         if type(self.value) == str:
             return f"'{str(self.value)}'"
         return str(self.value)
+
+    def visit(self, context):
+        if type(self.value) is int:
+            return context.builder.init_num(self.value)
 
     def eval(self, context):
         return DreamObj.make_primitive(self.value)
@@ -239,10 +255,12 @@ class CallNode(ASTNode):
     def __repr__(self):
         return f'{self.caller}({str(self.args)[1:-1]})'
 
+    def visit(self, context):
+        args = [arg.visit(context) for arg in self.args]
+        context.builder.call(self.caller.name, *args)
+
     def eval(self, context):
-
         args = [arg.eval(context) for arg in self.args]
-
         return self.caller.eval(context)(*args)
 
 
@@ -259,6 +277,10 @@ class BodyNode(ASTNode):
         for node in self.body:
             str_repr += f"\t{node}\n"
         return str_repr
+
+    def visit(self, context):
+        for node in self.body:
+            result = node.visit(context)
 
     def eval(self, context):
 
