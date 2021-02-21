@@ -11,7 +11,9 @@ class LLVMBuilder:
     def __init__(self):
         self.map_bindings()
         self.context = dreamLib.llvm_init()
-        self.scope = self.init_str("[global scope]")
+        self.scope = self.init_str("[scope]")
+
+        #self.scope = None
 
     def run(self, llvm_output=False):
         dreamLib.llvm_run(self.context, False, llvm_output)
@@ -20,13 +22,15 @@ class LLVMBuilder:
         ObjPtr = LLVMBuilder.ObjPtr
 
         def bind(obj, return_type, *arg_types):
-            obj.restype = return_type
+            if return_type is not None:
+                obj.restype = return_type
             if len(arg_types) > 0:
                 obj.argtypes = arg_types
 
         bind(dreamLib.llvm_init, ObjPtr)
         bind(dreamLib.llvmInt, ObjPtr, ObjPtr, c_int)
         bind(dreamLib.llvmStr, ObjPtr, ObjPtr, ObjPtr)
+
         bind(dreamLib.num, ObjPtr, ObjPtr, c_int)
         bind(dreamLib.str, ObjPtr, ObjPtr, c_char_p)
 
@@ -34,8 +38,11 @@ class LLVMBuilder:
         bind(dreamLib.sub, ObjPtr)
         bind(dreamLib.mul, ObjPtr)
         bind(dreamLib.divi, ObjPtr)
+        bind(dreamLib.retVal, ObjPtr)
         bind(dreamLib.int_type, ObjPtr)
         bind(dreamLib.call_standard_c, ObjPtr)
+        bind(dreamLib.func, ObjPtr)
+        bind(dreamLib.end_func, ObjPtr)
 
     def c_str(self, value):
         return c_char_p(value.encode('utf-8'))
@@ -56,14 +63,29 @@ class LLVMBuilder:
             return vals[0]
         return vals
 
-    def call(self, name, *args):
+    def call(self, name, *args, scoped = False):
         ObjPtr = LLVMBuilder.ObjPtr
-
         args = self.py_to_c(args)
 
         c_args = (ObjPtr * len(args))(*args)
+        #if scope is not None:
 
-        return dreamLib.call_standard_c(self.context, self.c_str(name), len(c_args), c_args)
+        #    return dreamLib.call_standard_c(self.context, self.c_str(name), len(c_args), c_args, scope)
+        arg_len = len(c_args)
+        if scoped: arg_len -= 1
+        return dreamLib.call_standard_c(self.context, self.c_str(name), arg_len, c_args)
+
+    def init_func(self, name, *arg_names):
+
+        arg_names = [c_char_p(val.encode('utf-8')) for val in arg_names]
+
+        args = (c_char_p * len(arg_names))(*arg_names)
+
+        return dreamLib.func(self.context, self.scope, self.c_str(name), len(arg_names), args)
+
+    def end_func(self, func_data):
+
+        dreamLib.end_func(self.context, self.scope, func_data)
 
     def init_str(self, value):
         return dreamLib.str(self.context, self.c_str(value))
@@ -101,6 +123,56 @@ class CompileContext:
 
     def __init__(self):
         self.builder = LLVMBuilder()
+        self.scope = self.builder.scope
+        # print(self.scope)
+
+    def func(self, name, *args):
+        return self.new_func(self.builder, name, *args)
+
+    class new_func:
+        def __init__(self, builder, name, *args):
+            self.builder = builder
+            self.name = name
+            self.args = args
+
+        def __enter__(self):
+            #print(self.args)
+
+            self.func = self.builder.init_func(self.name, *self.args)
+            #print(self.func)
+
+            return self.builder
+
+        def __exit__(self, type, value, traceback):
+
+            self.builder.end_func(self.func)
+            #self.builder.end_func(self.func)
+
+
+context = CompileContext()
+
+with context.func("dog", "fekw") as builder:
+    context.builder.call("print", context.builder.init_str("123"))
+    builder.ret(builder.init_str("yuh"))
+
+#context.builder.call("print", builder.init_str("yuh"))
+
+with context.func("bro", "name") as builder:
+    context.builder.call("print", context.builder.init_str("yooo"))
+    context.builder.call("print", context.builder.init_str("abc"))
+    context.builder.call("dog", context.builder.init_str("abc"),context.builder.init_str("abc"), scoped=True)
+    #f = context.builder.init_str("[scope]")
+    #context.builder.call("dog", builder.scope, builder.init_str("no"), scoped=True)
+    builder.ret(builder.init_str("yuh"))
+
+
+ret = context.builder.call("dog", context.builder.scope, context.builder.init_str("no"), scoped=True)
+
+context.builder.call("print", ret)
+
+context.builder.ret(0)
+context.builder.run(False)
+
 
 """
 builder = LLVMBuilder()

@@ -103,14 +103,15 @@ def the_works():
 
 
 #the_works()
+
 hopes = (("""
     c = 5
     a = c+5*2
     print(a)
 """))
 #dream = Dream("print((3*11-4+4-99)/2)")
-dream = Dream(hopes)
-dream.compile()
+#dream = Dream(hopes)
+#dream.compile()
 #dream.eval()
 
 
