@@ -6,13 +6,15 @@ dreamLib = cdll.LoadLibrary('./lib/dream.so')
 
 class LLVMBuilder:
 
-    ObjPtr = POINTER(c_char)
+    ObjPtr = POINTER(c_void_p)
+
+
 
     def __init__(self):
         self.map_bindings()
         self.context = dreamLib.llvm_init()
         self.scope = self.init_str("[scope]")
-
+        self.scopes = []
         #self.scope = None
 
     def run(self, llvm_output=False):
@@ -20,7 +22,6 @@ class LLVMBuilder:
 
     def map_bindings(self):
         ObjPtr = LLVMBuilder.ObjPtr
-
         def bind(obj, return_type, *arg_types):
             if return_type is not None:
                 obj.restype = return_type
@@ -29,7 +30,9 @@ class LLVMBuilder:
 
         bind(dreamLib.llvm_init, ObjPtr)
         bind(dreamLib.llvmInt, ObjPtr, ObjPtr, c_int)
-        bind(dreamLib.llvmStr, ObjPtr, ObjPtr, ObjPtr)
+
+        #SUS
+        #bind(dreamLib.llvmStr, ObjPtr, ObjPtr, ObjPtr)
 
         bind(dreamLib.num, ObjPtr, ObjPtr, c_int)
         bind(dreamLib.str, ObjPtr, ObjPtr, c_char_p)
@@ -39,6 +42,7 @@ class LLVMBuilder:
         bind(dreamLib.mul, ObjPtr)
         bind(dreamLib.divi, ObjPtr)
         bind(dreamLib.retVal, ObjPtr)
+        bind(dreamLib.funcScope, ObjPtr)
         bind(dreamLib.int_type, ObjPtr)
         bind(dreamLib.call_standard_c, ObjPtr)
         bind(dreamLib.func, ObjPtr)
@@ -54,17 +58,20 @@ class LLVMBuilder:
             py_vals = [py_vals]
         for val in py_vals:
             if type(val) is str:
+                #print("FIOWIJEOIWJOJFEOWJFIO")
                 vals.append(dreamLib.llvmStr(self.context, self.c_str(val)))
             elif type(val) is int:
                 vals.append(dreamLib.llvmInt(self.context, val))
             else:
                 vals.append(val)
         if not lst:
+
             return vals[0]
         return vals
 
-    def call(self, name, *args, scoped = False):
+    def call(self, name, *args):
         ObjPtr = LLVMBuilder.ObjPtr
+        #print(name, args )
         args = self.py_to_c(args)
 
         c_args = (ObjPtr * len(args))(*args)
@@ -72,20 +79,23 @@ class LLVMBuilder:
 
         #    return dreamLib.call_standard_c(self.context, self.c_str(name), len(c_args), c_args, scope)
         arg_len = len(c_args)
-        if scoped: arg_len -= 1
+
+        #if scoped: arg_len -= 1
+
         return dreamLib.call_standard_c(self.context, self.c_str(name), arg_len, c_args)
 
     def init_func(self, name, *arg_names):
 
         arg_names = [c_char_p(val.encode('utf-8')) for val in arg_names]
-
         args = (c_char_p * len(arg_names))(*arg_names)
-
-        return dreamLib.func(self.context, self.scope, self.c_str(name), len(arg_names), args)
+        func = dreamLib.func(self.context, self.scope, self.c_str(name), len(arg_names), args)
+        self.enter_scope(self.func_scope(func))
+        return func
 
     def end_func(self, func_data):
-
+        self.exit_scope()
         dreamLib.end_func(self.context, self.scope, func_data)
+        #self.exit_scope()
 
     def init_str(self, value):
         return dreamLib.str(self.context, self.c_str(value))
@@ -105,6 +115,9 @@ class LLVMBuilder:
     def mul(self, value1, value2):
         return dreamLib.mul(self.context, value1, value2)
 
+    def func_scope(self, func):
+        return dreamLib.funcScope(func)
+
     def ret(self, value):
         return dreamLib.retVal(self.context, self.py_to_c(value))
 
@@ -119,15 +132,33 @@ class LLVMBuilder:
         return self.call("get_var", obj, key)
 
 
+    def enter_scope(self, scope):
+        self.scopes.append(self.scope)
+        self.store = self.scope
+
+        self.scope = scope
+
+
+
+    def exit_scope(self):
+
+        self.scope = self.scopes.pop()
+
+
 class CompileContext:
 
     def __init__(self):
         self.builder = LLVMBuilder()
         self.scope = self.builder.scope
+
         # print(self.scope)
 
     def func(self, name, *args):
         return self.new_func(self.builder, name, *args)
+
+
+    #def enter_scope(self, scope):
+    #   self.builder.scope = scope
 
     class new_func:
         def __init__(self, builder, name, *args):
@@ -136,42 +167,44 @@ class CompileContext:
             self.args = args
 
         def __enter__(self):
-            #print(self.args)
-
             self.func = self.builder.init_func(self.name, *self.args)
-            #print(self.func)
-
             return self.builder
 
         def __exit__(self, type, value, traceback):
 
             self.builder.end_func(self.func)
+            #print("fiewj")
             #self.builder.end_func(self.func)
 
 
 context = CompileContext()
 
-with context.func("dog", "fekw") as builder:
-    context.builder.call("print", context.builder.init_str("123"))
-    builder.ret(builder.init_str("yuh"))
+with context.func("dog") as func:
+    func.ret(func.init_str("yummy"))
+
+
+with context.func("hot") as func:
+    #context.builder.call("print", func.init_str("yuh"))
+    #func.ret(func.)
+    #print(func.scope)
+    #print("INSID",context.builder.scope)
+    func.ret(func.call("dog",func.scope))
 
 #context.builder.call("print", builder.init_str("yuh"))
 
-with context.func("bro", "name") as builder:
-    context.builder.call("print", context.builder.init_str("yooo"))
-    context.builder.call("print", context.builder.init_str("abc"))
-    context.builder.call("dog", context.builder.init_str("abc"),context.builder.init_str("abc"), scoped=True)
+    #   context.builder.call("dog", context.builder.init_str("akc"),context.builder.init_str("abc"), scoped=True)
     #f = context.builder.init_str("[scope]")
     #context.builder.call("dog", builder.scope, builder.init_str("no"), scoped=True)
-    builder.ret(builder.init_str("yuh"))
+    #builder.ret(builder.init_str("yuh"))
 
 
-ret = context.builder.call("dog", context.builder.scope, context.builder.init_str("no"), scoped=True)
+ret = context.builder.call("hot", context.builder.scope)
 
 context.builder.call("print", ret)
+#context.builder.call("print", context.builder.init_str("okkfrpwkf"))
 
 context.builder.ret(0)
-context.builder.run(False)
+context.builder.run(True)
 
 
 """
