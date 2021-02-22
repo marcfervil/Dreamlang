@@ -88,6 +88,8 @@ class LLVMBuilder:
 
     def call(self, callee, *args):
         args = self.py_to_c(args)
+        if not hasattr(callee, "built_in"):
+            args.insert(0, self.scope)
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
 
         return dreamLib.call(self.context, callee, len(c_args), c_args)
@@ -135,10 +137,13 @@ class LLVMBuilder:
         return dreamLib.save(self.context, obj, self.c_str(key), self.py_to_c(value))
 
     def get_var(self, key, obj=None):
+
         if obj is None:
             obj = self.scope
-        return dreamLib.load(self.context, obj, self.c_str(key))
-
+        value =  dreamLib.load(self.context, obj, self.c_str(key))
+        if key == "print":
+            value.built_in = True
+        return value
 
     def enter_scope(self, scope):
         self.scopes.append(self.scope)

@@ -197,7 +197,6 @@ class FuncNode(ASTNode):
         self.params = Parser(params.value, True).get_ast()
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
-
     def call(self, *params):
         new_scope = self.context.copy()
         for i, param in enumerate(self.params):
@@ -208,6 +207,14 @@ class FuncNode(ASTNode):
     def eval(self, context):
         self.context = context
         context.add_var(self.name.value, self.call)
+
+    def visit(self, context):
+
+        args = [param.name for param in self.params]
+        with context.func(self.name.value, *args):
+            for node in self.body.body:
+                node.visit(context)
+        #return context later
 
 
 class ClassNode(ASTNode):
@@ -252,6 +259,8 @@ class ReturnNode(ASTNode):
     def eval(self, context):
         return self.value.eval(context)
 
+    def visit(self, context):
+        return context.builder.ret(self.value.visit(context))
 
 class CallNode(ASTNode):
     def __init__(self, caller, args):
@@ -263,7 +272,7 @@ class CallNode(ASTNode):
 
     def visit(self, context):
         args = [arg.visit(context) for arg in self.args]
-        context.builder.call(self.caller.visit(context), *args)
+        return context.builder.call(self.caller.visit(context), *args)
 
     def eval(self, context):
         args = [arg.eval(context) for arg in self.args]
