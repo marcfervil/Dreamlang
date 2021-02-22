@@ -36,7 +36,8 @@ class LLVMBuilder:
 
         bind(dreamLib.num, ObjPtr, ObjPtr, c_int)
         bind(dreamLib.str, ObjPtr, ObjPtr, c_char_p)
-
+        bind(dreamLib.save, ObjPtr)
+        bind(dreamLib.load, ObjPtr)
         bind(dreamLib.add, ObjPtr)
         bind(dreamLib.sub, ObjPtr)
         bind(dreamLib.mul, ObjPtr)
@@ -124,12 +125,12 @@ class LLVMBuilder:
     def set_var(self, key, value, obj=None):
         if obj is None:
             obj = self.scope
-        return self.call("set_var", obj, key, value)
+        return dreamLib.save(self.context, obj, self.c_str(key), self.py_to_c(value))
 
     def get_var(self, key, obj=None):
         if obj is None:
             obj = self.scope
-        return self.call("get_var", obj, key)
+        return dreamLib.load(self.context, obj, self.c_str(key))
 
 
     def enter_scope(self, scope):
@@ -176,7 +177,7 @@ class CompileContext:
             #print("fiewj")
             #self.builder.end_func(self.func)
 
-
+"""
 context = CompileContext()
 
 with context.func("dog") as func:
@@ -188,7 +189,7 @@ with context.func("hot") as func:
     #func.ret(func.)
     #print(func.scope)
     #print("INSID",context.builder.scope)
-    func.ret(func.call("dog",func.scope))
+    func.ret(func.call("dog", func.scope))
 
 #context.builder.call("print", builder.init_str("yuh"))
 
@@ -204,10 +205,10 @@ context.builder.call("print", ret)
 #context.builder.call("print", context.builder.init_str("okkfrpwkf"))
 
 context.builder.ret(0)
-context.builder.run(True)
+context.builder.run(False)
 
 
-"""
+
 builder = LLVMBuilder()
 builder.set_var("yup", builder.init_num(10))
 builder.set_var("heyy", builder.init_str("fwopek"))
