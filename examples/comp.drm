@@ -1,0 +1,15 @@
+func multiply(x, y){
+    a = "mutable, compiled, variables"
+    print(a)
+
+    a = 4
+    print(a)
+
+     a = "lyfe"
+    print(a)
+
+    return x * y
+}
+print(multiply(210, 2))
+
+

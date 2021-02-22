@@ -7,6 +7,7 @@ import copy
 from compile import CompileContext
 
 
+
 def dreamfunc(func):
     func.dreamy = True
     return func
@@ -211,7 +212,7 @@ class Dream:
         self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
         return self.ast.eval(self.context)
 
-    def compile(self, llvm_output = False):
+    def compile(self, llvm_output = False, build = False):
         if len(self.tokens) == 0:
             self.tokenize()
         self.context = CompileContext()
@@ -219,5 +220,9 @@ class Dream:
 
         result = self.ast.visit(self.context)
         self.context.builder.ret(0)
-        self.context.builder.run(llvm_output)
+        self.context.builder.run(llvm_output, build)
+        if build:
+            import os
+
+            os.system("gcc -o lib/main lib/dream.so lib/dream_output.o")
         return result

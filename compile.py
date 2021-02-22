@@ -17,8 +17,8 @@ class LLVMBuilder:
         self.scopes = []
         #self.scope = None
 
-    def run(self, llvm_output=False):
-        dreamLib.llvm_run(self.context, False, llvm_output)
+    def run(self, llvm_output=False, build=False):
+        dreamLib.llvm_run(self.context, False, llvm_output,build)
 
     def map_bindings(self):
         ObjPtr = LLVMBuilder.ObjPtr
