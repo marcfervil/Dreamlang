@@ -37,6 +37,7 @@ class LLVMBuilder:
         bind(dreamLib.num, ObjPtr, ObjPtr, c_int)
         bind(dreamLib.str, ObjPtr, ObjPtr, c_char_p)
         bind(dreamLib.save, ObjPtr)
+        bind(dreamLib.call, ObjPtr)
         bind(dreamLib.load, ObjPtr)
         bind(dreamLib.add, ObjPtr)
         bind(dreamLib.sub, ObjPtr)
@@ -70,7 +71,7 @@ class LLVMBuilder:
             return vals[0]
         return vals
 
-    def call(self, name, *args):
+    def call_old(self, name, *args):
         ObjPtr = LLVMBuilder.ObjPtr
         #print(name, args )
         args = self.py_to_c(args)
@@ -84,6 +85,12 @@ class LLVMBuilder:
         #if scoped: arg_len -= 1
 
         return dreamLib.call_standard_c(self.context, self.c_str(name), arg_len, c_args)
+
+    def call(self, callee, *args):
+        args = self.py_to_c(args)
+        c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
+
+        return dreamLib.call(self.context, callee, len(c_args), c_args)
 
     def init_func(self, name, *arg_names):
 

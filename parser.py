@@ -263,7 +263,7 @@ class CallNode(ASTNode):
 
     def visit(self, context):
         args = [arg.visit(context) for arg in self.args]
-        context.builder.call(self.caller.name, *args)
+        context.builder.call(self.caller.visit(context), *args)
 
     def eval(self, context):
         args = [arg.eval(context) for arg in self.args]
