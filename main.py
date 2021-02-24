@@ -104,26 +104,13 @@ def the_works():
 
 #the_works()
 
-hopes = (("""
-    func multiply(x, y){
-        a = "mutable, compiled, variables"
-        
-        print(a)
-        a = 4
-        print(a)
-         a = "lyfe"
-        print(a)
-        return x * y
-    }
-    print(multiply(210, 2))
-
-"""))
+hopes = (open("examples/comp.drm").read())
 
 
 #dream = Dream("print((3*11-4+4-99)/2)")
 dream = Dream(hopes)
 dream.compile(False, True)
-#dream.eval()
+dream.eval()
 
 
 #print(dream.tokens)

@@ -1,15 +1,38 @@
-func multiply(x, y){
-    a = "mutable, compiled, variables"
-    print(a)
+x = "didnt work"
 
-    a = 4
-    print(a)
 
-     a = "lyfe"
-    print(a)
+func mats(fun,butter){
+    butter = "muffin"
+    print(butter)
 
-    return x * y
+   print(x)
+    print(arg)
+    print(lala)
+    print(fun)
+    kap = "nah"
+    print(kap)
+    return 0
 }
-print(multiply(210, 2))
+
+func hats(lala){
+
+   print(x)
+    print(arg)
+    print(lala)
+    x=90
+    mats("d", "luver")
+    print(kap)
+    print(butter)
+    return 0
+}
+
+func bro(arg){
+    print(x)
+    print(arg)
+    x = "it works"
+    hats("args good")
+    return 0
+}
 
 
+bro("shouldn't see this")

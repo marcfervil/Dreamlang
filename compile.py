@@ -8,7 +8,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-
+    builtins = ["print", "dict"]
 
     def __init__(self):
         self.map_bindings()
@@ -49,6 +49,8 @@ class LLVMBuilder:
         bind(dreamLib.call_standard_c, ObjPtr)
         bind(dreamLib.func, ObjPtr)
         bind(dreamLib.end_func, ObjPtr)
+        bind(dreamLib.init_scope, ObjPtr)
+
 
     def c_str(self, value):
         return c_char_p(value.encode('utf-8'))
@@ -89,22 +91,39 @@ class LLVMBuilder:
     def call(self, callee, *args):
         args = self.py_to_c(args)
         if not hasattr(callee, "built_in"):
-            args.insert(0, self.scope)
+            new_scope = dreamLib.init_scope(self.context, self.scope)
+
+            args.insert(0, new_scope)
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
 
         return dreamLib.call(self.context, callee, len(c_args), c_args)
 
     def init_func(self, name, *arg_names):
-
         arg_names = [c_char_p(val.encode('utf-8')) for val in arg_names]
         args = (c_char_p * len(arg_names))(*arg_names)
         func = dreamLib.func(self.context, self.scope, self.c_str(name), len(arg_names), args)
         self.enter_scope(self.func_scope(func))
+        #self.log(self.scope)
+        #dreamLib.init_scope(self.context, self.scope)
+        #dreamLib.init_scope(self.context, self.scope)
         return func
 
+    def log(self, item):
+        if type(item) is str:
+            item = self.init_str(item)
+        self.call(self.get_var("print"), item)
+
+    def dict(self, item):
+        if type(item) is str:
+            item = self.init_str(item)
+        self.call(self.get_var("dict"), item)
+
     def end_func(self, func_data):
+
         self.exit_scope()
+
         dreamLib.end_func(self.context, self.scope, func_data)
+
         #self.exit_scope()
 
     def init_str(self, value):
@@ -137,20 +156,20 @@ class LLVMBuilder:
         return dreamLib.save(self.context, obj, self.c_str(key), self.py_to_c(value))
 
     def get_var(self, key, obj=None):
-
         if obj is None:
             obj = self.scope
-        value =  dreamLib.load(self.context, obj, self.c_str(key))
-        if key == "print":
+        value = dreamLib.load(self.context, obj, self.c_str(key))
+        if key in LLVMBuilder.builtins:
             value.built_in = True
         return value
 
     def enter_scope(self, scope):
         self.scopes.append(self.scope)
-        self.store = self.scope
+        #self.store = self.scope
 
         self.scope = scope
 
+        #self.log(self.scope)
 
 
     def exit_scope(self):
@@ -189,38 +208,35 @@ class CompileContext:
             #print("fiewj")
             #self.builder.end_func(self.func)
 
-"""
-context = CompileContext()
 
-with context.func("dog") as func:
-    func.ret(func.init_str("yummy"))
+def test():
+    context = CompileContext()
+    b = context.builder
+
+    b.set_var("hungry", b.init_str("4 apples"))
+    with context.func("dog") as func:
+        func.ret(func.init_str("yummy"))
+
+    with context.func("hot") as func:
+        # func.log(b.get_var("hungry"))
+        b.set_var("hungry", b.init_str("5 apples"))
+        # func.call(b.get_var("dict"), func.scope)
+        # func.log(b.get_var("hungry"))
+        func.call(b.get_var("dog"))
+        func.ret(func.init_str("yummy"))
+
+    b.call(b.get_var("hot"))
+
+    context.builder.ret(0)
+    context.builder.run(False)
 
 
-with context.func("hot") as func:
-    #context.builder.call("print", func.init_str("yuh"))
-    #func.ret(func.)
-    #print(func.scope)
-    #print("INSID",context.builder.scope)
-    func.ret(func.call("dog", func.scope))
 
-#context.builder.call("print", builder.init_str("yuh"))
-
-    #   context.builder.call("dog", context.builder.init_str("akc"),context.builder.init_str("abc"), scoped=True)
-    #f = context.builder.init_str("[scope]")
-    #context.builder.call("dog", builder.scope, builder.init_str("no"), scoped=True)
-    #builder.ret(builder.init_str("yuh"))
-
-
-ret = context.builder.call("hot", context.builder.scope)
-
-context.builder.call("print", ret)
 #context.builder.call("print", context.builder.init_str("okkfrpwkf"))
 
-context.builder.ret(0)
-context.builder.run(False)
 
 
-
+"""
 builder = LLVMBuilder()
 builder.set_var("yup", builder.init_num(10))
 builder.set_var("heyy", builder.init_str("fwopek"))
@@ -228,9 +244,9 @@ get = builder.get_var("heyy")
 builder.call("print", get)
 builder.ret(0)
 builder.run()
-"""
 
-"""
+
+
 builder = LLVMBuilder()
 num1 = builder.init_num(10)
 num2 = builder.init_num(4)

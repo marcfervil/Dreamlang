@@ -206,7 +206,7 @@ class Dream:
         return obj.copy()
 
     def eval(self):
-        if len(self.tokens) ==0:
+        if len(self.tokens) == 0:
             self.tokenize()
         self.context = self.get_context()
         self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
@@ -223,6 +223,15 @@ class Dream:
         self.context.builder.run(llvm_output, build)
         if build:
             import os
-
+            import timeit
             os.system("gcc -o lib/main lib/dream.so lib/dream_output.o")
+
+            """
+            setup = '''def add(num1, num2):return num1+num2
+            '''
+
+            setup2="import os"
+
+            print(min(timeit.Timer('add(3,5)', setup=setup).repeat(7, 1000)))
+            print(min(timeit.Timer('os.system("echo $pwd")', setup=setup2).repeat(7, 1000)))"""
         return result

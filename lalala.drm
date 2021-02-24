@@ -1,0 +1,14 @@
+
+x = 10
+func multiply(){
+
+    return 0
+}
+
+func jeff(){
+
+    multiply()
+    return 0
+}
+
+#-===================
