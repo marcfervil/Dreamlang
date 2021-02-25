@@ -91,6 +91,8 @@ class BinaryNode(ASTNode):
             return context.builder.mul(left, right)
         elif self.op.value == "/":
             return context.builder.div(left, right)
+        elif self.op.value == "is":
+            return context.builder.equals(left, right)
 
     def eval(self, context):
         left = self.left.eval(context)
@@ -174,6 +176,8 @@ class LiteralNode(ASTNode):
             return context.builder.init_num(self.value)
         elif type(self.value) is str:
             return context.builder.init_str(self.value)
+        elif type(self.value) is bool:
+            return context.builder.init_bool(self.value)
 
     def eval(self, context):
         return DreamObj.make_primitive(self.value)

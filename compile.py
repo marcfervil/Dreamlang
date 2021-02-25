@@ -35,11 +35,13 @@ class LLVMBuilder:
         #bind(dreamLib.llvmStr, ObjPtr, ObjPtr, ObjPtr)
 
         bind(dreamLib.num, ObjPtr, ObjPtr, c_int)
+        bind(dreamLib.bool_, ObjPtr)
         bind(dreamLib.str, ObjPtr, ObjPtr, c_char_p)
         bind(dreamLib.save, ObjPtr)
         bind(dreamLib.call, ObjPtr)
         bind(dreamLib.load, ObjPtr)
         bind(dreamLib.add, ObjPtr)
+        bind(dreamLib.equals_c, ObjPtr)
         bind(dreamLib.sub, ObjPtr)
         bind(dreamLib.mul, ObjPtr)
         bind(dreamLib.divi, ObjPtr)
@@ -132,6 +134,9 @@ class LLVMBuilder:
     def init_num(self, value):
         return dreamLib.num(self.context, value)
 
+    def init_bool(self, value):
+        return dreamLib.bool_(self.context, value)
+
     def add(self, value1, value2):
         return dreamLib.add(self.context, value1, value2)
 
@@ -144,6 +149,9 @@ class LLVMBuilder:
     def mul(self, value1, value2):
         return dreamLib.mul(self.context, value1, value2)
 
+    def equals(self, value1, value2):
+        return dreamLib.equals(self.context, value1, value2)
+
     def func_scope(self, func):
         return dreamLib.funcScope(func)
 
@@ -154,6 +162,9 @@ class LLVMBuilder:
         if obj is None:
             obj = self.scope
         return dreamLib.save(self.context, obj, self.c_str(key), self.py_to_c(value))
+
+    def equals(self, var1, var2):
+        return dreamLib.equals_c(self.context, var1, var2)
 
     def get_var(self, key, obj=None):
         if obj is None:
