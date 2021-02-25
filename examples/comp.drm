@@ -1,0 +1,9 @@
+func animal1(){
+    return "cat"
+}
+
+func animal2(){
+    return "dog"
+}
+
+print(animal1(), animal2())
