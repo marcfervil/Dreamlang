@@ -225,6 +225,7 @@ class Dream:
             import os
             import timeit
             os.system("gcc -o lib/main lib/dream.so lib/dream_output.o")
+            #os.system("llc -mtriple=wasm32-unknown-unknown -O3 -filetype=obj main.ll -o main.o")
 
             """
             setup = '''def add(num1, num2):return num1+num2

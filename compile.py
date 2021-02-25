@@ -8,7 +8,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict"]
+    builtins = ["print", "dict", "set_var_c"]
 
     def __init__(self):
         self.map_bindings()
