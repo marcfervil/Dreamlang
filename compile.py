@@ -8,7 +8,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c"]
+    builtins = ["print", "dict", "set_var_c", "ptr"]
 
     def __init__(self):
         self.map_bindings()
@@ -176,11 +176,11 @@ class LLVMBuilder:
 
     def enter_scope(self, scope):
         self.scopes.append(self.scope)
-        #self.store = self.scope
+
 
         self.scope = scope
+        self.set_var("scope", self.scope)
 
-        #self.log(self.scope)
 
 
     def exit_scope(self):

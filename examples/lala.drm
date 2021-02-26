@@ -1,0 +1,21 @@
+z = 50
+y = "nope"
+
+func nest(val){
+    print("nesting", z)
+    y = val
+    print(x)
+    return 0
+}
+
+func no_ptr(){
+    print(z)
+    z = "yuh"
+    x = "og x"
+    a = x
+    x = 49
+    print(a,x)
+    nest(x)
+
+    return x
+}

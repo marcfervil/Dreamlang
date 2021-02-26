@@ -1,14 +1,9 @@
 
-x = 10
+
 func multiply(){
-
+    x = 50
+    y = 30
     return 0
 }
 
-func jeff(){
-
-    multiply()
-    return 0
-}
-
-#-===================
+===========

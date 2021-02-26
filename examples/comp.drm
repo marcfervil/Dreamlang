@@ -1,9 +1,18 @@
-func animal1(){
-    return "cat"
+
+
+
+func mem(){
+    greeting = "hello!"
+    greeting_ptr = ptr(greeting)
+
+
+    greeting_ptr = "bonjour"
+    dict(scope)
+
+
+    greeting = "hola!"
+    dict(scope)
+    return 0
 }
 
-func animal2(){
-    return "dog"
-}
-
-print(animal1(), animal2())
+mem()
