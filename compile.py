@@ -176,8 +176,6 @@ class LLVMBuilder:
 
     def enter_scope(self, scope):
         self.scopes.append(self.scope)
-
-
         self.scope = scope
         self.set_var("scope", self.scope)
 

@@ -1,0 +1,41 @@
+
+
+
+func non_pointer_demo(){
+    greeting = "hello!"
+    greeting_ptr = (greeting)
+
+
+    greeting_ptr = "bonjour"
+    print("greeting:", greeting)
+    print("greeting_ptr:", greeting_ptr)
+
+    print("")
+
+    greeting = "hola!"
+    print("greeting:", greeting)
+    print("greeting_ptr:", greeting_ptr)
+    return 0
+}
+
+func pointer_demo(){
+    greeting = "hello!"
+    greeting_ptr = ptr(greeting)
+
+
+    greeting_ptr = "bonjour"
+    print("greeting:", greeting)
+    print("greeting_ptr:", greeting_ptr)
+
+    print("")
+
+    greeting = "hola!"
+    print("greeting:", greeting)
+    print("greeting_ptr:", greeting_ptr)
+    return 0
+}
+
+non_pointer_demo()
+print("")
+print("")
+pointer_demo()

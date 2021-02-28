@@ -7,6 +7,7 @@ def bro(arg):
 
 
 #print(bro("hey"))
-x = "3"+"d" +"foewk"+"feowk"
+#x = "3"+"d" +"foewk"+"feowk"
+swag()
 #x = 50
-print(x)
+#print(x)

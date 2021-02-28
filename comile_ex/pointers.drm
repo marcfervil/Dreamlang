@@ -1,0 +1,21 @@
+
+
+vv = "pointers don't work"
+
+func f2(a1,a2){
+    a1 = a2
+    #print(a1)
+    return 0
+}
+
+func ff(apple, words){
+
+    #apple= 35
+    #print(apple)
+    f2(apple, words)
+    return 0
+}
+
+ff(ptr(vv), "pointers work!")
+
+print(vv)

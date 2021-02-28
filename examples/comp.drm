@@ -1,18 +1,4 @@
+x = 3
+set_var_c(x, "jffpeowkfpoewfeopwkfpewokfpw", "hi!")
 
-
-
-func mem(){
-    greeting = "hello!"
-    greeting_ptr = ptr(greeting)
-
-
-    greeting_ptr = "bonjour"
-    dict(scope)
-
-
-    greeting = "hola!"
-    dict(scope)
-    return 0
-}
-
-mem()
+#dict(x)
