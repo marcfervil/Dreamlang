@@ -1,4 +1,9 @@
-x = 3
-set_var_c(x, "jffpeowkfpoewfeopwkfpewokfpw", "hi!")
 
-#dict(x)
+func luv(){
+    if 4 is 4 {
+        print("Yesssss")
+    }
+    return 0
+}
+
+luv()

@@ -116,7 +116,7 @@ class BinaryNode(ASTNode):
 class IfNode(ASTNode):
     def __init__(self, test, body):
         self.test = test
-        self.body = Parser(body.value).get_ast(node = BodyNode())
+        self.body = Parser(body.value).get_ast(node=BodyNode())
 
     def __repr__(self):
         body_str = str(self.body).replace('\t', '\t\t')
@@ -125,6 +125,11 @@ class IfNode(ASTNode):
     def eval(self, context):
         if self.test.eval(context).value:
             return self.body.eval(context)
+
+    def visit(self, context):
+        with context.builder.init_if(self.test.visit(context)):
+            for node in self.body.body:
+                node.visit(context)
 
 
 class ForNode(ASTNode):

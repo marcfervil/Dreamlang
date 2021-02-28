@@ -18,9 +18,10 @@ class LLVMBuilder:
         #self.scope = None
 
     def run(self, llvm_output=False, build=False):
-        dreamLib.llvm_run(self.context, False, llvm_output,build)
+        dreamLib.llvm_run(self.context, True, llvm_output, build)
 
     def map_bindings(self):
+
         ObjPtr = LLVMBuilder.ObjPtr
         def bind(obj, return_type, *arg_types):
             if return_type is not None:
@@ -31,9 +32,8 @@ class LLVMBuilder:
         bind(dreamLib.llvm_init, ObjPtr)
         bind(dreamLib.llvmInt, ObjPtr, ObjPtr, c_int)
 
-        #SUS
-        #bind(dreamLib.llvmStr, ObjPtr, ObjPtr, ObjPtr)
 
+        #print(vars(dreamLib))
         bind(dreamLib.num, ObjPtr, ObjPtr, c_int)
         bind(dreamLib.bool_, ObjPtr)
         bind(dreamLib.str, ObjPtr, ObjPtr, c_char_p)
@@ -52,7 +52,7 @@ class LLVMBuilder:
         bind(dreamLib.func, ObjPtr)
         bind(dreamLib.end_func, ObjPtr)
         bind(dreamLib.init_scope, ObjPtr)
-
+        bind(dreamLib.init_if, ObjPtr)
 
     def c_str(self, value):
         return c_char_p(value.encode('utf-8'))
@@ -105,10 +105,10 @@ class LLVMBuilder:
         args = (c_char_p * len(arg_names))(*arg_names)
         func = dreamLib.func(self.context, self.scope, self.c_str(name), len(arg_names), args)
         self.enter_scope(self.func_scope(func))
-        #self.log(self.scope)
-        #dreamLib.init_scope(self.context, self.scope)
-        #dreamLib.init_scope(self.context, self.scope)
         return func
+
+    def init_if(self, value):
+        return IfBuilder(self.context, value)
 
     def log(self, item):
         if type(item) is str:
@@ -121,9 +121,7 @@ class LLVMBuilder:
         self.call(self.get_var("dict"), item)
 
     def end_func(self, func_data):
-
         self.exit_scope()
-
         dreamLib.end_func(self.context, self.scope, func_data)
 
         #self.exit_scope()
@@ -149,8 +147,8 @@ class LLVMBuilder:
     def mul(self, value1, value2):
         return dreamLib.mul(self.context, value1, value2)
 
-    def equals(self, value1, value2):
-        return dreamLib.equals(self.context, value1, value2)
+    #def equals(self, value1, value2):
+    #    return dreamLib.equals(self.context, value1, value2)
 
     def func_scope(self, func):
         return dreamLib.funcScope(func)
@@ -179,27 +177,29 @@ class LLVMBuilder:
         self.scope = scope
         self.set_var("scope", self.scope)
 
-
-
     def exit_scope(self):
-
         self.scope = self.scopes.pop()
 
 
-class CompileContext:
+class IfBuilder:
+    def __init__(self, context, value):
+        self.context = context
+        self.if_data = dreamLib.init_if(self.context, value)
 
+    def __enter__(self):
+        return self.if_data
+
+    def __exit__(self, type_, value, traceback):
+        dreamLib.end_if(self.context, self.if_data)
+
+
+class CompileContext:
     def __init__(self):
         self.builder = LLVMBuilder()
         self.scope = self.builder.scope
 
-        # print(self.scope)
-
     def func(self, name, *args):
         return self.new_func(self.builder, name, *args)
-
-
-    #def enter_scope(self, scope):
-    #   self.builder.scope = scope
 
     class new_func:
         def __init__(self, builder, name, *args):
@@ -218,7 +218,7 @@ class CompileContext:
             #self.builder.end_func(self.func)
 
 
-def test():
+def test_func():
     context = CompileContext()
     b = context.builder
 
@@ -234,16 +234,23 @@ def test():
         func.call(b.get_var("dog"))
         func.ret(func.init_str("yummy"))
 
-    b.call(b.get_var("hot"))
+    b.log(b.call(b.get_var("hot")))
 
     context.builder.ret(0)
     context.builder.run(False)
 
 
+def test_if():
+    context = CompileContext()
+    b = context.builder
+    result = (b.equals(b.init_str("hi"), b.init_str("hi")))
+    with b.init_if(result):
+        b.log("it works doctor!")
 
-#context.builder.call("print", context.builder.init_str("okkfrpwkf"))
+    b.ret(0)
+    b.run(False)
 
-
+#test_if()
 
 """
 builder = LLVMBuilder()
