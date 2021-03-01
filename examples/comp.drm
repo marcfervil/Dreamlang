@@ -1,9 +1,22 @@
 
-func luv(){
-    if 4 is 4 {
-        print("Yesssss")
+
+gg = "og gg"
+
+if "4" is "4" {
+    swag = "feeeddddddddeeeeeeee"
+    xj = "100"
+    og_gg = gg
+    ff = "fff"
+
+    if "5" is "5" {
+        #print(x)
+        if "5" is "5" {
+            dd = "d"
+            dd = 1+2
+            print(xj,dd)
+        }
+        print("un",dd)
     }
-    return 0
+    print(xj)
 }
 
-luv()

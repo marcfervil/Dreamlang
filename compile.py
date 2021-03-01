@@ -18,7 +18,7 @@ class LLVMBuilder:
         #self.scope = None
 
     def run(self, llvm_output=False, build=False):
-        dreamLib.llvm_run(self.context, True, llvm_output, build)
+        dreamLib.llvm_run(self.context, False, llvm_output, build)
 
     def map_bindings(self):
 
@@ -93,7 +93,7 @@ class LLVMBuilder:
     def call(self, callee, *args):
         args = self.py_to_c(args)
         if not hasattr(callee, "built_in"):
-            new_scope = dreamLib.init_scope(self.context, self.scope)
+            new_scope = dreamLib.init_scope(self.context, self.scope, 0)
 
             args.insert(0, new_scope)
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
@@ -108,7 +108,7 @@ class LLVMBuilder:
         return func
 
     def init_if(self, value):
-        return IfBuilder(self.context, value)
+        return IfBuilder(self, value)
 
     def log(self, item):
         if type(item) is str:
@@ -182,15 +182,21 @@ class LLVMBuilder:
 
 
 class IfBuilder:
-    def __init__(self, context, value):
-        self.context = context
+    def __init__(self, builder, value):
+        self.builder = builder
+        self.context = builder.context
         self.if_data = dreamLib.init_if(self.context, value)
+
+        self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope,  1)
+
+        self.builder.enter_scope(self.scope)
 
     def __enter__(self):
         return self.if_data
 
     def __exit__(self, type_, value, traceback):
         dreamLib.end_if(self.context, self.if_data)
+        self.builder.exit_scope()
 
 
 class CompileContext:
