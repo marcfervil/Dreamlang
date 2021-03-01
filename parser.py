@@ -64,6 +64,12 @@ class AttributeNode(ASTNode):
         else:
             return self.attr.eval(context.get_var(self.obj.name))
 
+    def visit(self, context):
+        return context.builder.get_var(self.attr.name, self.obj.visit(context))
+
+    def assign_visit(self, context, value):
+        return context.builder.set_var(self.attr.name, value, self.obj.visit(context))
+
     def assign(self, context, value):
         if type(self.obj) is AttributeNode:
             self.attr.assign(self.obj.eval(context), value)

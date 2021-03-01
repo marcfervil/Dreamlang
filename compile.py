@@ -41,7 +41,7 @@ class LLVMBuilder:
         bind(dreamLib.call, ObjPtr)
         bind(dreamLib.load, ObjPtr)
         bind(dreamLib.add, ObjPtr)
-        bind(dreamLib.equals_c, ObjPtr)
+        bind(dreamLib.equals, ObjPtr)
         bind(dreamLib.sub, ObjPtr)
         bind(dreamLib.mul, ObjPtr)
         bind(dreamLib.divi, ObjPtr)
@@ -162,7 +162,7 @@ class LLVMBuilder:
         return dreamLib.save(self.context, obj, self.c_str(key), self.py_to_c(value))
 
     def equals(self, var1, var2):
-        return dreamLib.equals_c(self.context, var1, var2)
+        return dreamLib.equals(self.context, var1, var2)
 
     def get_var(self, key, obj=None):
         if obj is None:
