@@ -1,7 +1,35 @@
-func c(){
-    return "hi"
-}
-x = "hey"
-x.abc = c
 
-print(x.abc(), c())
+    class three{
+        previous = two()
+        func init()
+        func value(m){
+            return (previous.value(1) + 1) * m
+        }
+        func getPrevious(){
+            return previous
+        }
+    }
+
+    class two {
+        previous = one()
+        func init()
+        func value(m){
+
+            return (previous.value(1) + 1) * m
+        }
+        func getPrevious(){
+            return previous
+        }
+    }
+
+    class one {
+        func init()
+        func value(m){
+            return 1 * m
+        }
+    }
+
+    number = three()
+    print("Three: ", number.value(1))
+    print("First number ", number.previous.previous.value(1))
+    print("First number times ten: ", number.getPrevious().getPrevious().value(10))

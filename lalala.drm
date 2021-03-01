@@ -7,3 +7,24 @@ func multiply(){
 }
 
 ===========
+
+class animal {
+    name = "subwoofer"
+
+
+    func init(animal_name){
+        name = animal_name
+        #x = "d"
+        #name = param
+    }
+
+    func greet() {
+        #if lala is "cat" {
+        #    return name+" "+lala
+        #}
+        #print("fw")
+        #return "ffsfs"
+        return "fe"
+        #return "name"
+    }
+}

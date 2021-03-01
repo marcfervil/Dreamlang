@@ -100,10 +100,10 @@ class LLVMBuilder:
 
         return dreamLib.call(self.context, callee, len(c_args), c_args)
 
-    def init_func(self, name, *arg_names):
+    def init_func(self, name, is_class, *arg_names):
         arg_names = [c_char_p(val.encode('utf-8')) for val in arg_names]
         args = (c_char_p * len(arg_names))(*arg_names)
-        func = dreamLib.func(self.context, self.scope, self.c_str(name), len(arg_names), args)
+        func = dreamLib.func(self.context, self.scope, self.c_str(name), is_class, len(arg_names), args)
         self.enter_scope(self.func_scope(func))
         return func
 
@@ -204,24 +204,24 @@ class CompileContext:
         self.builder = LLVMBuilder()
         self.scope = self.builder.scope
 
-    def func(self, name, *args):
-        return self.new_func(self.builder, name, *args)
+    def func(self, name, *args, is_class=True):
+        return self.new_func(self.builder, name, is_class, *args)
 
     class new_func:
-        def __init__(self, builder, name, *args):
+        def __init__(self, builder, name, is_class, *args):
             self.builder = builder
             self.name = name
+            self.is_class = is_class
             self.args = args
 
         def __enter__(self):
-            self.func = self.builder.init_func(self.name, *self.args)
+            self.func = self.builder.init_func(self.name, self.is_class, *self.args)
             return self.builder
 
         def __exit__(self, type, value, traceback):
-
+            #self.builder.ret(self.builder.init_str("nadda"))
             self.builder.end_func(self.func)
-            #print("fiewj")
-            #self.builder.end_func(self.func)
+            #self.builder.ret(self.builder.scope)
 
 
 def test_func():

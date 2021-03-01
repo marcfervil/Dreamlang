@@ -65,7 +65,8 @@ class AttributeNode(ASTNode):
             return self.attr.eval(context.get_var(self.obj.name))
 
     def visit(self, context):
-        return context.builder.get_var(self.attr.name, self.obj.visit(context))
+        self.visited_obj = self.obj.visit(context)
+        return context.builder.get_var(self.attr.name, self.visited_obj)
 
     def assign_visit(self, context, value):
         return context.builder.set_var(self.attr.name, value, self.obj.visit(context))
@@ -224,17 +225,21 @@ class FuncNode(ASTNode):
         context.add_var(self.name.value, self.call)
 
     def visit(self, context):
-
         args = [param.name for param in self.params]
+        has_return = False
         with context.func(self.name.value, *args):
             for node in self.body.body:
+                if type(node) is ReturnNode:
+                    has_return = True
                 node.visit(context)
-        #return context later
+            if not has_return:
+                context.builder.ret(context.builder.init_str("<TODO: null>"))
 
 
 class ClassNode(ASTNode):
 
     def __init__(self, name, body):
+        self.context = None
         self.name = name
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
@@ -262,9 +267,26 @@ class ClassNode(ASTNode):
 
     def eval(self, context):
         self.context = context
-
         context.add_var(self.name.value, self.init, True)
         return self.init
+
+    def visit(self, context):
+        if self.body.body is not None:
+            # TODO: mark function as init during AST gen so we don't have to do 2 loops during compile time
+            for node in self.body.body:
+                if type(node) is FuncNode and node.name.value == "init":
+                    init = node
+                    args = [param.name for param in node.params]
+                    with context.func(self.name.value, *args, is_class=True):
+                        for class_node in self.body.body:
+                            if not (type(class_node) is FuncNode and class_node.name.value == "init"):
+                                class_node.visit(context)
+                        if init.body.body is not None:
+                            for init_node in init.body.body:
+                                init_node.visit(context)
+                        context.builder.ret(context.builder.scope)
+
+                    break
 
 
 class ReturnNode(ASTNode):
@@ -287,7 +309,18 @@ class CallNode(ASTNode):
 
     def visit(self, context):
         args = [arg.visit(context) for arg in self.args]
-        return context.builder.call(self.caller.visit(context), *args)
+
+        callee = self.caller.visit(context)
+
+        if type(self.caller) is AttributeNode:
+            context.builder.enter_scope(self.caller.visited_obj)
+
+        call_result = context.builder.call(callee, *args)
+
+        if type(self.caller) is AttributeNode:
+            context.builder.exit_scope()
+
+        return call_result
 
     def eval(self, context):
         args = [arg.eval(context) for arg in self.args]
@@ -299,7 +332,6 @@ control_flow = [IfNode, ForNode]
 
 class BodyNode(ASTNode):
     def __init__(self, body=None):
-
         self.body = body
 
     def __repr__(self):
