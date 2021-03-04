@@ -8,7 +8,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "shallow_copy"]
 
     def __init__(self):
         self.map_bindings()
@@ -91,11 +91,17 @@ class LLVMBuilder:
         return dreamLib.call_standard_c(self.context, self.c_str(name), arg_len, c_args)
 
     def call(self, callee, *args):
+        if type(callee) is str:
+            callee = self.get_var(callee)
         args = self.py_to_c(args)
+
         if not hasattr(callee, "built_in"):
-            new_scope = dreamLib.init_scope(self.context, self.scope, 0)
+            func_scope = self.get_var("@context", callee)
+            # func_scope = self.call("shallow_copy", func_scope)
+            new_scope = dreamLib.init_scope(self.context, func_scope, 1)
 
             args.insert(0, new_scope)
+
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
 
         return dreamLib.call(self.context, callee, len(c_args), c_args)
@@ -204,8 +210,25 @@ class CompileContext:
         self.builder = LLVMBuilder()
         self.scope = self.builder.scope
 
-    def func(self, name, *args, is_class=True):
+    def func(self, name, *args, is_class=False):
         return self.new_func(self.builder, name, is_class, *args)
+
+    def enter_scope(self):
+        return self.NewScope(self.builder)
+
+    class NewScope:
+        def __init__(self, builder):
+            self.builder = builder
+            #self.builder.scope
+            self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope, 0)
+            self.builder.enter_scope(self.scope)
+
+
+        def __enter__(self):
+            return self.scope
+
+        def __exit__(self, type_, value, traceback):
+            self.builder.exit_scope()
 
     class new_func:
         def __init__(self, builder, name, is_class, *args):

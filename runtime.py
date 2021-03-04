@@ -37,9 +37,7 @@ class DreamObj:
         elif type(obj) is bool:
             return DreamBool(obj)
 
-
     def copy(self):
-
         copy_obj = DreamObj()
         # we want a copy of primitives and a ref to actual objects for speed
         for name, value in self.vars.items():
@@ -220,7 +218,10 @@ class Dream:
 
         result = self.ast.visit(self.context)
         self.context.builder.ret(0)
+        #print("IR Generated")
+
         self.context.builder.run(llvm_output, build)
+
         if build:
             import os
             import timeit

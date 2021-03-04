@@ -1,5 +1,5 @@
 ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", ".", "->", ">", "=>"]
-special_chars = "!@#%^&*,-+=/.>="
+special_chars = "!#%^&*,-+=/.>="
 
 class Token:
 
@@ -51,7 +51,6 @@ class Tokenizer:
         self.token = ""
 
     def add_token(self, token=None):
-
         if token is None:
             if len(self.token.strip()) > 0:
                 new_token = Token(self.token)
@@ -73,14 +72,14 @@ class Tokenizer:
 
                 elif new_token.has("Number"):
                     if self.get(-1).has("Operator", "-") and (self.get(-2).has("Operator") or self.get(-2).has("None")):
-                        #if not self.get(-2).has("None"):
                         self.tokens.pop()
                         new_token.value *= -1
-
 
                 self.tokens.append(new_token)
                 self.token = ""
         else:
+            if token[0] == "`" and token[-1] == "`":
+                return
             self.tokens.append(Token(token))
 
     def get(self, index):
@@ -107,7 +106,11 @@ class Tokenizer:
                     self.add_token()
                     self.token = "#"
                     continue
-
+                elif char == '`':
+                    match_end_token = '`'
+                    match_start_token = '`'
+                    match_count = 1
+                    self.add_token()
                 elif char == " " or char in special_chars:
                     self.add_token()
                     if len(self.tokens) > 0 and str(self.tokens[-1].value) + char in ops:
@@ -125,6 +128,7 @@ class Tokenizer:
                     match_start_token = '"'
                     match_count = 1
                     self.add_token()
+
                 elif char == '{':
                     if self.tokens[-1].has("Newline"):
                         self.tokens.pop(-1)

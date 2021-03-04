@@ -1,35 +1,67 @@
 
-    class three{
-        previous = two()
-        func init()
-        func value(m){
-            return (previous.value(1) + 1) * m
-        }
-        func getPrevious(){
-            return previous
-        }
+
+`
+ class Node{
+
+    value = ""
+
+    func init(_value){
+        value = _value
+    }
+}`
+`
+class List {
+    full_name = "start"
+
+    func init(name){
+
+        full_name = "yoda"
+        #dict(scope.parent)
     }
 
-    class two {
-        previous = one()
-        func init()
-        func value(m){
-
-            return (previous.value(1) + 1) * m
-        }
-        func getPrevious(){
-            return previous
-        }
+    func la(){
+        print(name)
     }
 
-    class one {
-        func init()
-        func value(m){
-            return 1 * m
-        }
+}
+
+animals = List("john")
+`
+
+
+func y(){
+    print("<Undefined>", a)
+}
+q= "qt"
+func x(){
+
+    a = "defined"
+
+    func one(){
+        print("defined", a, f)
     }
 
-    number = three()
-    print("Three: ", number.value(1))
-    print("First number ", number.previous.previous.value(1))
-    print("First number times ten: ", number.getPrevious().getPrevious().value(10))
+    func two(){
+        func three(){
+            print("three",a,q,f)
+            q = "very cute"
+
+        }
+
+        three()
+
+    }
+
+
+    a = "redefined"
+    f = "few"
+
+    one()
+    y()
+    two()
+
+    print(q)
+    dict(scope)
+
+}
+x()

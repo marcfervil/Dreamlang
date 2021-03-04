@@ -1,13 +1,37 @@
-def swag():
-    return 50 * 50 * 199 - 20 + 30
 
 
-def bro(arg):
-    return swag() * 100 +10
+class three:
+    def __init__(self):
+        self.previous = two()
+
+    def value(self, m):
+        return (self.previous.value(1) + 1) * m
+
+    def getPrevious(self):
+        return self.previous
 
 
-#print(bro("hey"))
-#x = "3"+"d" +"foewk"+"feowk"
-swag()
-#x = 50
-#print(x)
+
+class two :
+    def __init__(self):
+        self.previous = one()
+
+    def value(self, m):
+        return (self.previous.value(1) + 1) * m
+
+    def getPrevious(self):
+        return self.previous
+
+
+class one:
+    def value(self, m):
+        return 1 * m
+
+
+
+number = three()
+print("Three: ", number.value(1))
+print("First number ", number.previous.previous.value(1))
+print("First number times ten: ", number.getPrevious().getPrevious().value(10))
+
+
