@@ -9,59 +9,36 @@
         value = _value
     }
 }`
-`
+
 class List {
-    full_name = "start"
+    full_name = "swag"
 
     func init(name){
+        #print("john =",name)
+        print("swag =",full_name)
+        full_name = name
 
-        full_name = "yoda"
-        #dict(scope.parent)
     }
 
-    func la(){
-        print(name)
+    func aa(){
+        print("aa",full_name,x)
+    }
+
+    func cc(){
+        print("<Undefined> =", name)
+        print("full_name", full_name)
+        full_name = "lalalala"
+        x= 45
+
+        aa()
+        print(x)
     }
 
 }
 
 animals = List("john")
-`
+print("john =",animals.full_name)
+animals.full_name = "rip"
+print("rip =",animals.full_name)
 
-
-func y(){
-    print("<Undefined>", a)
-}
-q= "qt"
-func x(){
-
-    a = "defined"
-
-    func one(){
-        print("defined", a, f)
-    }
-
-    func two(){
-        func three(){
-            print("three",a,q,f)
-            q = "very cute"
-
-        }
-
-        three()
-
-    }
-
-
-    a = "redefined"
-    f = "few"
-
-    one()
-    y()
-    two()
-
-    print(q)
-    dict(scope)
-
-}
-x()
+animals.cc()

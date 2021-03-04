@@ -253,7 +253,7 @@ class ClassNode(ASTNode):
         this_context = class_context.copy()
         this_context.parent_context = class_context
         this_context.this = True
-        class_context.add_var("this", this_context)
+        #class_context.add_var("this", this_context)
 
         init = None
         if self.body.body is not None:
@@ -277,6 +277,8 @@ class ClassNode(ASTNode):
         for node in self.body.body:
             if type(node) is FuncNode and node.name.value == "init":
                 return node
+
+
 
     def visit(self, context):
         if self.body.body is not None:
@@ -302,19 +304,21 @@ class ClassNode(ASTNode):
                 with context.enter_scope() as obj_scope:
                     for class_node in self.body.body:
                         if not (type(class_node) is FuncNode and class_node.name.value == "init"):
-                            #print(class_node)
                             class_node.visit(context)
 
-                context.builder.dict(obj_scope)
                 with context.func("init"):
                     for node in init.body.body:
                         if type(node) is ReturnNode:
                             print("You cannot return from a constructor!")
-                        node.visit(context)
 
+                        node.visit(context)
                     context.builder.ret(context.builder.init_str("<TODO: implement undefined"))
 
-                context.builder.call(context.builder.get_var("init"))
+                init_ir = context.builder.get_var("init")
+
+                context.builder.reparent(context.builder.get_var("@context", init_ir), obj_scope)
+                context.builder.call(init_ir)
+
                 context.builder.ret(obj_scope)
 
 

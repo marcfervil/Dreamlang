@@ -53,6 +53,7 @@ class LLVMBuilder:
         bind(dreamLib.end_func, ObjPtr)
         bind(dreamLib.init_scope, ObjPtr)
         bind(dreamLib.init_if, ObjPtr)
+        bind(dreamLib.set_parent_c, ObjPtr)
 
     def c_str(self, value):
         return c_char_p(value.encode('utf-8'))
@@ -97,7 +98,7 @@ class LLVMBuilder:
 
         if not hasattr(callee, "built_in"):
             func_scope = self.get_var("@context", callee)
-            # func_scope = self.call("shallow_copy", func_scope)
+            #func_scope = self.call("shallow_copy", func_scope)
             new_scope = dreamLib.init_scope(self.context, func_scope, 1)
 
             args.insert(0, new_scope)
@@ -167,8 +168,17 @@ class LLVMBuilder:
             obj = self.scope
         return dreamLib.save(self.context, obj, self.c_str(key), self.py_to_c(value))
 
+    def reparent(self, obj, new_parent):
+        return dreamLib.set_parent_c(self.context, obj, new_parent)
+
     def equals(self, var1, var2):
         return dreamLib.equals(self.context, var1, var2)
+
+    def build(self):
+
+        dreamLib.build(self.context)
+        import os
+        os.system("gcc -o lib/main lib/dream.so lib/dream_output.o")
 
     def get_var(self, key, obj=None):
         if obj is None:
@@ -181,7 +191,7 @@ class LLVMBuilder:
     def enter_scope(self, scope):
         self.scopes.append(self.scope)
         self.scope = scope
-        self.set_var("scope", self.scope)
+        #self.set_var("scope", self.scope)
 
     def exit_scope(self):
         self.scope = self.scopes.pop()
@@ -219,10 +229,8 @@ class CompileContext:
     class NewScope:
         def __init__(self, builder):
             self.builder = builder
-            #self.builder.scope
-            self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope, 0)
+            self.scope = self.builder.init_str("[new scope]")
             self.builder.enter_scope(self.scope)
-
 
         def __enter__(self):
             return self.scope

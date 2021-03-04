@@ -138,6 +138,7 @@ class Tokenizer:
                     self.add_token()
                     continue
                 elif char == '(':
+
                     match_end_token = ')'
                     match_start_token = '('
                     match_count = 1
@@ -145,6 +146,7 @@ class Tokenizer:
                     continue
 
             elif char == match_end_token:
+
                 match_count -= 1
                 if match_count == 0:
                     # comments should be the only token match with an empty string starting node

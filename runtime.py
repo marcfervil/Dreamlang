@@ -219,21 +219,12 @@ class Dream:
         result = self.ast.visit(self.context)
         self.context.builder.ret(0)
         #print("IR Generated")
+        if build:
+            self.context.builder.build()
 
+        print("built")
         self.context.builder.run(llvm_output, build)
 
-        if build:
-            import os
-            import timeit
-            os.system("gcc -o lib/main lib/dream.so lib/dream_output.o")
-            #os.system("llc -mtriple=wasm32-unknown-unknown -O3 -filetype=obj main.ll -o main.o")
 
-            """
-            setup = '''def add(num1, num2):return num1+num2
-            '''
 
-            setup2="import os"
-
-            print(min(timeit.Timer('add(3,5)', setup=setup).repeat(7, 1000)))
-            print(min(timeit.Timer('os.system("echo $pwd")', setup=setup2).repeat(7, 1000)))"""
         return result
