@@ -14,14 +14,14 @@ class List {
     full_name = "swag"
 
     func init(name){
-        #print("john =",name)
-        print("swag =",full_name)
-        full_name = name
+
+        print("swag =", full_name)
+        #full_name = name
 
     }
 
     func aa(){
-        print("aa",full_name,x)
+        print("aa", full_name, x)
     }
 
     func cc(){
@@ -29,6 +29,10 @@ class List {
         print("full_name", full_name)
         full_name = "lalalala"
         x= 45
+        if x is 45{
+            print("yuh")
+            x = 300
+        }
 
         aa()
         print(x)
@@ -37,8 +41,13 @@ class List {
 }
 
 animals = List("john")
-print("john =",animals.full_name)
+
+print("john =", animals.full_name)
 animals.full_name = "rip"
-print("rip =",animals.full_name)
+print("rip =", animals.full_name)
 
 animals.cc()
+
+
+animals2 = List("mac")
+print(animals2.full_name, animals.full_name)

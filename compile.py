@@ -13,7 +13,7 @@ class LLVMBuilder:
     def __init__(self):
         self.map_bindings()
         self.context = dreamLib.llvm_init()
-        self.scope = self.init_str("[scope]")
+        self.scope = self.init_obj()
         self.scopes = []
         #self.scope = None
 
@@ -36,6 +36,7 @@ class LLVMBuilder:
         #print(vars(dreamLib))
         bind(dreamLib.num, ObjPtr, ObjPtr, c_int)
         bind(dreamLib.bool_, ObjPtr)
+        bind(dreamLib.null_obj_init, ObjPtr)
         bind(dreamLib.str, ObjPtr, ObjPtr, c_char_p)
         bind(dreamLib.save, ObjPtr)
         bind(dreamLib.call, ObjPtr)
@@ -99,9 +100,9 @@ class LLVMBuilder:
         if not hasattr(callee, "built_in"):
             func_scope = self.get_var("@context", callee)
             #func_scope = self.call("shallow_copy", func_scope)
-            new_scope = dreamLib.init_scope(self.context, func_scope, 1)
+            #new_scope = dreamLib.init_scope(self.context, func_scope, 1)
 
-            args.insert(0, new_scope)
+            args.insert(0, func_scope)
 
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
 
@@ -135,6 +136,9 @@ class LLVMBuilder:
 
     def init_str(self, value):
         return dreamLib.str(self.context, self.c_str(value))
+
+    def init_obj(self):
+        return dreamLib.null_obj_init(self.context, self.c_str("[object]"))
 
     def init_num(self, value):
         return dreamLib.num(self.context, value)
@@ -191,7 +195,7 @@ class LLVMBuilder:
     def enter_scope(self, scope):
         self.scopes.append(self.scope)
         self.scope = scope
-        #self.set_var("scope", self.scope)
+        #self.set_var("self", self.scope)
 
     def exit_scope(self):
         self.scope = self.scopes.pop()
@@ -229,7 +233,7 @@ class CompileContext:
     class NewScope:
         def __init__(self, builder):
             self.builder = builder
-            self.scope = self.builder.init_str("[new scope]")
+            self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope, 1)
             self.builder.enter_scope(self.scope)
 
         def __enter__(self):

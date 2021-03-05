@@ -186,7 +186,10 @@ class Dream:
         return dream_globals
 
     def get_dict(self, obj):
-        print("[RUNTIME DICT]:", obj.vars.keys(), "[PARENT]", obj.parent_context.vars.keys())
+        if hasattr(obj, "vars"):
+            print("[RUNTIME DICT]:", obj.vars.keys(), "[PARENT]", obj.parent_context.vars.keys())
+        else:
+            print("<no vars>")
 
     def next_iter(self, params):
         obj, first = params

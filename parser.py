@@ -278,8 +278,6 @@ class ClassNode(ASTNode):
             if type(node) is FuncNode and node.name.value == "init":
                 return node
 
-
-
     def visit(self, context):
         if self.body.body is not None:
             init = self.get_init()

@@ -1,0 +1,20 @@
+gg = "woo"
+func a(){
+    x = 10
+    func b(){
+        func c(j){
+            print(x,j)
+            f = 100
+            gg = "new"
+        }
+        c("yes")
+        #dict(c.@context)
+        print(x,f,j)
+        x = 50
+    }
+    b()
+    print(x)
+}
+
+a()
+print(gg)
