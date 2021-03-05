@@ -16,7 +16,7 @@ class List {
     func init(name){
 
         print("swag =", full_name)
-        #full_name = name
+        full_name = name
 
     }
 
@@ -28,7 +28,7 @@ class List {
         print("<Undefined> =", name)
         print("full_name", full_name)
         full_name = "lalalala"
-        x= 45
+        x = 45
         if x is 45{
             print("yuh")
             x = 300

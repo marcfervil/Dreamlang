@@ -283,21 +283,6 @@ class ClassNode(ASTNode):
             init = self.get_init()
             args = [param.name for param in init.params] if init is not None else []
             with context.func(self.name.value, *args, is_class=True):
-                """
-                for class_node in self.body.body:
-                    if not (type(class_node) is FuncNode and class_node.name.value == "init"):
-
-                        class_node.visit(context)
-                if init is not None:
-                    with context.enter_scope():
-                        for init_node in init.body.body:
-                            if type(init_node) is ReturnNode:
-                                print("Constructors can't return!")
-                                exit(1)
-                            init_node.visit(context)
-
-                    context.builder.ret(context.builder.scope)
-                """
 
                 with context.enter_scope() as obj_scope:
                     for class_node in self.body.body:
@@ -310,7 +295,7 @@ class ClassNode(ASTNode):
                             print("You cannot return from a constructor!")
 
                         node.visit(context)
-                    context.builder.ret(context.builder.init_str("<TODO: implement undefined"))
+                    context.builder.ret(context.builder.init_str("<TODO: implement undefined>"))
 
                 init_ir = context.builder.get_var("init")
 

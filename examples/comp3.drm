@@ -1,0 +1,25 @@
+class house{
+    street = "t"
+    func init(name){
+        street = name
+    }
+
+    func getStreet(){
+        return street + " hi!"
+    }
+
+}
+
+f = house("woa")
+a = house("cool")
+
+print(f.street, a.street)
+
+f.street = "cool"
+a.street = "woa"
+
+print(f.street, a.street)
+
+print(a.getStreet(), f.getStreet())
+
+#print(f is "f")
