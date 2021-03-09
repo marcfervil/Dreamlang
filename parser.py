@@ -228,7 +228,7 @@ class FuncNode(ASTNode):
         args = [param.name for param in self.params]
         has_return = False
         og_scope = context.builder.scope
-        #context.builder.dict(og_scope)
+
         with context.func(self.name.value, *args):
             for node in self.body.body:
                 if type(node) is ReturnNode:
@@ -236,6 +236,15 @@ class FuncNode(ASTNode):
                 node.visit(context)
             if not has_return:
                 context.builder.ret(context.builder.init_str("<TODO: implement undefined ref>"))
+
+        """
+        if self.in_class:
+            func_ir = context.builder.get_var(self.name.value)
+            func_scope = func_ir.get_var("@context")
+            #context.builder.dict(func_ir.get_var("@context"))
+            #context.builder.scope
+            context.builder.reparent(func_scope, context.builder.scope)
+        """
 
 
 class ClassNode(ASTNode):
@@ -278,31 +287,44 @@ class ClassNode(ASTNode):
             if type(node) is FuncNode and node.name.value == "init":
                 return node
 
+    # context.builder.ret(context.builder.init_str("<TODO: implement undefined>"))
     def visit(self, context):
         if self.body.body is not None:
             init = self.get_init()
             args = [param.name for param in init.params] if init is not None else []
-            with context.func(self.name.value, *args, is_class=True):
+            with context.func(self.name.value+"_obj", is_class=True):
 
                 with context.enter_scope() as obj_scope:
                     for class_node in self.body.body:
                         if not (type(class_node) is FuncNode and class_node.name.value == "init"):
+                            class_node.in_class = True
                             class_node.visit(context)
-
-                with context.func("init"):
-                    for node in init.body.body:
-                        if type(node) is ReturnNode:
-                            print("You cannot return from a constructor!")
-
-                        node.visit(context)
-                    context.builder.ret(context.builder.init_str("<TODO: implement undefined>"))
-
-                init_ir = context.builder.get_var("init")
-
-                context.builder.reparent(context.builder.get_var("@context", init_ir), obj_scope)
-                context.builder.call(init_ir)
-
                 context.builder.ret(obj_scope)
+
+            with context.func(self.name.value, *args):
+                obj_scope_ret = context.builder.call(self.name.value + "_obj")
+               # context.builder.dict(obj_scope_ret)
+                obj_scope_ret.reparent(context.builder.scope)
+                context.builder.enter_scope(obj_scope_ret)
+
+                for node in init.body.body:
+
+                    if type(node) is ReturnNode:
+                        print("You cannot return from a constructor!")
+
+                    node.visit(context)
+
+                context.builder.ret(obj_scope_ret)
+                context.builder.exit_scope()
+                #context.builder.reparent(context.builder.get_var(self.name.value+"_init"), obj_scope_ret)
+
+            #init_ir = context.builder.get_var(self.name.value)
+            #
+
+
+
+
+
 
 
 class ReturnNode(ASTNode):

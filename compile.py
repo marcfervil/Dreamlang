@@ -14,6 +14,7 @@ class LLVMBuilder:
         self.map_bindings()
         self.context = dreamLib.llvm_init()
         self.scope = self.init_obj()
+            #
         self.scopes = []
         #self.scope = None
 
@@ -99,14 +100,18 @@ class LLVMBuilder:
 
         if not hasattr(callee, "built_in"):
             func_scope = self.get_var("@context", callee)
+            #self.dict(callee)
+            #self.log(func_scope.get_var("xw"))
             #func_scope = self.call("shallow_copy", func_scope)
             #new_scope = dreamLib.init_scope(self.context, func_scope, 1)
-
+            #self.reparent(func_scope, self.scope)
+            #self.log( self.get_var("parent", func_scope))
             args.insert(0, func_scope)
 
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
-
-        return dreamLib.call(self.context, callee, len(c_args), c_args)
+        result = dreamLib.call(self.context, callee, len(c_args), c_args)
+        self.add_helpers(result)
+        return result
 
     def init_func(self, name, is_class, *arg_names):
         arg_names = [c_char_p(val.encode('utf-8')) for val in arg_names]
@@ -135,13 +140,19 @@ class LLVMBuilder:
         #self.exit_scope()
 
     def init_str(self, value):
-        return dreamLib.str(self.context, self.c_str(value))
+        value = dreamLib.str(self.context, self.c_str(value))
+        self.add_helpers(value)
+        return value
 
     def init_obj(self):
-        return dreamLib.null_obj_init(self.context, self.c_str("[object]"))
+        value = dreamLib.null_obj_init(self.context, self.c_str("[object]"))
+        self.add_helpers(value)
+        return value
 
     def init_num(self, value):
-        return dreamLib.num(self.context, value)
+        value = dreamLib.num(self.context, value)
+        self.add_helpers(value)
+        return value
 
     def init_bool(self, value):
         return dreamLib.bool_(self.context, value)
@@ -184,17 +195,36 @@ class LLVMBuilder:
         import os
         os.system("gcc -o lib/main lib/dream.so lib/dream_output.o")
 
+    def add_helpers(self, var):
+        outer_self = self
+
+        def inner_var_get(key):
+            return outer_self.get_var(key, var)
+
+        def inner_var_set(key, value):
+            return outer_self.set_var(key, value, var)
+
+        def reparent(parent):
+            return outer_self.reparent(var, parent)
+
+        var.get_var = inner_var_get
+        var.set_Var = inner_var_set
+        var.reparent = reparent
+
     def get_var(self, key, obj=None):
         if obj is None:
             obj = self.scope
         value = dreamLib.load(self.context, obj, self.c_str(key))
         if key in LLVMBuilder.builtins:
             value.built_in = True
+
+        self.add_helpers(value)
         return value
 
     def enter_scope(self, scope):
         self.scopes.append(self.scope)
         self.scope = scope
+        self.add_helpers(self.scope)
         #self.set_var("self", self.scope)
 
     def exit_scope(self):
@@ -249,9 +279,11 @@ class CompileContext:
             self.is_class = is_class
             self.args = args
 
+
         def __enter__(self):
             self.func = self.builder.init_func(self.name, self.is_class, *self.args)
-            return self.builder
+            self.scope = self.builder.func_scope(self.func)
+            return self.builder, self.scope
 
         def __exit__(self, type, value, traceback):
             #self.builder.ret(self.builder.init_str("nadda"))

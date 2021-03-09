@@ -1,0 +1,13 @@
+
+
+
+func lama(){
+    func gene(){
+        x = 30
+        print("seederr", j)
+    }
+    gene()
+    print(x)
+}
+
+lama()

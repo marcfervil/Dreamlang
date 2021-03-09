@@ -1,5 +1,5 @@
 class house{
-    street = "t"
+    street = "street_name"
     func init(name){
         street = name
     }
@@ -11,6 +11,7 @@ class house{
 }
 
 f = house("woa")
+
 a = house("cool")
 
 print(f.street, a.street)

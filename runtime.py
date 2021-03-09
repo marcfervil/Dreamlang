@@ -107,7 +107,7 @@ class Undefined(DreamObj):
         self.undefined = True
 
     def __repr__(self):
-        return "[Undefined]"
+        return "<Undefined>"
 
     @dreamfunc
     def equals(self, other):
@@ -186,7 +186,7 @@ class Dream:
         return dream_globals
 
     def get_dict(self, obj):
-        if hasattr(obj, "vars") and  obj.parent_context is not None:
+        if hasattr(obj, "vars") and obj.parent_context is not None:
             print("[RUNTIME DICT]:", obj.vars.keys(), "[PARENT]", obj.parent_context.vars.keys())
         else:
             print("<no vars>")

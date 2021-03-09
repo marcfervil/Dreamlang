@@ -1,0 +1,38 @@
+x = 30
+class house {
+    val = "start"
+
+    func init(bad){
+        print("val", val, bad)
+
+
+        val = bad
+        #print(bad, val)
+        #dict(self.parent)
+        #print(self.parent.party)
+        #party = "eotepk"
+    }
+
+    func outer_scope(){
+        print(x)
+    }
+
+    func cat(){
+
+        print("<Undefined> =", bad)
+        print(meme, val, x)
+        return 3
+    }
+}
+
+h1 = house("10")
+
+
+print(h1.val)
+h2 = house("20")
+
+h2.meme = "meme"
+
+
+print("meme",h2.meme)
+h2.cat()
