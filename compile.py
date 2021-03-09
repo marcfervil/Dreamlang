@@ -14,7 +14,7 @@ class LLVMBuilder:
         self.map_bindings()
         self.context = dreamLib.llvm_init()
         self.scope = self.init_obj()
-            #
+
         self.scopes = []
         #self.scope = None
 
@@ -100,13 +100,14 @@ class LLVMBuilder:
 
         if not hasattr(callee, "built_in"):
             func_scope = self.get_var("@context", callee)
-            #self.dict(callee)
+
+            #self.dict(func_scope)
             #self.log(func_scope.get_var("xw"))
             #func_scope = self.call("shallow_copy", func_scope)
-            #new_scope = dreamLib.init_scope(self.context, func_scope, 1)
+            new_scope = dreamLib.init_scope(self.context, func_scope, 1)
             #self.reparent(func_scope, self.scope)
             #self.log( self.get_var("parent", func_scope))
-            args.insert(0, func_scope)
+            args.insert(0, new_scope)
 
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
         result = dreamLib.call(self.context, callee, len(c_args), c_args)

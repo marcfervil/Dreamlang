@@ -1,13 +1,15 @@
 
 
-
 func lama(){
-    func gene(){
-        x = 30
-        print("seederr", j)
+    x = 8
+    print(y, x)
+    func inner(){
+        z = "lala"
+        print(z)
     }
-    gene()
-    print(x)
+    inner()
+    print(z)
 }
-
+y = "d"
+xx = "d"
 lama()
