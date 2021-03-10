@@ -1,0 +1,25 @@
+y  = 100
+class runner{
+    class gunner{
+        g = "swim"
+        func init(){
+            print(x,y, g)
+        }
+    }
+    x = "hi"
+    func init(xy){
+        gunner()
+        print(g)
+    }
+
+}
+f = runner(4)
+x = f
+x.he = "hehe"
+print(x.he, f.he)
+f.he = "mooo"
+print(x.he, f.he)
+
+f="ee"
+
+print(f)

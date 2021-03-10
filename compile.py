@@ -8,7 +8,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "shallow_copy"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy","unmerge", "shallow_copy", "merge"]
 
     def __init__(self):
         self.map_bindings()
@@ -209,7 +209,7 @@ class LLVMBuilder:
             return outer_self.reparent(var, parent)
 
         var.get_var = inner_var_get
-        var.set_Var = inner_var_set
+        var.set_var = inner_var_set
         var.reparent = reparent
 
     def get_var(self, key, obj=None):

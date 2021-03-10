@@ -215,6 +215,7 @@ class FuncNode(ASTNode):
 
     def call(self, *params):
         new_scope = self.context.copy()
+        #new_scope = self.context
         for i, param in enumerate(self.params):
             new_scope.add_var(param.name, params[i])
 
@@ -293,19 +294,30 @@ class ClassNode(ASTNode):
             init = self.get_init()
             args = [param.name for param in init.params] if init is not None else []
             with context.func(self.name.value+"_obj", is_class=True):
+                #
 
                 with context.enter_scope() as obj_scope:
+
                     for class_node in self.body.body:
                         if not (type(class_node) is FuncNode and class_node.name.value == "init"):
                             class_node.in_class = True
                             class_node.visit(context)
+
                 context.builder.ret(obj_scope)
 
             with context.func(self.name.value, *args):
+
                 obj_scope_ret = context.builder.call(self.name.value + "_obj")
-               # context.builder.dict(obj_scope_ret)
-                obj_scope_ret.reparent(context.builder.scope)
-                context.builder.enter_scope(obj_scope_ret)
+                og_scope = context.builder.scope
+
+
+                context.builder.call("merge", obj_scope_ret, context.builder.scope)
+
+
+                init_scope = context.builder.init_obj()
+                init_scope.reparent(obj_scope_ret)
+
+                context.builder.enter_scope(init_scope)
 
                 for node in init.body.body:
 
@@ -313,9 +325,14 @@ class ClassNode(ASTNode):
                         print("You cannot return from a constructor!")
 
                     node.visit(context)
-
+                #obj_scope_ret.reparent(init_scope)
+                #context.builder.call("dict", og_scope)
+                context.builder.call("unmerge", obj_scope_ret, og_scope)
+                #context.builder.call("dict", og_scope)
                 context.builder.ret(obj_scope_ret)
                 context.builder.exit_scope()
+
+
                 #context.builder.reparent(context.builder.get_var(self.name.value+"_init"), obj_scope_ret)
 
             #init_ir = context.builder.get_var(self.name.value)

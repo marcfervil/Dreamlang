@@ -17,7 +17,7 @@ class List {
 
         print("swag =", full_name)
         full_name = name
-
+        #print("FULL",name,full_name)
     }
 
     func aa(){
@@ -50,4 +50,5 @@ animals.cc()
 
 
 animals2 = List("mac")
+#dict(animals2)
 print(animals2.full_name, animals.full_name)
