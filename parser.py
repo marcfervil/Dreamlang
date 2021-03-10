@@ -311,24 +311,27 @@ class ClassNode(ASTNode):
                 og_scope = context.builder.scope
 
 
-                context.builder.call("merge", obj_scope_ret, context.builder.scope)
+
 
 
                 init_scope = context.builder.init_obj()
+
+                #context.builder.call("merge", obj_scope_ret, og_scope)
+
                 init_scope.reparent(obj_scope_ret)
 
                 context.builder.enter_scope(init_scope)
-
+                context.builder.call("merge", init_scope, og_scope)
+                #context.builder.dict(init_scope)
                 for node in init.body.body:
 
                     if type(node) is ReturnNode:
                         print("You cannot return from a constructor!")
 
                     node.visit(context)
-                #obj_scope_ret.reparent(init_scope)
-                #context.builder.call("dict", og_scope)
-                context.builder.call("unmerge", obj_scope_ret, og_scope)
-                #context.builder.call("dict", og_scope)
+
+                #context.builder.call("unmerge", obj_scope_ret, og_scope)
+
                 context.builder.ret(obj_scope_ret)
                 context.builder.exit_scope()
 

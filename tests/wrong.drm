@@ -5,11 +5,10 @@ class test {
     x = "no_x"
     y = "no_y"
 
-    func init(sx, sy, truck){
+    func init(x, y, truck){
         print(truck)
         g = "fff"
-        x = sx
-        y = sy
+
         me()
     }
 
