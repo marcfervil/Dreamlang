@@ -1,0 +1,43 @@
+class List {
+
+    head = "$"
+    last = "$"
+    length = 0
+
+    class Node {
+        value = "$"
+        next = "$"
+        func init(value)
+    }
+
+    func push(element){
+        node = Node(element)
+        if head is "$" {
+            head = node
+            last = head
+            #print(last.value)
+            return node.value
+        }
+        last.next = node
+        last = node
+        return node.value
+
+    }
+
+    func _get(node, index){
+        if index is 0 {
+            return node.value
+        }
+        return _get(node.next, index - 1)
+    }
+
+    func get(index){
+        return _get(head, index)
+    }
+}
+
+animals = List()
+animals.push("cat")
+animals.push("dog")
+animals.push("mouse")
+print("Zoo:", animals.get(0), animals.get(1), animals.get(2))

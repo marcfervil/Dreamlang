@@ -105,13 +105,13 @@ def the_works():
 #the_works()
 
 #hopes = (open("tests/wrong.drm").read())
-hopes = (open("examples/assignemnt.drm").read())
+hopes = (open("examples/ctype.drm").read())
 #hopes = (open("examples/comp5.drm").read())
 
 #dream = Dream("print((3*11-4+4-99)/2)")
 dream = Dream(hopes)
-dream.eval()
-print("")
+#dream.eval()
+#print("")
 #print(dream.tokens)
 dream.compile(False, True)
 
