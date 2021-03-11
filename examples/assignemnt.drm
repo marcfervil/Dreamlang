@@ -1,9 +1,32 @@
 
-func luvme(){
-    print("fewokf")
-}
+    class three{
+        previous = two()
+        func value(m){
+            return (previous.value(1) + 1) * m
+        }
+        func getPrevious(){
+            return previous
+        }
+    }
 
-y = luvme
+    class two {
+        previous = one()
+        func value(m){
 
-y()
-luvme()
+            return (previous.value(1) + 1) * m
+        }
+        func getPrevious(){
+            return previous
+        }
+    }
+
+    class one {
+        func value(m){
+            return 1 * m
+        }
+    }
+
+    number = three()
+    number.value(1)
+    number.previous.previous.value(1)
+    number.getPrevious().getPrevious().value(10)

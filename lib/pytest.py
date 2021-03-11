@@ -30,8 +30,11 @@ class one:
 
 
 number = three()
-print("Three: ", number.value(1))
-print("First number ", number.previous.previous.value(1))
-print("First number times ten: ", number.getPrevious().getPrevious().value(10))
+number.value(1)
+number.previous.previous.value(1)
+number.getPrevious().getPrevious().value(10)
+#print("Three: ", )
+#print("First number ", )
+#print("First number times ten: ", )
 
 
