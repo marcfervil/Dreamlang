@@ -8,12 +8,12 @@ class test {
     func init(x, y, truck){
         print(truck)
         g = "fff"
-
+        print(truck,y)
         me()
     }
 
     func me(){
-        print(x,y,g)
+        print(x,y,g,truck)
     }
 
 }
@@ -22,5 +22,5 @@ class test {
 
 f2 = test("works1!", "works2!", "car")
 f2.me()
-
+#f2.me()
 print(f2.x, f2.y, f2.g)

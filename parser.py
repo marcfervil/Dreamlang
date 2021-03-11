@@ -310,10 +310,6 @@ class ClassNode(ASTNode):
                 obj_scope_ret = context.builder.call(self.name.value + "_obj")
                 og_scope = context.builder.scope
 
-
-
-
-
                 init_scope = context.builder.init_obj()
 
                 #context.builder.call("merge", obj_scope_ret, og_scope)

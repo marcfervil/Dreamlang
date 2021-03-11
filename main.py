@@ -104,8 +104,9 @@ def the_works():
 
 #the_works()
 
-hopes = (open("tests/wrong.drm").read())
-#hopes = (open("examples/comp.drm").read())
+#hopes = (open("tests/wrong.drm").read())
+hopes = (open("examples/list_comp.drm").read())
+#hopes = (open("examples/comp5.drm").read())
 
 #dream = Dream("print((3*11-4+4-99)/2)")
 dream = Dream(hopes)
