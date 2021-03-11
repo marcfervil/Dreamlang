@@ -1,0 +1,9 @@
+
+func luvme(){
+    print("fewokf")
+}
+
+y = luvme
+
+y()
+luvme()
