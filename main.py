@@ -102,11 +102,14 @@ def the_works():
     dream = Dream(listiter).eval()
 
 
+
+
+
 #the_works()
 
-#hopes = (open("tests/wrong.drm").read())
-hopes = (open("examples/ctype.drm").read())
-#hopes = (open("examples/comp5.drm").read())
+hopes = (open("tests/wrong.drm").read())
+#hopes = (open("examples/addition_over.drm").read())
+#hopes = (open("examples/comp.drm").read())
 
 #dream = Dream("print((3*11-4+4-99)/2)")
 dream = Dream(hopes)
@@ -114,6 +117,7 @@ dream = Dream(hopes)
 #print("")
 #print(dream.tokens)
 dream.compile(False, True)
+
 
 
 

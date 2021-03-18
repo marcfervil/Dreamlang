@@ -1,0 +1,155 @@
+class Node {
+    value = "$"
+    next = "$"
+    func init(value)
+    func rep() => "Node("+ value + ")"
+}
+
+
+class List {
+
+    head = "$"
+    last = "$"
+    length = 0
+
+    func push(element){
+
+        node = Node(element)
+        length = length + 1
+        if head is "$"{
+            head = node
+
+            last = head
+            return node.value
+        }
+        last.next = node
+        last = node
+
+        return node.value
+
+    }
+
+    func _get(node, index){
+        if index is 0 {
+            return node.value
+        }
+        return _get(node.next, index - 1)
+    }
+
+    func get(index){
+        return _get(head, index)
+    }
+
+
+    func string(){
+
+        #dict(this)
+
+        func _rep(n, s){
+            if n is length - 1 => s + get(n)
+            return _rep(n+1, s + get(n) + ", ")
+        }
+        return "[" + _rep(0, "") + "]"
+    }
+
+    func get_length(){
+        dict(this)
+        print(length)
+        return length
+    }
+
+    func big_test(){
+        string()
+        dict(this)
+    }
+
+
+
+}
+
+
+
+`
+
+class y {
+    luv = "fwopk"
+
+    func init(luv)
+
+    func tryme(){
+        cc = y("fake")
+        cc.luv = "from bun"
+        return cc
+    }
+}
+func g(){
+     print("g hi")
+}
+
+#y.f= "d"
+
+f = y("me")
+print(f.luv, f.tryme().luv)
+f = y("whoooo")
+print(f.luv, f.tryme().luv)
+dict(f)
+dict(y)`
+
+
+`
+x = deep_copy(g)
+dict(x)
+x()
+z = deep_copy(y)
+#dict(z.@context)
+z()
+`
+
+
+
+
+animals = List()
+animals.push("dog")
+animals.push("cat")
+animals.push("bird")
+#dict(animals)
+#print(animals.string())
+#dict(animals)
+#print(animals.index)
+
+animals.big_test()
+
+
+#dict(animals.this)
+#animals + 3
+
+#animals.big_test()
+#dict(animals.this)
+#print(animals)
+
+
+#print("Zoo:", animals.get(0), animals.get(1), animals.get(2))
+
+#animals2 = deep_copy(animals)
+
+#print("Zoo:", animals2.get(0), animals2.get(1), animals2.get(2))
+
+
+
+`
+animals2 = List()
+animals2.push("tiger")
+
+
+animals2.push("lion")
+animals2.push("bear")
+
+
+
+animals3 = animals + animals2
+#dict(animals3)
+
+#print("Zoo2:", animals3.get(0), animals3.get(1), animals3.get(2), animals3.get(3) ,animals3.get(4), animals3.get(5))
+
+
+#print("Zoo:", animals.get(0), animals.get(1), animals.get(2), animals.get(3))`

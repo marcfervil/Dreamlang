@@ -18,9 +18,20 @@ class test {
 
 }
 
+class lada{
+
+    a = 0
+    b = 0
+    func init(a, b)
+}
+
+cc = "hi"
 
 
-f2 = test("works1!", "works2!", "car")
+
+f2 = test("works1!", "works2!", "car69")
+g = lada(3,5)
 f2.me()
+print(f2.cc)
 #f2.me()
 print(f2.x, f2.y, f2.g)

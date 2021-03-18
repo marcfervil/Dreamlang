@@ -79,6 +79,8 @@ class DreamObj:
 
         if self.parent_context is not None and name in self.parent_context.vars:
             return self.parent_context.get_var(name)
+        #elif not outer:
+        #    print(self.vars.keys())
 
         if name not in self.vars:
             return Undefined()

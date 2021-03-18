@@ -61,8 +61,11 @@ class AttributeNode(ASTNode):
     def eval(self, context):
         if type(self.obj) is AttributeNode or type(self.obj) is CallNode:
             return self.attr.eval(self.obj.eval(context))
+
         else:
-            return self.attr.eval(context.get_var(self.obj.name))
+            c = context.get_var(self.obj.name)
+            print(c.vars.keys())
+            return self.attr.eval(c)
 
     def visit(self, context):
         self.visited_obj = self.obj.visit(context)
@@ -294,7 +297,6 @@ class ClassNode(ASTNode):
             init = self.get_init()
             args = [param.name for param in init.params] if init is not None else []
             with context.func(self.name.value+"_obj", is_class=True):
-                #
 
                 with context.enter_scope() as obj_scope:
 
@@ -302,6 +304,10 @@ class ClassNode(ASTNode):
                         if not (type(class_node) is FuncNode and class_node.name.value == "init"):
                             class_node.in_class = True
                             class_node.visit(context)
+
+                    context.builder.set_var("this", context.builder.scope)
+                    #context.builder.set_var("butt", context.builder.init_str("efwe"))
+                    #context.builder.dict(context.builder.get_var("this"))
 
                 context.builder.ret(obj_scope)
 
@@ -312,7 +318,6 @@ class ClassNode(ASTNode):
                 og_scope = context.builder.scope
 
                 init_scope = context.builder.init_obj()
-
 
                 init_scope.reparent(obj_scope_ret)
 

@@ -1,6 +1,6 @@
 
 from ctypes import *
-
+import os
 dreamLib = cdll.LoadLibrary('./lib/dream.so')
 
 
@@ -8,11 +8,14 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy","unmerge", "shallow_copy", "merge", "ctype", "display"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "merge", "ctype", "display"]
 
     def __init__(self):
         self.map_bindings()
         self.context = dreamLib.llvm_init()
+
+        #dreamLib.llvm_link(self.context, self.c_str("dream_output.o"))
+
         self.scope = self.init_obj()
 
         self.scopes = []
@@ -193,8 +196,18 @@ class LLVMBuilder:
     def build(self):
 
         dreamLib.build(self.context)
-        import os
-        os.system("gcc -o lib/main lib/dream.so lib/dream_output.o")
+        fpath = "/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/pylink.c"
+
+        os.system(f'gcc -o lib/main lib/hopes.o lib/dream_output.o')
+        #os.system("gcc -o lib/main lib/dream_output.o")
+        #os.system(f'gcc  -o lib/main lib/dream_output.o')
+
+       # os.system("gcc -o lib/main -L . lib/dream_output.o -l dream")
+        #os.system("gcc  lib/dream_output.o -o lib/main -ldream")
+        #fpath = "/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/pylink.c"
+        #os.system(f"clang++ -L/usr/local/Cellar/llvm/11.0.1/lib -fPIC -isystem /usr/local/Cellar/llvm/11.0.1/include  -Wl,-undefined -Wl,dynamic_lookup  -fPIC -rdynamic {fpath} lib/dream_output.o -o lib/main_test -lllvm")
+        #os.system("clang -framework CoreFoundation -framework IOKit dream.a -o myprogram ")
+
 
     def add_helpers(self, var):
         outer_self = self
