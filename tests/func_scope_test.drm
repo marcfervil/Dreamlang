@@ -1,0 +1,30 @@
+f = "wow"
+
+func z(param){
+    check("outer scoped functions undefined", x, $)
+    check("outer scoped functions undefined", c, $)
+    check("outer scoped function param", param, 30)
+}
+
+func zz(param){
+    check("outer scoped function upsetted param", param, 68)
+    check("outer scoped function outer scoped var", f, "yup")
+}
+
+func a(){
+    func b(){
+        c = "wowow"
+        check("nested function outer scope var defined", x, 30)
+        z(x)
+        x = 68
+        check("nested function upget", f, "wow")
+        f = "yup"
+    }
+    x = 30
+    b()
+    check("nested function scope undefined", c, $)
+    zz(x)
+}
+a()
+check("inner function scope", x, $)
+check("upsetted from nested", f, "yup")

@@ -107,11 +107,11 @@ def the_works():
 
 #the_works()
 
-hopes = (open("tests/wrong.drm").read())
+hopes = (open("tests/func_scope_test.drm").read())
 #hopes = (open("examples/addition_over.drm").read())
 #hopes = (open("examples/comp.drm").read())
 
-#dream = Dream("print((3*11-4+4-99)/2)")
+#dream = Dream("print((3*11-4+4-99)/2)") # == -33
 dream = Dream(hopes)
 #dream.eval()
 #print("")

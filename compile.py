@@ -1,6 +1,8 @@
 
 from ctypes import *
 import os
+from pathlib import Path
+
 dreamLib = cdll.LoadLibrary('./lib/dream.so')
 
 
@@ -8,7 +10,8 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "merge", "ctype", "display"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "merge", "ctype", "display2", "native_test", "native_int", "check"]
+
 
     def __init__(self):
         self.map_bindings()
@@ -35,8 +38,11 @@ class LLVMBuilder:
 
         bind(dreamLib.llvm_init, ObjPtr)
         bind(dreamLib.llvmInt, ObjPtr, ObjPtr, c_int)
-
-
+        bind(dreamLib.llvmStr, ObjPtr)
+        bind(dreamLib.native_add, ObjPtr)
+        bind(dreamLib.native_sub, ObjPtr)
+        bind(dreamLib.native_mul, ObjPtr)
+        bind(dreamLib.native_div, ObjPtr)
         #print(vars(dreamLib))
         bind(dreamLib.num, ObjPtr, ObjPtr, c_int)
         bind(dreamLib.bool_, ObjPtr)
@@ -59,6 +65,7 @@ class LLVMBuilder:
         bind(dreamLib.init_scope, ObjPtr)
         bind(dreamLib.init_if, ObjPtr)
         bind(dreamLib.set_parent_c, ObjPtr)
+        #bind(dreamLib.llvmInt, ObjPtr)
 
     def c_str(self, value):
         return c_char_p(value.encode('utf-8'))
@@ -70,9 +77,10 @@ class LLVMBuilder:
             py_vals = [py_vals]
         for val in py_vals:
             if type(val) is str:
-                #print("FIOWIJEOIWJOJFEOWJFIO")
+
                 vals.append(dreamLib.llvmStr(self.context, self.c_str(val)))
-            elif type(val) is int:
+            elif type(val) is int or type(val) is bool:
+
                 vals.append(dreamLib.llvmInt(self.context, val))
             else:
                 vals.append(val)
@@ -113,6 +121,7 @@ class LLVMBuilder:
             args.insert(0, new_scope)
 
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
+
         result = dreamLib.call(self.context, callee, len(c_args), c_args)
         self.add_helpers(result)
         return result
@@ -162,18 +171,34 @@ class LLVMBuilder:
         return dreamLib.bool_(self.context, value)
 
     def add(self, value1, value2):
+        if hasattr(value1, "native_type"):
+            op = dreamLib.native_add(self.context, value1, value2)
+            op.native_type = int
+            return op
         return dreamLib.add(self.context, value1, value2)
 
     def sub(self, value1, value2):
+        if hasattr(value1, "native_type"):
+            op = dreamLib.native_sub(self.context, value1, value2)
+            op.native_type = int
+            return op
         return dreamLib.sub(self.context, value1, value2)
 
     def div(self, value1, value2):
+        if hasattr(value1, "native_type"):
+            op = dreamLib.native_div(self.context, value1, value2)
+            op.native_type = int
+            return op
         return dreamLib.divi(self.context, value1, value2)
 
     def mul(self, value1, value2):
+        if hasattr(value1, "native_type"):
+            op = dreamLib.native_mul(self.context, value1, value2)
+            op.native_type = int
+            return op
         return dreamLib.mul(self.context, value1, value2)
 
-    #def equals(self, value1, value2):
+    # def equals(self, value1, value2):
     #    return dreamLib.equals(self.context, value1, value2)
 
     def func_scope(self, func):
@@ -182,9 +207,18 @@ class LLVMBuilder:
     def ret(self, value):
         return dreamLib.retVal(self.context, self.py_to_c(value))
 
-    def set_var(self, key, value, obj=None):
+    def set_var(self, key, value, obj=None, native=False):
         if obj is None:
             obj = self.scope
+        if not hasattr(obj, "natives"):
+            obj.natives = {}
+        else:
+            if key in obj.natives.keys():
+                native = True
+
+        if native:
+            obj.natives[key] = value
+            return obj.natives[key]
         return dreamLib.save(self.context, obj, self.c_str(key), self.py_to_c(value))
 
     def reparent(self, obj, new_parent):
@@ -193,12 +227,15 @@ class LLVMBuilder:
     def equals(self, var1, var2):
         return dreamLib.equals(self.context, var1, var2)
 
-    def build(self):
+    def build(self, file_name):
 
         dreamLib.build(self.context)
         fpath = "/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/pylink.c"
 
-        os.system(f'gcc -o lib/main lib/hopes.o lib/dream_output.o')
+        os.system(f'gcc -o {file_name[:-4]} lib/hopes.o lib/dream_output.o')
+        os.system(f"./{file_name[:-4]}")
+        #Path(f"{file_name[:-3]}").rename("")
+
         #os.system("gcc -o lib/main lib/dream_output.o")
         #os.system(f'gcc  -o lib/main lib/dream_output.o')
 
@@ -228,6 +265,10 @@ class LLVMBuilder:
     def get_var(self, key, obj=None):
         if obj is None:
             obj = self.scope
+
+        if hasattr(obj, "natives") and key in obj.natives.keys():
+            #print("got native", key, "=", obj.natives[key])
+            return obj.natives[key]
         value = dreamLib.load(self.context, obj, self.c_str(key))
         if key in LLVMBuilder.builtins:
             value.built_in = True
@@ -267,6 +308,7 @@ class CompileContext:
     def __init__(self):
         self.builder = LLVMBuilder()
         self.scope = self.builder.scope
+        self.native_type = None
 
     def func(self, name, *args, is_class=False):
         return self.new_func(self.builder, name, is_class, *args)

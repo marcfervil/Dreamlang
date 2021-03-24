@@ -215,7 +215,7 @@ class Dream:
         self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
         return self.ast.eval(self.context)
 
-    def compile(self, llvm_output = False, build = False):
+    def compile(self, llvm_output=False, build=False, file_name="benchmarks/math/native_math.drm"):
         if len(self.tokens) == 0:
             self.tokenize()
         self.context = CompileContext()
@@ -225,10 +225,11 @@ class Dream:
         self.context.builder.ret(0)
         #print("IR Generated")
         if build:
-            self.context.builder.build()
+            self.context.builder.build(file_name)
 
         print("built")
-        self.context.builder.run(llvm_output, build)
+
+        #self.context.builder.run(llvm_output, build)
 
 
 

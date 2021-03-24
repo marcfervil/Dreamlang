@@ -17,6 +17,7 @@ class ASTNode:
 class IdentifierNode(ASTNode):
     def __init__(self, name):
         self.name = name
+        self.type = None
 
     def __repr__(self):
         return self.name
@@ -35,7 +36,12 @@ class IdentifierNode(ASTNode):
         context.add_var(self.name, value)
 
     def assign_visit(self, context, value):
-        context.builder.set_var(self.name, value)
+        if self.type is not None:
+            context.native_type = self.type
+            context.builder.set_var(self.name, value.visit(context), native=True)
+            context.native_type = None
+            return
+        context.builder.set_var(self.name, value.visit(context))
 
 
 class AssignNode(ASTNode):
@@ -47,7 +53,7 @@ class AssignNode(ASTNode):
         return f'{self.var} = {str(self.value)}'
 
     def visit(self, context):
-        self.var.assign_visit(context, self.value.visit(context))
+        self.var.assign_visit(context, self.value)
 
     def eval(self, context):
         self.var.assign(context, self.value.eval(context))
@@ -72,6 +78,7 @@ class AttributeNode(ASTNode):
         return context.builder.get_var(self.attr.name, self.visited_obj)
 
     def assign_visit(self, context, value):
+
         return context.builder.set_var(self.attr.name, value, self.obj.visit(context))
 
     def assign(self, context, value):
@@ -93,6 +100,7 @@ class BinaryNode(ASTNode):
     def visit(self, context):
         left = self.left.visit(context)
         right = self.right.visit(context)
+
         if self.op.value == "+":
             return context.builder.add(left, right)
         elif self.op.value == "-":
@@ -187,12 +195,21 @@ class LiteralNode(ASTNode):
         return str(self.value)
 
     def visit(self, context):
+        if context.native_type is not None:
+            native_value = context.builder.py_to_c(self.value)
+
+            native_value.native_type = type(self.value)
+            return native_value
+
+        primitive = None
         if type(self.value) is int:
-            return context.builder.init_num(self.value)
+            primitive = context.builder.init_num(self.value)
         elif type(self.value) is str:
-            return context.builder.init_str(self.value)
+            primitive = context.builder.init_str(self.value)
         elif type(self.value) is bool:
-            return context.builder.init_bool(self.value)
+            primitive = context.builder.init_bool(self.value)
+
+        return primitive
 
     def eval(self, context):
         return DreamObj.make_primitive(self.value)
@@ -504,9 +521,15 @@ class Parser:
             value = self.get_ast()
             return ReturnNode(value)
 
-        # just return the identifier
+        # return the identifier
         if token.type == "Identifier":
-            return IdentifierNode(token.value)
+            primitives = ["int", "str", "bool"]
+            # if the parent node is a primitive type, then assign a type to the identifier
+            value = IdentifierNode(token.value)
+            if parent_type is IdentifierNode and node.name in primitives:
+                value.type = node.name
+                return value
+            return value
 
         # if you're parsing math and you've hit a comma - you've gone too far
         if prec > 0 and token.has("Operator", ","):
