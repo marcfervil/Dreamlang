@@ -185,6 +185,7 @@ class Dream:
         dream_globals.vars["copy"] = self.copy
         dream_globals.vars["next"] = self.next_iter
         dream_globals.vars["hasnext"] = self.has_next
+        dream_globals.vars["check"] = self.check
         return dream_globals
 
     def get_dict(self, obj):
@@ -192,6 +193,10 @@ class Dream:
             print("[RUNTIME DICT]:", obj.vars.keys(), "[PARENT]", obj.parent_context.vars.keys())
         else:
             print("<no vars>")
+
+    def check(self, message, var1, var2):
+        if not var1.call("equals", var2).value:
+            print("Assertion Error:", message)
 
     def next_iter(self, params):
         obj, first = params
