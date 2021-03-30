@@ -70,7 +70,7 @@ class AttributeNode(ASTNode):
 
         else:
             c = context.get_var(self.obj.name)
-            print(c.vars.keys())
+            #print(c.vars.keys())
             return self.attr.eval(c)
 
     def visit(self, context):
@@ -78,8 +78,8 @@ class AttributeNode(ASTNode):
         return context.builder.get_var(self.attr.name, self.visited_obj)
 
     def assign_visit(self, context, value):
-
-        return context.builder.set_var(self.attr.name, value, self.obj.visit(context))
+        #print(value)
+        return context.builder.set_var(self.attr.name, value.visit(context), self.obj.visit(context))
 
     def assign(self, context, value):
         if type(self.obj) is AttributeNode:
@@ -466,6 +466,7 @@ class Parser:
         self.prec_stack = []
         self.token = ""
         self.parse_as_list = parse_as_list
+        self.line = 0
         if parse_as_list:
             self.nodes = []
 
@@ -586,9 +587,10 @@ class Parser:
                 expression_token = self.eat_token()
                 expression.append(expression_token)
                 if expression_token.has("Newline") or len(self.tokens) == 0:
-                    if len(self.tokens) > 0: self.tokens.insert(0, expression_token)
+                    if len(self.tokens) > 0:
+                        self.tokens.insert(0, expression_token)
                     return Token(expression, "Block")
-            #print(expression)
+
             return Token(expression, "Block")
         return token
 
@@ -609,6 +611,7 @@ class Parser:
             token = self.eat_token()
 
             if token.type == "Newline" or token.type == "Block":
+
                 if node is not None:
                     self.tokens.insert(0, token)
                     return node

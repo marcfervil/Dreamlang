@@ -17,9 +17,10 @@ class DreamObj:
     def __init__(self, value=None):
         self.value = value
         self.vars = {
-            "by_value":[],
+            "by_value": [],
 
         }
+        self.local_vars = {}
         self.parent_context = None
         self.this = False
         self.primitive = False
@@ -100,7 +101,9 @@ class DreamObj:
             if store_value:
 
                 self.vars["by_value"].append(name)
+
             self.vars[name] = value
+            self.local_vars[name] = value
 
 
 class Undefined(DreamObj):
@@ -177,7 +180,6 @@ class Dream:
         tokens = Tokenizer(self.text_input).tokenize()
         self.tokens = copy.deepcopy(tokens)
 
-
     def get_context(self):
         dream_globals = DreamObj()
         dream_globals.vars["print"] = print
@@ -186,13 +188,27 @@ class Dream:
         dream_globals.vars["next"] = self.next_iter
         dream_globals.vars["hasnext"] = self.has_next
         dream_globals.vars["check"] = self.check
+        #self.dream_globals = dream_globals
         return dream_globals
 
     def get_dict(self, obj):
+        # TODO: make list dynamic
+        dream_globals = ["print", "dict", "copy", "next", "hasnext", "check"]
+        print("{")
+        #print(obj.local_vars)
+        for key, value in obj.local_vars.items():
+            #print(key)
+            if key not in dream_globals:
+                #pass
+                #print(key)
+                print(key+":", value)
+        print("}")
+        """
         if hasattr(obj, "vars") and obj.parent_context is not None:
             print("[RUNTIME DICT]:", obj.vars.keys(), "[PARENT]", obj.parent_context.vars.keys())
         else:
             print("<no vars>")
+        """
 
     def check(self, message, var1, var2):
         if not var1.call("equals", var2).value:

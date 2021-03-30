@@ -1,0 +1,11 @@
+    length = 0
+
+    class Node {
+        value = "$"
+        next = "$"
+        func init(value)
+    }
+
+  f = Node("dd")
+  f.next = "dcs"
+  print(f.next)

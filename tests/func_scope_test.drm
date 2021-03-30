@@ -29,3 +29,4 @@ func a(){
 a()
 check("inner function scope", x, $)
 check("upsetted from nested", f, "yup")
+
