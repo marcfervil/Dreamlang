@@ -1,3 +1,7 @@
+class List {
+
+    head = "$"
+    last = "$"
     length = 0
 
     class Node {
@@ -6,6 +10,69 @@
         func init(value)
     }
 
-  f = Node("dd")
-  f.next = "dcs"
-  print(f.next)
+    func push(element){
+        node = Node(element)
+        length = length + 1
+        if head is "$" {
+            head = node
+            last = head
+            return node.value
+        }
+        last.next = node
+        last = node
+
+        return node.value
+    }
+
+    func _get(node, index){
+        if index is 0 {
+            return node.value
+        }
+        return _get(node.next, index - 1)
+    }
+
+    func get(index){
+        return _get(head, index)
+    }
+
+    func string(){
+        func _string(num, val){
+            if num is length - 1 => return get(num);
+            return get(num) + ", " + _string(num + 1, val)
+        }
+        return "[" + _string(0, "") + "]"
+    }
+
+    func get_length(){
+        return length
+    }
+
+    func add(other){
+        #the new list should be a copy of this...unfortunately, you cannot copy "this" atm
+        list = deep_copy(this)
+
+        list.last.next = deep_copy(other.head)
+        list.length = 60
+
+
+        print(list.get_length(), list.length)
+
+        return list
+    }
+
+}
+
+animals = List()
+animals.push("dog")
+animals.push("cat")
+animals.push("bird")
+print(animals.string())
+
+
+animals2 = List()
+animals2.push("lion")
+animals2.push("tiger")
+animals2.push("bear")
+print(animals2.string())
+
+animals3 = animals.add(animals2)

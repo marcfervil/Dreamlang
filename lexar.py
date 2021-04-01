@@ -1,11 +1,13 @@
 ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", ".", "->", ">", "=>"]
 special_chars = "!#%^&*,-+=/.>="
 
+
 class Token:
 
-    def __init__(self, value, type=None):
+    def __init__(self, value, tokenizer, type=None, line=0):
         self.value = value
         self.is_literal = False
+        self.line = line
         if type is None:
 
             if self.value.isnumeric():
@@ -17,16 +19,24 @@ class Token:
             elif self.value == "\n":
                 self.type = "Newline"
                 self.value = ""
+
             elif self.value[0] == '"' and self.value[-1] == '"':
                 self.type = "String"
                 self.value = self.value[2:-1]
                 self.is_literal = True
             elif self.value[0] == '{' and self.value[-1] == '}':
                 self.type = "Block"
-                self.value = Tokenizer(self.value[1:-1]).tokenize()
+
+                new_tokenizer = Tokenizer(self.value[1:-1], tokenizer.line)
+
+                #print("LINEOG", line)
+                self.value = new_tokenizer.tokenize()
+                tokenizer.line = new_tokenizer.line - 1
+                #print("APPLE", new_tokenizer.line, tokenizer.line)
+
             elif self.value[0] == '(' and self.value[-1] == ')':
                 self.type = "Set"
-                self.value = Tokenizer(self.value[1:-1]).tokenize()
+                self.value = Tokenizer(self.value[1:-1], tokenizer.line).tokenize()
             elif self.value == "true" or self.value == "false":
                 self.type = "Boolean"
                 self.value = self.value == "true"
@@ -45,17 +55,21 @@ class Token:
 
 class Tokenizer:
 
-    def __init__(self, data):
+    def __init__(self, data, line=1):
         self.data = data
         self.tokens = []
         self.token = ""
+        self.line = line
+        self.line_text = ""
+        self.has_linebreak = False
 
     def add_token(self, token=None):
+
         if token is None:
             if len(self.token.strip()) > 0:
-                new_token = Token(self.token)
+                new_token = Token(self.token, self, line=self.line)
 
-                # ???? this is wrong but i'm too scared to delete it @ this point
+                # ???? this seems wrong but i'm too scared to delete it @ this point
                 if self.token[0] == "#":
                     self.tokens.append(new_token)
 
@@ -77,25 +91,43 @@ class Tokenizer:
 
                 self.tokens.append(new_token)
                 self.token = ""
+                #print("added", new_token, "to line ", new_token.line)
         else:
             if token[0] == "`" and token[-1] == "`":
                 return
-            self.tokens.append(Token(token))
+            new_token = Token(token, self, line=self.line)
+            #print("added", new_token, new_token.line)
+            self.tokens.append(new_token)
+        if self.has_linebreak:
+            self.linebreak()
 
     def get(self, index):
         if abs(index) > len(self.tokens):
-            return Token("None", "None")
+            return Token("None", self, "None")
         return self.tokens[index]
 
     def newline(self):
+
         if len(self.tokens) > 0 and not self.tokens[-1].has("Newline"):
             self.add_token("\n")
+
+    def linebreak(self):
+        self.line += 1
+        # self.tokens.append(Token(self.line, self, "LineBreak"))
+        # print(f"Line #{self.line-1}")
+        self.line_text = ""
+        self.has_linebreak = False
 
     def tokenize(self):
         match_start_token = None
         match_end_token = None
         match_count = 0
         for char in self.data:
+            self.line_text += char
+
+            if char == "\n":
+                self.has_linebreak = True
+
             if match_count == 0:
 
                 if char == '#':
@@ -119,9 +151,13 @@ class Tokenizer:
                         self.add_token(char)
                     continue
                 elif char == "\n" or char == ";":
+
                     if len(self.tokens) > 0 and not self.tokens[-1].has("Newline"):
                         self.add_token()
                         self.add_token("\n")
+                    else:
+                        self.linebreak()
+
                     continue
                 elif char == '"':
                     match_end_token = '"'
@@ -131,7 +167,9 @@ class Tokenizer:
 
                 elif char == '{':
                     if self.tokens[-1].has("Newline"):
+
                         self.tokens.pop(-1)
+
                     match_end_token = '}'
                     match_start_token = '{'
                     match_count = 1

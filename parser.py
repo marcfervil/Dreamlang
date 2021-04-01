@@ -10,6 +10,11 @@ class ASTNode:
     def __init__(self):
         pass
 
+    def visit(self, context):
+        #if hasattr(self, "line"):
+        #    print(f'{type(self).__name__} on line {self.line} "{self.__repr__()}"')
+        pass
+
     def __repr__(self):
         return f"({self.__class__.__name__}) {str(self.__dict__)}"
 
@@ -23,6 +28,7 @@ class IdentifierNode(ASTNode):
         return self.name
 
     def visit(self, context):
+        super().visit(context)
         return context.builder.get_var(self.name)
 
     def eval(self, context):
@@ -53,6 +59,7 @@ class AssignNode(ASTNode):
         return f'{self.var} = {str(self.value)}'
 
     def visit(self, context):
+        super().visit(context)
         self.var.assign_visit(context, self.value)
 
     def eval(self, context):
@@ -74,6 +81,7 @@ class AttributeNode(ASTNode):
             return self.attr.eval(c)
 
     def visit(self, context):
+        super().visit(context)
         self.visited_obj = self.obj.visit(context)
         return context.builder.get_var(self.attr.name, self.visited_obj)
 
@@ -98,6 +106,7 @@ class BinaryNode(ASTNode):
         return f"({self.left} {self.op.value} {self.right})"
 
     def visit(self, context):
+        super().visit(context)
         left = self.left.visit(context)
         right = self.right.visit(context)
 
@@ -145,6 +154,7 @@ class IfNode(ASTNode):
             return self.body.eval(context)
 
     def visit(self, context):
+        super().visit(context)
         with context.builder.init_if(self.test.visit(context)):
             for node in self.body.body:
                 node.visit(context)
@@ -195,6 +205,7 @@ class LiteralNode(ASTNode):
         return str(self.value)
 
     def visit(self, context):
+        super().visit(context)
         if context.native_type is not None:
             native_value = context.builder.py_to_c(self.value)
 
@@ -241,11 +252,17 @@ class FuncNode(ASTNode):
 
         return self.body.eval(new_scope)
 
+    def __repr__(self):
+        value = f"func {self.name.value}({', '.join([identifier.name for identifier in self.params])})"
+        return value
+
+
     def eval(self, context):
         self.context = context
         context.add_var(self.name.value, self.call)
 
     def visit(self, context):
+        super().visit(context)
         args = [param.name for param in self.params]
         has_return = False
         og_scope = context.builder.scope
@@ -310,6 +327,7 @@ class ClassNode(ASTNode):
 
     # context.builder.ret(context.builder.init_str("<TODO: implement undefined>"))
     def visit(self, context):
+        super().visit(context)
         if self.body.body is not None:
             init = self.get_init()
             args = [param.name for param in init.params] if init is not None else []
@@ -372,6 +390,7 @@ class ReturnNode(ASTNode):
         return self.value.eval(context)
 
     def visit(self, context):
+        super().visit(context)
         return context.builder.ret(self.value.visit(context))
 
 
@@ -384,6 +403,7 @@ class CallNode(ASTNode):
         return f'{self.caller}({str(self.args)[1:-1]})'
 
     def visit(self, context):
+        super().visit(context)
         args = [arg.visit(context) for arg in self.args]
 
         callee = self.caller.visit(context)
@@ -416,6 +436,7 @@ class BodyNode(ASTNode):
         if self.body is None:
             self.body = []
 
+
     def __repr__(self):
         str_repr = ":\n"
         for node in self.body:
@@ -423,6 +444,7 @@ class BodyNode(ASTNode):
         return str_repr
 
     def visit(self, context):
+        super().visit(context)
         for node in self.body:
             result = node.visit(context)
 
@@ -458,15 +480,15 @@ math_ops = {
 
 }
 
-class Parser:
 
+class Parser:
     def __init__(self, tokens, parse_as_list=False):
         self.tokens = tokens
         self.root_node = BodyNode()
         self.prec_stack = []
         self.token = ""
         self.parse_as_list = parse_as_list
-        self.line = 0
+        self.current_line = "poop"
         if parse_as_list:
             self.nodes = []
 
@@ -483,7 +505,9 @@ class Parser:
                 if next_node is not None:
                     program_body.append(next_node)
                 else:
-                    return BodyNode(program_body)
+                    body = BodyNode(program_body)
+                    #body.line = self.current_line
+                    return body
 
         # if statement
         if token.has("Identifier", "if"):
@@ -577,7 +601,8 @@ class Parser:
 
     def eat_token(self):
         token = self.tokens.pop(0)
-
+        #self.current_line = token.line
+        #print(f"{token} on line {token.line}")
         # the "->" operator returns a body token that consists of all the tokens until newline
         if token.has("Operator", "->") or token.has("Operator", "=>"):
             expression = []
@@ -597,6 +622,7 @@ class Parser:
     def peak_token(self):
 
         token = self.tokens[0]
+
         # if the "->" operator is used just return an empty block because it's the same thing
         if token.has("Operator", "->") or token.has("Operator", "=>"):
             return Token([], "Block")
@@ -611,7 +637,6 @@ class Parser:
             token = self.eat_token()
 
             if token.type == "Newline" or token.type == "Block":
-
                 if node is not None:
                     self.tokens.insert(0, token)
                     return node
@@ -619,9 +644,12 @@ class Parser:
                     continue
 
             current_node = self.token_to_node(token, node, prec)
+            if current_node is not None:
+                current_node.line = token.line
 
             if self.parse_as_list and self.token_is(token, "Operator", ","):
                 if prec == 0:
+                    #node.line = self.current_line
                     self.nodes.append(node)
                     node = None
                     continue

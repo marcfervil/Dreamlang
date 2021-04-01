@@ -1,0 +1,39 @@
+func h(){
+    hi = "hello"
+
+
+    class Node{
+
+        value = "default"
+        func init(value)
+
+        func test(){
+            return value
+        }
+
+        func test2(){
+            #print(value.hi)
+            return hi
+        }
+
+        func test3(){
+
+            return ff
+        }
+    }
+
+
+
+
+    x = Node("yo")
+
+    func g(){
+         print(x.hi, x.test(), x.value, x.test2())
+    }
+
+
+
+    g()
+}
+h()
+#dict(x.test2.@context.parent.hi)

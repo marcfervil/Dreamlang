@@ -1,0 +1,15 @@
+x = 30
+line8 = 40
+
+
+func line11(e,g){
+
+
+    print(line8)
+    ff = "dowekp"
+
+}
+line11(2,3)
+
+
+g = "f"

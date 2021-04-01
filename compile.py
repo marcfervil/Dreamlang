@@ -10,7 +10,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "merge", "ctype", "display2", "native_test", "native_int", "check"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check"]
 
 
     def __init__(self):
