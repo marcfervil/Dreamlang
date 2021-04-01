@@ -13,7 +13,7 @@ class ASTNode:
     def visit(self, context):
         #if hasattr(self, "line"):
         #    print(f'{type(self).__name__} on line {self.line} "{self.__repr__()}"')
-        pass
+        context.set_line(self.line)
 
     def __repr__(self):
         return f"({self.__class__.__name__}) {str(self.__dict__)}"

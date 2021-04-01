@@ -16,7 +16,7 @@ class LLVMBuilder:
     def __init__(self):
         self.map_bindings()
         self.context = dreamLib.llvm_init()
-
+        self.line = 1
         #dreamLib.llvm_link(self.context, self.c_str("dream_output.o"))
 
         self.scope = self.init_obj()
@@ -198,6 +198,10 @@ class LLVMBuilder:
             return op
         return dreamLib.mul(self.context, value1, value2)
 
+    def set_line(self, line):
+        self.line = line
+        dreamLib.set_line(self.context, line)
+
     # def equals(self, value1, value2):
     #    return dreamLib.equals(self.context, value1, value2)
 
@@ -263,9 +267,12 @@ class LLVMBuilder:
         var.reparent = reparent
 
     def get_var(self, key, obj=None):
+
+        #if key == "line":
+        #    return self.init_num(self.line)
+
         if obj is None:
             obj = self.scope
-
         if hasattr(obj, "natives") and key in obj.natives.keys():
             #print("got native", key, "=", obj.natives[key])
             return obj.natives[key]
@@ -309,6 +316,12 @@ class CompileContext:
         self.builder = LLVMBuilder()
         self.scope = self.builder.scope
         self.native_type = None
+        self.line = 1
+
+    def set_line(self, line):
+        if line != self.line:
+            self.builder.set_line(line)
+            self.line = line
 
     def func(self, name, *args, is_class=False):
         return self.new_func(self.builder, name, is_class, *args)
