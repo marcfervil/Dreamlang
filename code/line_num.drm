@@ -1,3 +1,4 @@
-print(line)
-x()
-test
+a = "string"
+a.exists = "yup"
+
+print("exists" in a, "not_exists" in a)

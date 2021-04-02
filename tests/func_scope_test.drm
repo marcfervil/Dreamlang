@@ -2,6 +2,8 @@
 f = "wow"
 
 func z(param){
+    y = "e"
+
     check("outer scoped functions undefined", x, $)
     check("outer scoped functions undefined", c, $)
     check("outer scoped function param", param, 30)

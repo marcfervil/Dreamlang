@@ -53,6 +53,7 @@ class LLVMBuilder:
         bind(dreamLib.load, ObjPtr)
         bind(dreamLib.add, ObjPtr)
         bind(dreamLib.equals, ObjPtr)
+        bind(dreamLib.contains, ObjPtr)
         bind(dreamLib.sub, ObjPtr)
         bind(dreamLib.mul, ObjPtr)
         bind(dreamLib.divi, ObjPtr)
@@ -131,6 +132,7 @@ class LLVMBuilder:
         args = (c_char_p * len(arg_names))(*arg_names)
         func = dreamLib.func(self.context, self.scope, self.c_str(name), is_class, len(arg_names), args)
         self.enter_scope(self.func_scope(func))
+
         return func
 
     def init_if(self, value):
@@ -231,6 +233,9 @@ class LLVMBuilder:
     def equals(self, var1, var2):
         return dreamLib.equals(self.context, var1, var2)
 
+    def contains(self, var1, var2):
+        return dreamLib.contains(self.context, var1, var2)
+
     def build(self, file_name):
 
         dreamLib.build(self.context)
@@ -267,7 +272,7 @@ class LLVMBuilder:
         var.reparent = reparent
 
     def get_var(self, key, obj=None):
-
+        #print("getting", key)
         #if key == "line":
         #    return self.init_num(self.line)
 
@@ -276,6 +281,7 @@ class LLVMBuilder:
         if hasattr(obj, "natives") and key in obj.natives.keys():
             #print("got native", key, "=", obj.natives[key])
             return obj.natives[key]
+
         value = dreamLib.load(self.context, obj, self.c_str(key))
         if key in LLVMBuilder.builtins:
             value.built_in = True

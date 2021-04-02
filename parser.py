@@ -15,6 +15,7 @@ class ASTNode:
         #    print(f'{type(self).__name__} on line {self.line} "{self.__repr__()}"')
         context.set_line(self.line)
 
+
     def __repr__(self):
         return f"({self.__class__.__name__}) {str(self.__dict__)}"
 
@@ -23,6 +24,7 @@ class IdentifierNode(ASTNode):
     def __init__(self, name):
         self.name = name
         self.type = None
+
 
     def __repr__(self):
         return self.name
@@ -60,6 +62,7 @@ class AssignNode(ASTNode):
 
     def visit(self, context):
         super().visit(context)
+        #print(self.var)
         self.var.assign_visit(context, self.value)
 
     def eval(self, context):
@@ -120,6 +123,8 @@ class BinaryNode(ASTNode):
             return context.builder.div(left, right)
         elif self.op.value == "is":
             return context.builder.equals(left, right)
+        elif self.op.value == "in":
+            return context.builder.contains(left, right)
 
     def eval(self, context):
         left = self.left.eval(context)
@@ -256,7 +261,6 @@ class FuncNode(ASTNode):
         value = f"func {self.name.value}({', '.join([identifier.name for identifier in self.params])})"
         return value
 
-
     def eval(self, context):
         self.context = context
         context.add_var(self.name.value, self.call)
@@ -265,7 +269,7 @@ class FuncNode(ASTNode):
         super().visit(context)
         args = [param.name for param in self.params]
         has_return = False
-        og_scope = context.builder.scope
+        #og_scope = context.builder.scope
 
         with context.func(self.name.value, *args):
             for node in self.body.body:
@@ -436,7 +440,6 @@ class BodyNode(ASTNode):
         if self.body is None:
             self.body = []
 
-
     def __repr__(self):
         str_repr = ":\n"
         for node in self.body:
@@ -473,6 +476,7 @@ math_ops = {
     "==": 1,
     "is": 1,
     "is not": 1,
+    "in": 1,
     "+": 2,
     "-": 2,
     "*": 3,
@@ -644,7 +648,8 @@ class Parser:
                     continue
 
             current_node = self.token_to_node(token, node, prec)
-            if current_node is not None:
+
+            if current_node is not None and isinstance(current_node, ASTNode):
                 current_node.line = token.line
 
             if self.parse_as_list and self.token_is(token, "Operator", ","):
