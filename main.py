@@ -107,8 +107,8 @@ def the_works():
 
 #the_works()
 
-#hopes = (open("tests/func_scope_test.drm").read())
-hopes = (open("code/line_num.drm").read())
+hopes = (open("tests/func_scope_test.drm").read())
+#hopes = (open("code/line_num.drm").read())
 #hopes = (open("examples/addition_over.drm").read())
 #hopes = (open("examples/comp.drm").read())
 

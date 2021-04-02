@@ -1,11 +1,14 @@
 
 f = "wow"
 
+
+
+
 func z(param){
     y = "e"
 
-    check("outer scoped functions undefined", x, $)
-    check("outer scoped functions undefined", c, $)
+    check("outer scoped var 'x' undefined", "x" in self, false)
+    check("outer scoped var 'y' undefined", "c" in self, false)
     check("outer scoped function param", param, 30)
 }
 
@@ -25,10 +28,10 @@ func a(){
     }
     x = 30
     b()
-    check("nested function scope undefined", c, $)
+    check("nested function scope undefined", "c" in self, false)
     zz(x)
 }
 a()
-check("inner function scope", x, $)
+check("inner function scope", "x" in self, false)
 check("upsetted from nested", f, "yup")
 
