@@ -1,9 +1,16 @@
-class outer{
+class outer {
+    c = 10
 
-    func get_a() => a
+
+    func get_a(){
+        #print(30)
+        return c
+    }
 
 }
 
 a = 30
 x = outer()
-print(x.a, x.get_a())
+print(x.a, x.get_a() is 10)
+#print(x.a, x.get_a())
+

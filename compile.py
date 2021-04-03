@@ -271,18 +271,22 @@ class LLVMBuilder:
         var.set_var = inner_var_set
         var.reparent = reparent
 
-    def get_var(self, key, obj=None):
-        #print("getting", key)
-        #if key == "line":
-        #    return self.init_num(self.line)
+    def get_var(self, key, obj=None, from_parent=None):
 
         if obj is None:
             obj = self.scope
+
         if hasattr(obj, "natives") and key in obj.natives.keys():
-            #print("got native", key, "=", obj.natives[key])
             return obj.natives[key]
 
-        value = dreamLib.load(self.context, obj, self.c_str(key))
+        #value = dreamLib.load(self.context, obj, self.c_str(key), 1)
+
+        if from_parent is None:
+            value = dreamLib.load(self.context, obj, self.c_str(key), 1)
+        else:
+            value = dreamLib.load(self.context, obj, self.c_str(key), from_parent)
+
+
         if key in LLVMBuilder.builtins:
             value.built_in = True
 

@@ -86,7 +86,7 @@ class AttributeNode(ASTNode):
     def visit(self, context):
         super().visit(context)
         self.visited_obj = self.obj.visit(context)
-        return context.builder.get_var(self.attr.name, self.visited_obj)
+        return context.builder.get_var(self.attr.name, self.visited_obj, False)
 
     def assign_visit(self, context, value):
         #print(value)

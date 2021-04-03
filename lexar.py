@@ -29,15 +29,15 @@ class Token:
                 self.type = "Block"
 
                 new_tokenizer = Tokenizer(self.value[1:-1], tokenizer.line)
-
-                #print("LINEOG", line)
                 self.value = new_tokenizer.tokenize()
                 tokenizer.line = new_tokenizer.line - 1
-                #print("APPLE", new_tokenizer.line, tokenizer.line)
 
             elif self.value[0] == '(' and self.value[-1] == ')':
                 self.type = "Set"
-                self.value = Tokenizer(self.value[1:-1], tokenizer.line).tokenize()
+                new_tokenizer = Tokenizer(self.value[1:-1], tokenizer.line)
+                self.value = new_tokenizer.tokenize()
+                tokenizer.line = new_tokenizer.line
+
             elif self.value == "true" or self.value == "false":
                 self.type = "Boolean"
                 self.value = self.value == "true"

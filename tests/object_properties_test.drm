@@ -1,6 +1,7 @@
 class three{
     previous = two()
     func value(m){
+        #print(self.parent.previous)
         return (previous.value(1) + 1) * m
     }
     func getPrevious(){

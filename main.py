@@ -112,12 +112,12 @@ def the_works():
 #hopes = (open("tests/list_test.drm").read())
 hopes = (open("code/line_num.drm").read())
 #hopes = (open("examples/addition_over.drm").read())
-#hopes = (open("examples/comp.drm").read())
+#hopes = (open("examples/comp1.drm").read())
 
 #dream = Dream("print((3*11-4+4-99)/2)") # == -33
 dream = Dream(hopes)
-#dream.eval()
-#print("")
+dream.eval()
+print("")
 #print(dream.tokens)
 dream.compile(False, True)
 
