@@ -629,7 +629,7 @@ class Parser:
 
         # if the "->" operator is used just return an empty block because it's the same thing
         if token.has("Operator", "->") or token.has("Operator", "=>"):
-            return Token([], "Block")
+            return Token([], token.tokenizer, "Block")
         return token
 
     def token_is(self, token, token_type, value):

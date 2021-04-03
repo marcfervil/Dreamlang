@@ -1,4 +1,9 @@
-a = "string"
-a.exists = "yup"
+class outer{
 
-print("exists" in a, "not_exists" in a)
+    func get_a() => a
+
+}
+
+a = 30
+x = outer()
+print(x.a, x.get_a())
