@@ -535,7 +535,7 @@ class Parser:
             name = self.eat_token()
             params = self.eat_token()
             if len(self.tokens) == 0 or self.peak_token().type == "Newline":
-                body = Token("{}")
+                body = Token("{}", token.tokenizer)
             elif self.peak_token().type == "Block":
                 body = self.eat_token()
                #print(name.value,"=",body)
@@ -611,16 +611,16 @@ class Parser:
         if token.has("Operator", "->") or token.has("Operator", "=>"):
             expression = []
             if token.value == "=>":
-                expression.append(Token("return"))
+                expression.append(Token("return", token.tokenizer))
             while True:
                 expression_token = self.eat_token()
                 expression.append(expression_token)
                 if expression_token.has("Newline") or len(self.tokens) == 0:
                     if len(self.tokens) > 0:
                         self.tokens.insert(0, expression_token)
-                    return Token(expression, "Block")
+                    return Token(expression, token.tokenizer, "Block")
 
-            return Token(expression, "Block")
+            return Token(expression, token.tokenizer, "Block")
         return token
 
     def peak_token(self):

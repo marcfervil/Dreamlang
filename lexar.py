@@ -8,6 +8,7 @@ class Token:
         self.value = value
         self.is_literal = False
         self.line = line
+        self.tokenizer = tokenizer
         if type is None:
 
             if self.value.isnumeric():
