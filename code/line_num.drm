@@ -17,9 +17,7 @@ print(x.a, x.get_a() is 10)
 `
 
 
-
-
-var a = 20 + 300
+var a = 69
 int b = a
 native_int(b)
 

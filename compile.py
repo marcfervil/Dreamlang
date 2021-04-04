@@ -82,11 +82,11 @@ class LLVMBuilder:
         for val in py_vals:
             if type(val) is str:
                 string = dreamLib.llvmStr(self.context, self.c_str(val))
-
+                #string.type = str
                 vals.append(string)
             elif type(val) is int or type(val) is bool:
                 integer = dreamLib.llvmInt(self.context, val)
-
+                #integer.type = int
                 vals.append(integer)
             else:
                 vals.append(val)
@@ -222,9 +222,12 @@ class LLVMBuilder:
         if value.native_type == int:
             return dreamLib.num_llvm(self.context, value)
 
-    def dream_to_native(self, value):
+    # TODO this should probably be casted @ runtime cause this isn't safe
+    def dream_to_native(self, value, new_type):
         ObjPtr = LLVMBuilder.ObjPtr
-        value = dreamLib.get_pointer_value(self.context, ObjPtr.in_dll(dreamLib, "intType"), value)
+        
+        if new_type == "int":
+            value = dreamLib.get_pointer_value(self.context, ObjPtr.in_dll(dreamLib, "intType"), value)
         return value
 
     def set_var(self, key, value, obj=None, native=False):
@@ -234,13 +237,14 @@ class LLVMBuilder:
         if not hasattr(obj, "natives"):
             obj.natives = {}
         elif key in obj.natives.keys():
-            native = True
+            native = obj.natives[key]["native_type"]
 
-        if native:
+        if native is not False:
+            # should probably pass in the native type...
             if not hasattr(value, "native_type"):
-                value = self.dream_to_native(value)
+                value = self.dream_to_native(value, native)
 
-            obj.natives[key] = value
+            obj.natives[key] = {"value": value, "native_type": native}
             return obj.natives[key]
 
         if hasattr(value, "native_type"):
@@ -300,7 +304,7 @@ class LLVMBuilder:
             obj = self.scope
 
         if hasattr(obj, "natives") and key in obj.natives.keys():
-            return obj.natives[key]
+            return obj.natives[key]["value"]
 
         #value = dreamLib.load(self.context, obj, self.c_str(key), 1)
 

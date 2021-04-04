@@ -25,7 +25,6 @@ class IdentifierNode(ASTNode):
         self.name = name
         self.type = None
 
-
     def __repr__(self):
         return self.name
 
@@ -46,7 +45,7 @@ class IdentifierNode(ASTNode):
     def assign_visit(self, context, value):
         if self.type is not None:
             context.native_type = self.type
-            context.builder.set_var(self.name, value.visit(context), native=True)
+            context.builder.set_var(self.name, value.visit(context), native=self.type)
             context.native_type = None
             return
         context.builder.set_var(self.name, value.visit(context))
