@@ -67,6 +67,8 @@ class LLVMBuilder:
         bind(dreamLib.init_if, ObjPtr)
         bind(dreamLib.set_parent_c, ObjPtr)
         bind(dreamLib.num_llvm, ObjPtr)
+        bind(dreamLib.get_pointer_value, ObjPtr)
+        #bind(dreamLib.intType, ObjPtr)
         #bind(dreamLib.llvmInt, ObjPtr)
 
     def c_str(self, value):
@@ -220,6 +222,11 @@ class LLVMBuilder:
         if value.native_type == int:
             return dreamLib.num_llvm(self.context, value)
 
+    def dream_to_native(self, value):
+        ObjPtr = LLVMBuilder.ObjPtr
+        value = dreamLib.get_pointer_value(self.context, ObjPtr.in_dll(dreamLib, "intType"), value)
+        return value
+
     def set_var(self, key, value, obj=None, native=False):
         if obj is None:
             obj = self.scope
@@ -230,6 +237,9 @@ class LLVMBuilder:
             native = True
 
         if native:
+            if not hasattr(value, "native_type"):
+                value = self.dream_to_native(value)
+
             obj.natives[key] = value
             return obj.natives[key]
 

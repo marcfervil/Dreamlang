@@ -16,14 +16,16 @@ print(x.a, x.get_a() is 10)
 
 `
 
-`
-a = 20
-int c = a
-`
 
 
+
+var a = 20 + 300
+int b = a
+native_int(b)
+
+`
 int a = 30
 var c = a
 
 print(c)
-
+`
