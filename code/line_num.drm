@@ -1,4 +1,4 @@
-class outer {
+`class outer {
     c = 10
 
 
@@ -13,4 +13,17 @@ a = 30
 x = outer()
 print(x.a, x.get_a() is 10)
 #print(x.a, x.get_a())
+
+`
+
+`
+a = 20
+int c = a
+`
+
+
+int a = 30
+var c = a
+
+print(c)
 

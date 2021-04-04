@@ -66,6 +66,7 @@ class LLVMBuilder:
         bind(dreamLib.init_scope, ObjPtr)
         bind(dreamLib.init_if, ObjPtr)
         bind(dreamLib.set_parent_c, ObjPtr)
+        bind(dreamLib.num_llvm, ObjPtr)
         #bind(dreamLib.llvmInt, ObjPtr)
 
     def c_str(self, value):
@@ -78,11 +79,13 @@ class LLVMBuilder:
             py_vals = [py_vals]
         for val in py_vals:
             if type(val) is str:
+                string = dreamLib.llvmStr(self.context, self.c_str(val))
 
-                vals.append(dreamLib.llvmStr(self.context, self.c_str(val)))
+                vals.append(string)
             elif type(val) is int or type(val) is bool:
+                integer = dreamLib.llvmInt(self.context, val)
 
-                vals.append(dreamLib.llvmInt(self.context, val))
+                vals.append(integer)
             else:
                 vals.append(val)
         if not lst:
@@ -213,19 +216,29 @@ class LLVMBuilder:
     def ret(self, value):
         return dreamLib.retVal(self.context, self.py_to_c(value))
 
+    def native_to_dream(self, value):
+        if value.native_type == int:
+            return dreamLib.num_llvm(self.context, value)
+
     def set_var(self, key, value, obj=None, native=False):
         if obj is None:
             obj = self.scope
+
         if not hasattr(obj, "natives"):
             obj.natives = {}
-        else:
-            if key in obj.natives.keys():
-                native = True
+        elif key in obj.natives.keys():
+            native = True
 
         if native:
             obj.natives[key] = value
             return obj.natives[key]
-        return dreamLib.save(self.context, obj, self.c_str(key), self.py_to_c(value))
+
+        if hasattr(value, "native_type"):
+            value = self.native_to_dream(value)
+        else:
+            value = self.py_to_c(value)
+
+        return dreamLib.save(self.context, obj, self.c_str(key), value)
 
     def reparent(self, obj, new_parent):
         return dreamLib.set_parent_c(self.context, obj, new_parent)

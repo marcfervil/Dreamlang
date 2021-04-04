@@ -552,12 +552,13 @@ class Parser:
 
         # return the identifier
         if token.type == "Identifier":
-            primitives = ["int", "str", "bool"]
+            primitives = ["int", "str", "bool", "var"]
             # if the parent node is a primitive type, then assign a type to the identifier
             value = IdentifierNode(token.value)
-            if parent_type is IdentifierNode and node.name in primitives:
+            if parent_type is IdentifierNode and node.name != "var" and node.name in primitives:
                 value.type = node.name
                 return value
+
             return value
 
         # if you're parsing math and you've hit a comma - you've gone too far
