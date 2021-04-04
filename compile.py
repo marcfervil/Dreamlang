@@ -178,31 +178,52 @@ class LLVMBuilder:
         return dreamLib.bool_(self.context, value)
 
     def add(self, value1, value2):
+
         if hasattr(value1, "native_type"):
+            if not hasattr(value2, "native_type"):
+                value2 = self.dream_to_native(value2, "int")
+
             op = dreamLib.native_add(self.context, value1, value2)
             op.native_type = int
             return op
+
+        if hasattr(value2, "native_type"):
+            value2 = self.native_to_dream(value2)
         return dreamLib.add(self.context, value1, value2)
 
     def sub(self, value1, value2):
+
         if hasattr(value1, "native_type"):
+            if not hasattr(value2, "native_type"):
+                value2 = self.dream_to_native(value2, "int")
+
             op = dreamLib.native_sub(self.context, value1, value2)
             op.native_type = int
             return op
+        if hasattr(value2, "native_type"):
+            value2 = self.native_to_dream(value2)
         return dreamLib.sub(self.context, value1, value2)
 
     def div(self, value1, value2):
         if hasattr(value1, "native_type"):
+            if not hasattr(value2, "native_type"):
+                value2 = self.dream_to_native(value2, "int")
             op = dreamLib.native_div(self.context, value1, value2)
             op.native_type = int
             return op
+        if hasattr(value2, "native_type"):
+            value2 = self.native_to_dream(value2)
         return dreamLib.divi(self.context, value1, value2)
 
     def mul(self, value1, value2):
         if hasattr(value1, "native_type"):
+            if not hasattr(value2, "native_type"):
+                value2 = self.dream_to_native(value2, "int")
             op = dreamLib.native_mul(self.context, value1, value2)
             op.native_type = int
             return op
+        if hasattr(value2, "native_type"):
+            value2 = self.native_to_dream(value2)
         return dreamLib.mul(self.context, value1, value2)
 
     def set_line(self, line):
@@ -225,7 +246,7 @@ class LLVMBuilder:
     # TODO this should probably be casted @ runtime cause this isn't safe
     def dream_to_native(self, value, new_type):
         ObjPtr = LLVMBuilder.ObjPtr
-        
+
         if new_type == "int":
             value = dreamLib.get_pointer_value(self.context, ObjPtr.in_dll(dreamLib, "intType"), value)
         return value

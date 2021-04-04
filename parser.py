@@ -211,8 +211,8 @@ class LiteralNode(ASTNode):
     def visit(self, context):
         super().visit(context)
         if context.native_type is not None:
-            native_value = context.builder.py_to_c(self.value)
 
+            native_value = context.builder.py_to_c(self.value)
             native_value.native_type = type(self.value)
             return native_value
 
