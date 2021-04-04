@@ -1,33 +1,6 @@
-`class outer {
-    c = 10
 
 
-    func get_a(){
-        #print(30)
-        return c
-    }
+int y = 30
 
-}
+print(y, "k")
 
-a = 30
-x = outer()
-print(x.a, x.get_a() is 10)
-#print(x.a, x.get_a())
-
-`
-
-var a = 10
-int b = 20
-int c = b / a * a - 10
-
-var d = b / a * a - 10
-
-native_int(c)
-print(d)
-
-`
-int a = 30
-var c = a
-
-print(c)
-`

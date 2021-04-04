@@ -10,7 +10,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx"]
 
 
     def __init__(self):
@@ -125,6 +125,12 @@ class LLVMBuilder:
             #self.reparent(func_scope, self.scope)
             #self.log( self.get_var("parent", func_scope))
             args.insert(0, new_scope)
+        elif callee.built_in == "print":
+            if any(hasattr(arg, "native_type") for arg in args):
+                call_map = {"int": "d", "str": "s"}
+                call_str = [call_map[arg.native_type.__name__] if hasattr(arg, "native_type") else "x" for arg in args]
+                call_str = "".join(call_name for call_name in call_str)
+                return self.call("printx", call_str, *args)
 
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
 
@@ -336,7 +342,7 @@ class LLVMBuilder:
 
 
         if key in LLVMBuilder.builtins:
-            value.built_in = True
+            value.built_in = key
 
         self.add_helpers(value)
         return value
