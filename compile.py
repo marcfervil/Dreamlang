@@ -4,7 +4,16 @@ import os
 from pathlib import Path
 
 dreamLib = cdll.LoadLibrary('./lib/dream.so')
+hopesLib = cdll.LoadLibrary('./lib/hopes_lib.so')
 
+
+def pretty(d, indent=0):
+   for key, value in d.items():
+      print('\t' * indent + str(key))
+      if isinstance(value, dict):
+         pretty(value, indent+1)
+      else:
+         print('\t' * (indent+1) + str(value))
 
 class LLVMBuilder:
 
@@ -17,11 +26,12 @@ class LLVMBuilder:
         self.map_bindings()
         self.context = dreamLib.llvm_init()
         self.line = 1
-        #dreamLib.llvm_link(self.context, self.c_str("dream_output.o"))
+        dreamLib.llvm_link(self.context, self.c_str("hopes_lib.so"))
 
         self.scope = self.init_obj()
 
         self.scopes = []
+        #print(hopesLib.get_var)
         #self.scope = None
 
     def run(self, llvm_output=False, build=False):
@@ -290,23 +300,15 @@ class LLVMBuilder:
     def contains(self, var1, var2):
         return dreamLib.contains(self.context, var1, var2)
 
-    def build(self, file_name):
+    def build(self, file_name, run=False):
 
         dreamLib.build(self.context)
         fpath = "/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/pylink.c"
 
         os.system(f'gcc -o {file_name[:-4]} lib/hopes.o lib/dream_output.o')
-        os.system(f"./{file_name[:-4]}")
-        #Path(f"{file_name[:-3]}").rename("")
+        if run:
+            os.system(f"./{file_name[:-4]}")
 
-        #os.system("gcc -o lib/main lib/dream_output.o")
-        #os.system(f'gcc  -o lib/main lib/dream_output.o')
-
-       # os.system("gcc -o lib/main -L . lib/dream_output.o -l dream")
-        #os.system("gcc  lib/dream_output.o -o lib/main -ldream")
-        #fpath = "/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/pylink.c"
-        #os.system(f"clang++ -L/usr/local/Cellar/llvm/11.0.1/lib -fPIC -isystem /usr/local/Cellar/llvm/11.0.1/include  -Wl,-undefined -Wl,dynamic_lookup  -fPIC -rdynamic {fpath} lib/dream_output.o -o lib/main_test -lllvm")
-        #os.system("clang -framework CoreFoundation -framework IOKit dream.a -o myprogram ")
 
 
     def add_helpers(self, var):

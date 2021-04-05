@@ -250,7 +250,7 @@ class Dream:
 
         print("built")
 
-        #self.context.builder.run(llvm_output, build)
+        self.context.builder.run(llvm_output, build)
 
 
 
