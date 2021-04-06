@@ -1,6 +1,0 @@
-
-
-
-str abc = "native string!"
-print(abc)
-

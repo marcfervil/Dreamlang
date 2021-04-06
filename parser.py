@@ -159,9 +159,12 @@ class IfNode(ASTNode):
 
     def visit(self, context):
         super().visit(context)
-        with context.builder.init_if(self.test.visit(context)):
+        with context.builder.init_if(self.test.visit(context)) as if_block:
             for node in self.body.body:
                 node.visit(context)
+
+
+        #context.builder.ret(context.scope)
 
 
 class ForNode(ASTNode):
@@ -276,6 +279,8 @@ class FuncNode(ASTNode):
                     has_return = True
                 node.visit(context)
             if not has_return:
+                # TODO: Break in case of future (returns scope)
+                #context.builder.ret(context.builder.scope)
                 context.builder.ret(context.builder.init_str("<TODO: implement undefined ref>"))
 
         """

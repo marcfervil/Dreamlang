@@ -245,12 +245,16 @@ class Dream:
         result = self.ast.visit(self.context)
         self.context.builder.ret(0)
         #print("IR Generated")
+
+        #if build:
         if build:
             self.context.builder.build(file_name)
 
-        print("built")
-
         self.context.builder.run(llvm_output, build)
+
+       # print("built")
+
+
 
 
 

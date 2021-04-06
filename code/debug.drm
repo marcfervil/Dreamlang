@@ -1,0 +1,7 @@
+
+func myFunction(){
+    return 3
+}
+
+print(myFunction() + 10)
+

@@ -102,7 +102,7 @@ def the_works():
     dream = Dream(listiter).eval()
 
 
-
+#exit()
 
 
 #the_works()
@@ -110,9 +110,9 @@ def the_works():
 #hopes = (open("tests/func_scope_test.drm").read())
 #hopes = (open("tests/object_properties_test.drm").read())
 #hopes = (open("tests/list_test.drm").read())
-hopes = (open("code/line_num.drm").read())
+hopes = (open("code/debug.drm").read())
 #hopes = (open("examples/addition_over.drm").read())
-#hopes = (open("examples/comp1.drm").read())
+#hopes = (open("examples/comp.drm").read())
 
 #dream = Dream("print((3*11-4+4-99)/2)") # == -33
 dream = Dream(hopes)
