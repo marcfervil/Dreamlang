@@ -236,15 +236,21 @@ class Dream:
         self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
         return self.ast.eval(self.context)
 
-    def compile(self, llvm_output=False, build=False, file_name="benchmarks/math/native_math.drm"):
+    def compile(self, llvm_output=False, build=False, file_name="benchmarks/math/native_math.drm", platform="System"):
         if len(self.tokens) == 0:
             self.tokenize()
-        self.context = CompileContext()
-        with self.context.func("AndroidContext") as (builder, scope):
+        self.context = CompileContext(platform)
+
+        if platform == "Android":
+            with self.context.func("AndroidContext") as (builder, scope):
+                self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
+
+                result = self.ast.visit(self.context)
+                self.context.builder.ret(scope)
+        elif platform == "System":
             self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
 
             result = self.ast.visit(self.context)
-            self.context.builder.ret(scope)
 
 
         self.context.builder.ret(0)
@@ -252,9 +258,10 @@ class Dream:
 
         #if build:
         if build:
-            self.context.builder.build(file_name)
+            self.context.builder.build(file_name, platform=platform)
 
-        #self.context.builder.run(llvm_output, build)
+        if platform == "System":
+            self.context.builder.run(llvm_output, build)
 
        # print("built")
 

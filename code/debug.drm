@@ -1,12 +1,9 @@
 class test{
     func init(){
-        dream_log("hi")
+        print("print remapped!!")
     }
 }
 
-func so(){
-    dream_log("???")
-}
 
 test()
 

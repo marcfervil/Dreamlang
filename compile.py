@@ -21,8 +21,9 @@ class LLVMBuilder:
 
     builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log"]
 
-    def __init__(self):
+    def __init__(self, platform):
         self.map_bindings()
+        self.platform = platform
         self.context = dreamLib.llvm_init()
         self.line = 1
         dreamLib.llvm_link(self.context, self.c_str("hopes_lib.so"))
@@ -299,48 +300,20 @@ class LLVMBuilder:
     def contains(self, var1, var2):
         return dreamLib.contains(self.context, var1, var2)
 
-    def build(self, file_name, run=False):
+    def build(self, file_name, run=False, platform="System"):
 
         #dreamLib.llvm_inspect(self.context, self.c_str("lib/hopes_lib.so"))
 
         dreamLib.build(self.context)
 
-        #-march = i686 - mtune = intel - mssse3 - mfpmath = sse - m32
+
         command = ""
 
-        #GOOD COMMAND:
-        #os.system(f'gcc -o {file_name[:-4]} lib/hopes.o lib/dream_output.o {command} ')
+        if platform == "System":
+            os.system(f'gcc -o {file_name[:-4]} lib/hopes.o lib/dream_output.o {command} ')
+        elif platform == "Android":
+            os.system("bash scripts/build_android.bash")
 
-
-
-        # os.system(f"gcc lib/hopes_lib.so lib/dream_output.o -shared -o code/output/libdream.so {command}")
-
-        # ANDROID
-        #os.system("llc -mtriple=armv7-none-linux-androideabi -filetype=obj lib/llvm_output.ll -relocation-model=pic")
-
-
-
-        #os.system("clang -emit-llvm -S lib/hopes.o -o hope_llvm.ll")
-        #--disable - verify
-        #   --import-all-index                                                   - Import all external functions in index.
-
-
-        """
-        --relocation-model=<value>                                           - Choose relocation model
-    =static                                                            -   Non-relocatable code
-    =pic                                                               -   Fully relocatable, position independent code
-    =dynamic-no-pic        
-        """
-        os.system("bash scripts/build_android.bash")
-
-
-        # os.system(f"gcc lib/hopes_lib.so lib/dream_output.o -shared -o code/output/libdream.so {command}")
-        # os.system("gcc lib/llvm_output.o -shared -o libdreamandroid.so")
-        #
-
-
-        # os.system("g++ -dynamiclib -o code/output/libdream.so lib/hopes.o lib/dream_output.o ")
-        # os.system("cp code/output/libdream.so /Users/marcfervil/AndroidStudioProjects/DreamlangAndorid/app/src/main/jniLibs/x86/libdream.so")
         if run:
             os.system(f"./{file_name[:-4]}")
 
@@ -363,6 +336,9 @@ class LLVMBuilder:
         var.reparent = reparent
 
     def get_var(self, key, obj=None, from_parent=None):
+
+        if self.platform == "Android" and key == "print":
+            key = "dream_log"
 
         if obj is None:
             obj = self.scope
@@ -413,8 +389,9 @@ class IfBuilder:
 
 
 class CompileContext:
-    def __init__(self):
-        self.builder = LLVMBuilder()
+    def __init__(self, platform):
+        self.builder = LLVMBuilder(platform)
+
         self.scope = self.builder.scope
         self.native_type = None
         self.line = 1

@@ -119,7 +119,7 @@ dream = Dream(hopes)
 #dream.eval()
 #print("")
 #print(dream.tokens)
-dream.compile(False, True)
+dream.compile(False, True, platform="Android")
 
 
 
