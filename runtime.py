@@ -240,9 +240,13 @@ class Dream:
         if len(self.tokens) == 0:
             self.tokenize()
         self.context = CompileContext()
-        self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
+        with self.context.func("AndroidContext") as (builder, scope):
+            self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
 
-        result = self.ast.visit(self.context)
+            result = self.ast.visit(self.context)
+            self.context.builder.ret(scope)
+
+
         self.context.builder.ret(0)
         #print("IR Generated")
 

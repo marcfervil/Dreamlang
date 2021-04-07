@@ -1,7 +1,12 @@
-
-func myFunction(){
-    dream_log("Logging from dreamlang!")
-    dream_log("check one check two!!!")
+class test{
+    func init(){
+        dream_log("hi")
+    }
 }
 
+func so(){
+    dream_log("???")
+}
+
+test()
 
