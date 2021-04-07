@@ -1,7 +1,7 @@
 
 func myFunction(){
-    return 3
+    dream_log("Logging from dreamlang!")
+    dream_log("check one check two!!!")
 }
 
-print(myFunction() + 10)
 

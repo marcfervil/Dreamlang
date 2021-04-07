@@ -250,7 +250,7 @@ class Dream:
         if build:
             self.context.builder.build(file_name)
 
-        self.context.builder.run(llvm_output, build)
+        #self.context.builder.run(llvm_output, build)
 
        # print("built")
 

@@ -19,7 +19,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log"]
 
     def __init__(self):
         self.map_bindings()
@@ -308,7 +308,11 @@ class LLVMBuilder:
         #-march = i686 - mtune = intel - mssse3 - mfpmath = sse - m32
         command = ""
 
-        os.system(f'gcc -o {file_name[:-4]} lib/hopes.o lib/dream_output.o {command} ')
+        #GOOD COMMAND:
+        #os.system(f'gcc -o {file_name[:-4]} lib/hopes.o lib/dream_output.o {command} ')
+
+
+
         # os.system(f"gcc lib/hopes_lib.so lib/dream_output.o -shared -o code/output/libdream.so {command}")
 
         # ANDROID
