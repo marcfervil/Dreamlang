@@ -1,2 +1,11 @@
 
-abc = list("hello", "list", "yooooo")
+`
+g = "hi"
+g.s = list(0, "hiiii", 2)
+print(g.s[6])
+
+`
+
+x = ["hey!", "look!", "listen!"]
+print(x[0], x[1], x[2])
+

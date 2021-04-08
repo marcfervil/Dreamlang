@@ -70,6 +70,17 @@ class AssignNode(ASTNode):
         self.var.assign(context, self.value.eval(context))
 
 
+class ElementNode(ASTNode):
+    def __init__(self, element, index):
+        self.element = element
+        self.index = index[0]
+
+    def visit(self, context):
+        super().visit(context)
+        return context.builder.call(self.element.visit(context).get_var("get"), self.index.visit(context))
+
+
+
 class AttributeNode(ASTNode):
     def __init__(self, obj, attr):
         self.obj = obj
@@ -228,6 +239,8 @@ class LiteralNode(ASTNode):
             primitive = context.builder.init_str(self.value)
         elif type(self.value) is bool:
             primitive = context.builder.init_bool(self.value)
+        elif type(self.value) is list:
+            primitive = context.builder.call("list", *[item.visit(context) for item in self.value])
 
         return primitive
 
@@ -492,6 +505,9 @@ math_ops = {
 }
 
 
+
+
+
 class Parser:
     def __init__(self, tokens, parse_as_list=False):
         self.tokens = tokens
@@ -603,10 +619,10 @@ class Parser:
 
         if token.type == "Index":
             value = Parser(token.value, parse_as_list=True).get_ast()
-            if parent_type is not IdentifierNode:
+            if parent_type is not IdentifierNode and parent_type is not AttributeNode:
                 return LiteralNode(value)
             else:
-                pass
+                return ElementNode(node, value)
 
         # function call
         if token.type == "Set":
