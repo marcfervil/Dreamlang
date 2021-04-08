@@ -120,7 +120,7 @@ dream = Dream(hopes)
 #print("")
 #print(dream.tokens)
 dream.compile(False, True,
-            platform="Android"
+            #platform="Android"
               )
 
 #  %10 = call %dreamObj* @dreamFunc(i8* bitcast (void (%dreamObj*, %dreamObj*)* @merge to i8*))
