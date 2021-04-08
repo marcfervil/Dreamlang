@@ -1,1 +1,2 @@
-print("Wow, its a dream!")
+
+abc = list("hello", "list", "yooooo")

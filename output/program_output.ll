@@ -5,7 +5,11 @@ target triple = "x86_64-apple-macosx11.0.0"
 
 %dreamObj = type { i8*, %dreamObj**, i8*, %dreamObj*, %dreamObj**, %dreamObj**, %dreamObj*, i32, [1022 x %dreamObj**] }
 
-@0 = private unnamed_addr constant [18 x i8] c"Wow, its a dream!\00", align 1
+@line = external global i32
+@0 = private unnamed_addr constant [6 x i8] c"hello\00", align 1
+@1 = private unnamed_addr constant [5 x i8] c"list\00", align 1
+@2 = private unnamed_addr constant [7 x i8] c"yooooo\00", align 1
+@3 = private unnamed_addr constant [4 x i8] c"abc\00", align 1
 
 define i32 @main() {
 EntryBlock:
@@ -13,24 +17,36 @@ EntryBlock:
   %0 = call %dreamObj* @dreamObject()
   store %dreamObj* %0, %dreamObj** %obj_stack, align 8
   %obj = load %dreamObj*, %dreamObj** %obj_stack, align 8
+  store i32 2, i32* @line, align 4
   %str_stack = alloca %dreamObj*, align 8
-  %1 = call %dreamObj* @dreamStr(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @0, i32 0, i32 0))
+  %1 = call %dreamObj* @dreamStr(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @0, i32 0, i32 0))
   store %dreamObj* %1, %dreamObj** %str_stack, align 8
   %str = load %dreamObj*, %dreamObj** %str_stack, align 8
+  %str_stack1 = alloca %dreamObj*, align 8
+  %2 = call %dreamObj* @dreamStr(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @1, i32 0, i32 0))
+  store %dreamObj* %2, %dreamObj** %str_stack1, align 8
+  %str2 = load %dreamObj*, %dreamObj** %str_stack1, align 8
+  %str_stack3 = alloca %dreamObj*, align 8
+  %3 = call %dreamObj* @dreamStr(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @2, i32 0, i32 0))
+  store %dreamObj* %3, %dreamObj** %str_stack3, align 8
+  %str4 = load %dreamObj*, %dreamObj** %str_stack3, align 8
   %func_stack = alloca %dreamObj*, align 8
-  %2 = call %dreamObj* @dreamFunc(i8* bitcast (void (i32, %dreamObj*, ...)* @print to i8*))
-  store %dreamObj* %2, %dreamObj** %func_stack, align 8
+  %4 = call %dreamObj* @dreamFunc(i8* bitcast (%dreamObj* (i32, ...)* @dreamList to i8*))
+  store %dreamObj* %4, %dreamObj** %func_stack, align 8
   %func = load %dreamObj*, %dreamObj** %func_stack, align 8, !var_args !0
   %memberptr = getelementptr %dreamObj, %dreamObj* %func, i32 0, i32 2
   %value_temp = load i8*, i8** %memberptr, align 8
-  %3 = bitcast i8* %value_temp to %dreamObj* (...)*
-  %4 = call %dreamObj* (...) %3(i32 1, %dreamObj* %str)
+  %5 = bitcast i8* %value_temp to %dreamObj* (...)*
+  %6 = call %dreamObj* (...) %5(i32 3, %dreamObj* %str, %dreamObj* %str2, %dreamObj* %str4)
+  %7 = call %dreamObj* @set_var(%dreamObj* %obj, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @3, i32 0, i32 0), %dreamObj* %6)
   ret i32 0
 }
 
 declare void @print(i32, %dreamObj*, ...)
 
 declare void @dream_log(%dreamObj*)
+
+declare %dreamObj* @dreamList(i32, ...)
 
 declare %dreamObj* @pointer(%dreamObj*)
 

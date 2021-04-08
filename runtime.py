@@ -175,6 +175,7 @@ class Dream:
     def __init__(self, text_input):
         self.text_input = text_input
         self.tokenize()
+        #print(self.tokens)
 
     def tokenize(self):
         tokens = Tokenizer(self.text_input).tokenize()
@@ -232,13 +233,17 @@ class Dream:
     def eval(self):
         if len(self.tokens) == 0:
             self.tokenize()
+            #print(self.tokens)
         self.context = self.get_context()
         self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
         return self.ast.eval(self.context)
 
     def compile(self, llvm_output=False, build=False, file_name="benchmarks/math/native_math.drm", platform="System"):
+
         if len(self.tokens) == 0:
             self.tokenize()
+
+
         self.context = CompileContext(platform)
 
         if platform == "Android":
@@ -249,7 +254,7 @@ class Dream:
                 self.context.builder.ret(scope)
         elif platform == "System":
             self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
-
+            #print(self.ast)
             result = self.ast.visit(self.context)
 
 

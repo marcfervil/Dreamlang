@@ -38,6 +38,12 @@ class Token:
                 self.value = new_tokenizer.tokenize()
                 tokenizer.line = new_tokenizer.line
 
+            elif self.value[0] == '[' and self.value[-1] == ']':
+                self.type = "Index"
+                new_tokenizer = Tokenizer(self.value[1:-1], tokenizer.line)
+                self.value = new_tokenizer.tokenize()
+                tokenizer.line = new_tokenizer.line
+
             elif self.value == "true" or self.value == "false":
                 self.type = "Boolean"
                 self.value = self.value == "true"
@@ -48,7 +54,8 @@ class Token:
             self.type = type
 
     def __repr__(self):
-        return f"({self.type} {self.value})"
+        newline = "\n" if self.type == 'Newline' else ''
+        return f"{newline}({self.type} {self.value}){newline}"
 
     def has(self, type, value=None):
         return (value is None and self.type == type) or (self.value == value and self.type == type)
@@ -183,6 +190,13 @@ class Tokenizer:
                     match_count = 1
                     self.add_token()
                     continue
+                elif char == '[':
+
+                    match_end_token = ']'
+                    match_start_token = '['
+                    match_count = 1
+                    self.add_token()
+                    continue
 
             elif char == match_end_token:
 
@@ -190,6 +204,7 @@ class Tokenizer:
                 if match_count == 0:
                     # comments should be the only token match with an empty string starting node
                     if match_start_token == "":
+
                         self.newline()
                     else:
                         self.add_token(match_start_token + self.token + match_end_token)
@@ -202,7 +217,9 @@ class Tokenizer:
             self.token += char
         if not match_count == 0:
             if match_start_token == "":
+
                 self.newline()
+                return self.tokens
         self.add_token()
         return self.tokens
 

@@ -24,6 +24,7 @@ class IdentifierNode(ASTNode):
     def __init__(self, name):
         self.name = name
         self.type = None
+        #print(self.name)
 
     def __repr__(self):
         return self.name
@@ -57,6 +58,7 @@ class AssignNode(ASTNode):
         self.value = value
 
     def __repr__(self):
+
         return f'{self.var} = {str(self.value)}'
 
     def visit(self, context):
@@ -498,8 +500,8 @@ class Parser:
         self.token = ""
         self.parse_as_list = parse_as_list
         self.current_line = "poop"
-        if parse_as_list:
-            self.nodes = []
+        #if parse_as_list:
+        self.nodes = []
 
     def token_to_node(self, token, node, prec):
         parent_type = type(node)
@@ -599,6 +601,13 @@ class Parser:
         if token.is_literal:
             return LiteralNode(token.value)
 
+        if token.type == "Index":
+            value = Parser(token.value, parse_as_list=True).get_ast()
+            if parent_type is not IdentifierNode:
+                return LiteralNode(value)
+            else:
+                pass
+
         # function call
         if token.type == "Set":
             if parent_type == IdentifierNode or parent_type == AttributeNode or parent_type == ClassNode:
@@ -658,9 +667,20 @@ class Parser:
             if current_node is not None and isinstance(current_node, ASTNode):
                 current_node.line = token.line
 
+            """
             if self.parse_as_list and self.token_is(token, "Operator", ","):
                 if prec == 0:
                     #node.line = self.current_line
+                    self.nodes.append(node)
+                    node = None
+                    continue
+            """
+            if self.token_is(token, "Operator", ","):
+                if prec == 0:
+                    #if type(node) is not list:
+                    if not self.parse_as_list:
+                        self.parse_as_list = True
+                        
                     self.nodes.append(node)
                     node = None
                     continue

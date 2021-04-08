@@ -15,8 +15,8 @@ cp output/android/libdream.so  "/Users/marcfervil/AndroidStudioProjects/Dreamlan
 
 
 cd /Users/marcfervil/AndroidStudioProjects/DreamlangAndorid
-#gradle assembleDebug
+gradle assembleDebug
 gradle installDebug
 cd app/build/outputs/apk/debug
-adb -d install -t --fastdeploy app-debug.apk
-adb -d shell am start -n "com.almostanything.dreamlang/com.almostanything.dreamlang.MainActivity" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER
+adb install -t --fastdeploy app-debug.apk
+adb shell am start -n "com.almostanything.dreamlang/com.almostanything.dreamlang.MainActivity" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER
