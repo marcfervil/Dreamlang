@@ -358,7 +358,7 @@ class ClassNode(ASTNode):
 
             #with context.func(self.name.value, *args):
             with context.func(self.name.value, *args):
-                #context.builder.get_var("lalala")
+                #context.builder.get_var("sneaky")
 
 
                 obj_scope_ret = context.builder.call(self.name.value + "_obj")

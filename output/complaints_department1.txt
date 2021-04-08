@@ -1,4 +1,0 @@
-llvm-link: output/program_output.ll:108:7: error: value doesn't match function result type '%dreamObj*'
-  ret i8* getelementptr inbounds ([7 x i8], [7 x i8]* @0, i32 0, i32 0)
-      ^
-llvm-link: error:  loading file 'output/program_output.ll'
