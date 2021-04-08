@@ -340,23 +340,29 @@ class ClassNode(ASTNode):
             init = self.get_init()
             args = [param.name for param in init.params] if init is not None else []
             with context.func(self.name.value+"_obj", is_class=True):
-
+                #context.builder.ret(context.builder.init_str("ooh"))
                 with context.enter_scope() as obj_scope:
-
+                    
                     for class_node in self.body.body:
+
                         if not (type(class_node) is FuncNode and class_node.name.value == "init"):
+
                             class_node.in_class = True
                             class_node.visit(context)
+                        
 
                     context.builder.set_var("this", context.builder.scope)
-                    #context.builder.set_var("butt", context.builder.init_str("efwe"))
-                    #context.builder.dict(context.builder.get_var("this"))
 
                 context.builder.ret(obj_scope)
 
+
+            #with context.func(self.name.value, *args):
             with context.func(self.name.value, *args):
+                #context.builder.get_var("lalala")
+
 
                 obj_scope_ret = context.builder.call(self.name.value + "_obj")
+
 
                 og_scope = context.builder.scope
 
@@ -373,16 +379,11 @@ class ClassNode(ASTNode):
                             print("You cannot return from a constructor!")
 
                         node.visit(context)
-
+               
 
                 context.builder.ret(obj_scope_ret)
+                #context.builder.ret(context.builder.init_str("meme"))
                 context.builder.exit_scope()
-
-
-                #context.builder.reparent(context.builder.get_var(self.name.value+"_init"), obj_scope_ret)
-
-            #init_ir = context.builder.get_var(self.name.value)
-            #
 
 
 

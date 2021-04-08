@@ -1,9 +1,11 @@
-class test{
-    func init(){
-        print("print remapped!!")
-    }
+
+class wow {
+
+    name = "Marc"
+    address = "601 Pawnee"
+
+    func init(car)
+
 }
 
-
-test()
-
+#x = wow("")

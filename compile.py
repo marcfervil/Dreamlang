@@ -142,6 +142,7 @@ class LLVMBuilder:
                 call_str = "".join(call_name for call_name in call_str)
                 return self.call("printx", call_str, *args)
 
+
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
 
         result = dreamLib.call(self.context, callee, len(c_args), c_args)
@@ -159,10 +160,20 @@ class LLVMBuilder:
     def init_if(self, value):
         return IfBuilder(self, value)
 
+    def get_lib(self):
+        return dreamLib
+
+    def pad(self):
+        dreamLib.llvmStrConst(self.context, self.c_str("makemeto"))
+
     def log(self, item):
         if type(item) is str:
             item = self.init_str(item)
-        self.call(self.get_var("print"), item)
+        log_func = "print"
+        if self.platform == "Android":
+            log_func = "dream_log"
+        #self.get_var(log_func)
+        self.call(self.get_var(log_func), item)
 
     def dict(self, item):
         if type(item) is str:
@@ -181,7 +192,7 @@ class LLVMBuilder:
         return value
 
     def init_obj(self):
-        value = dreamLib.null_obj_init(self.context, self.c_str("[object]"))
+        value = dreamLib.null_obj_init(self.context)
         self.add_helpers(value)
         return value
 
