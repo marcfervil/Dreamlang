@@ -174,6 +174,8 @@ class IfNode(ASTNode):
         super().visit(context)
         with context.builder.init_if(self.test.visit(context)) as if_block:
             for node in self.body.body:
+                if type(node) is ReturnNode:
+                    if_block.has_return = True
                 node.visit(context)
 
 
@@ -185,6 +187,12 @@ class ForNode(ASTNode):
         self.var = var
         self.iterator = iterator
         self.body = Parser(body.value).get_ast(node=BodyNode())
+
+    def visit(self, context):
+        super().visit(context)
+        with context.builder.init_for(self.var.value, self.iterator.visit(context)) as for_block:
+            for node in self.body.body:
+                node.visit(context)
 
     def eval(self, context):
         iterator = self.iterator.eval(context)
@@ -289,6 +297,7 @@ class FuncNode(ASTNode):
         #og_scope = context.builder.scope
 
         with context.func(self.name.value, *args):
+            #context.builder.log(context.builder.get_null())
             for node in self.body.body:
                 if type(node) is ReturnNode:
                     has_return = True
@@ -297,6 +306,8 @@ class FuncNode(ASTNode):
                 # TODO: Break in case of future (returns scope)
                 #context.builder.ret(context.builder.scope)
                 context.builder.ret(context.builder.init_str("<TODO: implement undefined ref>"))
+
+                #context.builder.ret(context.builder.get_null())
 
         """
         if self.in_class:

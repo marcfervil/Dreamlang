@@ -1,11 +1,18 @@
 
-`
-g = "hi"
-g.s = list(0, "hiiii", 2)
-print(g.s[6])
 
-`
 
-x = ["hey!", "look!", "listen!"]
-print(x[0], x[1], x[2])
+func c(g){
+    if g is 1 {
+        return "one"
 
+    }
+    return "not 1"
+}
+
+dd = ""
+if 3 is 3 {
+    dd = (c(2))
+}
+
+
+print(dd)

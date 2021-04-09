@@ -125,7 +125,8 @@ dream.compile(False, True)
 
 #  %10 = call %dreamObj* @dreamFunc(i8* bitcast (void (%dreamObj*, %dreamObj*)* @merge to i8*))
 
-
+#
+##/Users/marcfervil/Library/Android/sdk/emulator/emulator -list-avds
 
 #print(dream.tokens)
 #print(dream.tokens)

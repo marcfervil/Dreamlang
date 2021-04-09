@@ -20,7 +20,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count"]
 
     def __init__(self, platform):
         self.map_bindings()
@@ -32,11 +32,16 @@ class LLVMBuilder:
         self.scope = self.init_obj()
 
         self.scopes = []
+        #self.null =
         #print(hopesLib.get_var)
         #self.scope = None
+        #self.log(self.null)
 
     def run(self, llvm_output=False, build=False):
         dreamLib.llvm_run(self.context, False, llvm_output, build)
+
+    def get_null(self):
+        return dreamLib.get_null_val()
 
     def map_bindings(self):
 
@@ -76,11 +81,17 @@ class LLVMBuilder:
         bind(dreamLib.end_func, ObjPtr)
         bind(dreamLib.init_scope, ObjPtr)
         bind(dreamLib.init_if, ObjPtr)
+        bind(dreamLib.init_for, ObjPtr)
+
+        bind(dreamLib.get_null_val, ObjPtr)
+
         bind(dreamLib.set_parent_c, ObjPtr)
         bind(dreamLib.num_llvm, ObjPtr)
         bind(dreamLib.get_pointer_value, ObjPtr)
         #bind(dreamLib.intType, ObjPtr)
         #bind(dreamLib.llvmInt, ObjPtr)
+
+
 
     def c_str(self, value):
         return c_char_p(value.encode('utf-8'))
@@ -160,6 +171,9 @@ class LLVMBuilder:
 
     def init_if(self, value):
         return IfBuilder(self, value)
+
+    def init_for(self, var_name, cond):
+        return ForBuilder(self, var_name, cond)
 
     def get_lib(self):
         return dreamLib
@@ -389,14 +403,32 @@ class IfBuilder:
         self.if_data = dreamLib.init_if(self.context, value)
 
         self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope,  1)
+        self.has_return = False
+        self.builder.enter_scope(self.scope)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type_, value, traceback):
+        dreamLib.end_if(self.context, self.if_data, self.has_return)
+        self.builder.exit_scope()
+
+
+class ForBuilder:
+    def __init__(self, builder, var_name, cond):
+        self.builder = builder
+        self.context = builder.context
+        self.for_data = dreamLib.init_for(self.context, self.builder.c_str(var_name), cond)
+
+        self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope,  1)
 
         self.builder.enter_scope(self.scope)
 
     def __enter__(self):
-        return self.if_data
+        return self.for_data
 
     def __exit__(self, type_, value, traceback):
-        dreamLib.end_if(self.context, self.if_data)
+        dreamLib.end_for(self.context, self.for_data)
         self.builder.exit_scope()
 
 

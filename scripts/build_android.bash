@@ -14,9 +14,12 @@ cp output/android/libdream.so  "/Users/marcfervil/AndroidStudioProjects/Dreamlan
 #--export-dynamice
 
 
+
+
 cd /Users/marcfervil/AndroidStudioProjects/DreamlangAndorid
 gradle assembleDebug
 gradle installDebug
 cd app/build/outputs/apk/debug
 adb install -t --fastdeploy app-debug.apk
 adb shell am start -n "com.almostanything.dreamlang/com.almostanything.dreamlang.MainActivity" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER
+
