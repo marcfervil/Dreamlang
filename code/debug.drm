@@ -1,18 +1,11 @@
 
+g = count(2)
+g.next()
+g.next()
 
+for i in g {
 
-func c(g){
-    if g is 1 {
-        return "one"
+    print("e")
 
-    }
-    return "not 1"
 }
 
-dd = ""
-if 3 is 3 {
-    dd = (c(2))
-}
-
-
-print(dd)

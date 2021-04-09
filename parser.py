@@ -192,6 +192,8 @@ class ForNode(ASTNode):
         super().visit(context)
         with context.builder.init_for(self.var.value, self.iterator.visit(context)) as for_block:
             for node in self.body.body:
+                if type(node) is ReturnNode:
+                    for_block.has_return = True
                 node.visit(context)
 
     def eval(self, context):

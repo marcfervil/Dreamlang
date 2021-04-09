@@ -139,13 +139,8 @@ class LLVMBuilder:
 
         if not hasattr(callee, "built_in"):
             func_scope = self.get_var("@context", callee)
-
-            #self.dict(func_scope)
-            #self.log(func_scope.get_var("xw"))
-            #func_scope = self.call("shallow_copy", func_scope)
             new_scope = dreamLib.init_scope(self.context, func_scope, 1)
-            #self.reparent(func_scope, self.scope)
-            #self.log( self.get_var("parent", func_scope))
+
             args.insert(0, new_scope)
         elif callee.built_in == "print":
             if any(hasattr(arg, "native_type") for arg in args):
@@ -418,17 +413,27 @@ class ForBuilder:
     def __init__(self, builder, var_name, cond):
         self.builder = builder
         self.context = builder.context
-        self.for_data = dreamLib.init_for(self.context, self.builder.c_str(var_name), cond)
+        self.has_return = False
+
+        cond = cond.get_var("next")
+        iter_func_scope = cond.get_var("@context")
+
+        iter_func_call_scope = dreamLib.init_scope(self.context, iter_func_scope, 1)
+
+       
+        self.for_data = dreamLib.init_for(self.context, self.builder.c_str(var_name), cond, iter_func_call_scope)
+
+
 
         self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope,  1)
 
         self.builder.enter_scope(self.scope)
 
     def __enter__(self):
-        return self.for_data
+        return self
 
     def __exit__(self, type_, value, traceback):
-        dreamLib.end_for(self.context, self.for_data)
+        dreamLib.end_for(self.context, self.for_data, self.has_return)
         self.builder.exit_scope()
 
 
