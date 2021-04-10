@@ -7,17 +7,11 @@ target triple = "x86_64-apple-macosx11.0.0"
 
 @nullDream = external global %dreamObj*
 @line = external global i32
-@0 = private unnamed_addr constant [2 x i8] c"g\00", align 1
-@1 = private unnamed_addr constant [2 x i8] c"g\00", align 1
-@2 = private unnamed_addr constant [5 x i8] c"next\00", align 1
-@3 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
-@4 = private unnamed_addr constant [2 x i8] c"g\00", align 1
-@5 = private unnamed_addr constant [5 x i8] c"next\00", align 1
-@6 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
-@7 = private unnamed_addr constant [2 x i8] c"g\00", align 1
-@8 = private unnamed_addr constant [5 x i8] c"next\00", align 1
-@9 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
-@10 = private unnamed_addr constant [2 x i8] c"e\00", align 1
+@0 = private unnamed_addr constant [5 x i8] c"next\00", align 1
+@1 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
+@2 = private unnamed_addr constant [2 x i8] c"i\00", align 1
+@3 = private unnamed_addr constant [6 x i8] c"three\00", align 1
+@4 = private unnamed_addr constant [2 x i8] c"i\00", align 1
 
 define i32 @main() {
 EntryBlock:
@@ -26,9 +20,9 @@ EntryBlock:
   %0 = call %dreamObj* @dreamObject()
   store %dreamObj* %0, %dreamObj** %obj_stack, align 8
   %obj = load %dreamObj*, %dreamObj** %obj_stack, align 8
-  store i32 2, i32* @line, align 4
+  store i32 3, i32* @line, align 4
   %int_stack = alloca %dreamObj*, align 8
-  %1 = call %dreamObj* @dreamInt(i32 2)
+  %1 = call %dreamObj* @dreamInt(i32 3)
   store %dreamObj* %1, %dreamObj** %int_stack, align 8
   %int = load %dreamObj*, %dreamObj** %int_stack, align 8
   %func_stack = alloca %dreamObj*, align 8
@@ -39,68 +33,52 @@ EntryBlock:
   %value_temp = load i8*, i8** %memberptr, align 8
   %3 = bitcast i8* %value_temp to %dreamObj* (...)*
   %4 = call %dreamObj* (...) %3(%dreamObj* %int)
-  %5 = call %dreamObj* @set_var(%dreamObj* %obj, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @0, i32 0, i32 0), %dreamObj* %4)
-  store i32 3, i32* @line, align 4
-  %6 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %obj, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @1, i32 0, i32 0))
-  %7 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %6, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @2, i32 0, i32 0), i32 0)
-  %8 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %7, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @3, i32 0, i32 0))
-  %9 = call %dreamObj* @new_scope(%dreamObj* %8, i32 1)
+  %5 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %4, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0))
+  %6 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %5, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @1, i32 0, i32 0))
+  %7 = call %dreamObj* @new_scope(%dreamObj* %6, i32 1)
   %scope_stack = alloca %dreamObj*, align 8
-  store %dreamObj* %9, %dreamObj** %scope_stack, align 8
+  store %dreamObj* %7, %dreamObj** %scope_stack, align 8
   %new_scope = load %dreamObj*, %dreamObj** %scope_stack, align 8
-  %memberptr1 = getelementptr %dreamObj, %dreamObj* %7, i32 0, i32 2
-  %value_temp2 = load i8*, i8** %memberptr1, align 8
-  %10 = bitcast i8* %value_temp2 to %dreamObj* (...)*
-  %11 = call %dreamObj* (...) %10(%dreamObj* %new_scope)
+  %8 = call %dreamObj* @new_scope(%dreamObj* %obj, i32 1)
+  %scope_stack1 = alloca %dreamObj*, align 8
+  store %dreamObj* %8, %dreamObj** %scope_stack1, align 8
+  %new_scope2 = load %dreamObj*, %dreamObj** %scope_stack1, align 8
+  %null_dream3 = load %dreamObj*, %dreamObj** @nullDream, align 8
+  %memberptr4 = getelementptr %dreamObj, %dreamObj* %5, i32 0, i32 2
+  %value_temp5 = load i8*, i8** %memberptr4, align 8
+  %9 = bitcast i8* %value_temp5 to %dreamObj* (...)*
+  %10 = call %dreamObj* (...) %9(%dreamObj* %new_scope)
+  %11 = call %dreamObj* @set_var(%dreamObj* %new_scope2, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @2, i32 0, i32 0), %dreamObj* %10)
+  br label %for_start
+
+for_start:                                        ; preds = %then, %EntryBlock
+  %12 = icmp ne %dreamObj* %10, %null_dream3
+  br i1 %12, label %then, label %forcont
+
+then:                                             ; preds = %for_start
   store i32 4, i32* @line, align 4
-  %12 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %obj, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @4, i32 0, i32 0))
-  %13 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %12, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @5, i32 0, i32 0), i32 0)
-  %14 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %13, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @6, i32 0, i32 0))
-  %15 = call %dreamObj* @new_scope(%dreamObj* %14, i32 1)
-  %scope_stack3 = alloca %dreamObj*, align 8
-  store %dreamObj* %15, %dreamObj** %scope_stack3, align 8
-  %new_scope4 = load %dreamObj*, %dreamObj** %scope_stack3, align 8
-  %memberptr5 = getelementptr %dreamObj, %dreamObj* %13, i32 0, i32 2
-  %value_temp6 = load i8*, i8** %memberptr5, align 8
-  %16 = bitcast i8* %value_temp6 to %dreamObj* (...)*
-  %17 = call %dreamObj* (...) %16(%dreamObj* %new_scope4)
-  store i32 5, i32* @line, align 4
-  %18 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %obj, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @7, i32 0, i32 0))
-  %19 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %18, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @8, i32 0, i32 0))
-  %20 = call %dreamObj* (%dreamObj*, i8*, ...) @get_var(%dreamObj* %19, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @9, i32 0, i32 0))
-  %21 = call %dreamObj* @new_scope(%dreamObj* %20, i32 1)
-  %scope_stack7 = alloca %dreamObj*, align 8
-  store %dreamObj* %21, %dreamObj** %scope_stack7, align 8
-  %new_scope8 = load %dreamObj*, %dreamObj** %scope_stack7, align 8
-  %null_dream9 = load %dreamObj*, %dreamObj** @nullDream, align 8
-  %memberptr10 = getelementptr %dreamObj, %dreamObj* %19, i32 0, i32 2
-  %value_temp11 = load i8*, i8** %memberptr10, align 8
-  %22 = bitcast i8* %value_temp11 to %dreamObj* (...)*
-  %23 = call %dreamObj* (...) %22(%dreamObj* %new_scope8)
-  %24 = icmp ne %dreamObj* %23, %null_dream9
-  br i1 %24, label %then, label %forcont
-
-then:                                             ; preds = %EntryBlock
-  %25 = call %dreamObj* @new_scope(%dreamObj* %obj, i32 1)
-  %scope_stack12 = alloca %dreamObj*, align 8
-  store %dreamObj* %25, %dreamObj** %scope_stack12, align 8
-  %new_scope13 = load %dreamObj*, %dreamObj** %scope_stack12, align 8
-  store i32 7, i32* @line, align 4
   %str_stack = alloca %dreamObj*, align 8
-  %26 = call %dreamObj* @dreamStr(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @10, i32 0, i32 0))
-  store %dreamObj* %26, %dreamObj** %str_stack, align 8
+  %13 = call %dreamObj* @dreamStr(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @3, i32 0, i32 0))
+  store %dreamObj* %13, %dreamObj** %str_stack, align 8
   %str = load %dreamObj*, %dreamObj** %str_stack, align 8
-  %func_stack14 = alloca %dreamObj*, align 8
-  %27 = call %dreamObj* @dreamFunc(i8* bitcast (void (i32, %dreamObj*, ...)* @print to i8*))
-  store %dreamObj* %27, %dreamObj** %func_stack14, align 8
-  %func15 = load %dreamObj*, %dreamObj** %func_stack14, align 8, !var_args !1
-  %memberptr16 = getelementptr %dreamObj, %dreamObj* %func15, i32 0, i32 2
-  %value_temp17 = load i8*, i8** %memberptr16, align 8
-  %28 = bitcast i8* %value_temp17 to %dreamObj* (...)*
-  %29 = call %dreamObj* (...) %28(i32 1, %dreamObj* %str)
-  br label %forcont
+  %func_stack6 = alloca %dreamObj*, align 8
+  %14 = call %dreamObj* @dreamFunc(i8* bitcast (void (i32, %dreamObj*, ...)* @print to i8*))
+  store %dreamObj* %14, %dreamObj** %func_stack6, align 8
+  %func7 = load %dreamObj*, %dreamObj** %func_stack6, align 8, !var_args !1
+  %memberptr8 = getelementptr %dreamObj, %dreamObj* %func7, i32 0, i32 2
+  %value_temp9 = load i8*, i8** %memberptr8, align 8
+  %15 = bitcast i8* %value_temp9 to %dreamObj* (...)*
+  %16 = call %dreamObj* (...) %15(i32 1, %dreamObj* %str)
+  %memberptr10 = getelementptr %dreamObj, %dreamObj* %5, i32 0, i32 2
+  %value_temp11 = load i8*, i8** %memberptr10, align 8
+  %17 = bitcast i8* %value_temp11 to %dreamObj* (...)*
+  %18 = call %dreamObj* (...) %17(%dreamObj* %new_scope)
+  %19 = call %dreamObj* @set_var(%dreamObj* %new_scope2, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @4, i32 0, i32 0), %dreamObj* %18)
+  %null_dream12 = load %dreamObj*, %dreamObj** @nullDream, align 8
+  %20 = icmp ne %dreamObj* %18, %null_dream12
+  br i1 %20, label %for_start, label %forcont
 
-forcont:                                          ; preds = %then, %EntryBlock
+forcont:                                          ; preds = %then, %for_start
   ret i32 0
 }
 

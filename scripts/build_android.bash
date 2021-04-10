@@ -15,6 +15,9 @@ cp output/android/libdream.so  "/Users/marcfervil/AndroidStudioProjects/Dreamlan
 
 
 
+#/Users/marcfervil/Library/Android/sdk/emulator/emulator -avd Nexus_6_API_30 -netdelay none -netspeed full
+
+
 
 cd /Users/marcfervil/AndroidStudioProjects/DreamlangAndorid
 gradle assembleDebug
@@ -23,3 +26,4 @@ cd app/build/outputs/apk/debug
 adb install -t --fastdeploy app-debug.apk
 adb shell am start -n "com.almostanything.dreamlang/com.almostanything.dreamlang.MainActivity" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER
 
+adb logcat MainActivity:I dreamlang:D *:S

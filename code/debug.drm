@@ -1,11 +1,5 @@
 
-g = count(2)
-g.next()
-g.next()
 
-for i in g {
-
-    print("e")
-
+for i in count(3){
+   print("three");
 }
-

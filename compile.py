@@ -420,12 +420,9 @@ class ForBuilder:
 
         iter_func_call_scope = dreamLib.init_scope(self.context, iter_func_scope, 1)
 
-       
-        self.for_data = dreamLib.init_for(self.context, self.builder.c_str(var_name), cond, iter_func_call_scope)
+        self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope, 1)
+        self.for_data = dreamLib.init_for(self.context, self.builder.c_str(var_name), self.scope, cond, iter_func_call_scope)
 
-
-
-        self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope,  1)
 
         self.builder.enter_scope(self.scope)
 
