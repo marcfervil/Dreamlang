@@ -25,7 +25,7 @@ class Token:
                 self.type = "String"
                 self.value = self.value[2:-1]
                 self.is_literal = True
-            elif self.value[0] == '{' and self.value[-1] == '}':
+            elif (self.value[0] == '{' and self.value[-1] == '}') or (self.value[0] == '\t'):
                 self.type = "Block"
 
                 new_tokenizer = Tokenizer(self.value[1:-1], tokenizer.line)
@@ -131,14 +131,19 @@ class Tokenizer:
         match_start_token = None
         match_end_token = None
         match_count = 0
-        for char in self.data:
+        self.data = self.data.replace(" "*4, "\t")
+        for i,char in enumerate(self.data):
             self.line_text += char
 
             if char == "\n":
                 self.has_linebreak = True
 
-            if match_count == 0:
+            
+            outdent = ((match_count!=0) and ((match_end_token == '[outdent]' and char == "\n" and self.data[i + 1] != "\t") ))
 
+            if match_count == 0:
+                if char == '\t':
+                    continue
                 if char == '#':
                     match_end_token = '\n'
                     match_start_token = ""
@@ -191,6 +196,7 @@ class Tokenizer:
                     match_count = 1
                     self.add_token()
                     continue
+
                 elif char == '[':
 
                     match_end_token = ']'
@@ -198,16 +204,35 @@ class Tokenizer:
                     match_count = 1
                     self.add_token()
                     continue
+                elif char == ':':
+                    print("indent")
+                    match_end_token = '[outdent]'
+                    match_start_token = ":"
+                    match_count = 1
 
-            elif char == match_end_token:
+                    self.add_token()
+                    continue
 
-                match_count -= 1
+            elif char == match_end_token or outdent:
+                #print('ee',self.data[i-1 ])
+
+                    #print("<ye>",self.token.strip(),"</ye>")
+                if outdent:
+                    print("outdent", self.line)
+                    match_count -= 1
+                else:
+
+                    match_count -= 1
                 if match_count == 0:
                     # comments should be the only token match with an empty string starting node
                     if match_start_token == "":
 
                         self.newline()
                     else:
+                        if outdent:
+                            #print(self.token)
+                            match_start_token = "{"
+                            match_end_token = "}"
                         self.add_token(match_start_token + self.token + match_end_token)
 
                     self.token = ""

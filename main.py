@@ -119,9 +119,11 @@ dream = Dream(hopes)
 #dream.eval()
 #print("")
 #print(dream.tokens)
-dream.compile(False, True)
+
+#dream.compile(False, True)
+
 #print(dream.get_ast())
-#print(dream.tokens)
+print(dream.tokens)
 
 #  %10 = call %dreamObj* @dreamFunc(i8* bitcast (void (%dreamObj*, %dreamObj*)* @merge to i8*))
 

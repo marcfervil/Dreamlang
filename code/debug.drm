@@ -1,18 +1,6 @@
-
-`
-c = [1, 2, [3, 5, 7]]
-c[2][0] = "yaaayeeee"
-c.push("pfkwe")
-c[2].push("noice!")
-c[2].push("noice!")
-
-print(c)
-
-`
-c = [1, 2, [3, 5, 7]]
-c[2][0] = "yaaayeeee"
-c.push("pfkwe")
-c[2].push("noice!")
-c[2].push("noice!")
-
-print(c)
+func he():
+    wow()
+    hello()
+    if f :
+        print("E")
+print("e")
