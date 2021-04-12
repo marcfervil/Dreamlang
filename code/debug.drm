@@ -1,5 +1,18 @@
 
+`
+c = [1, 2, [3, 5, 7]]
+c[2][0] = "yaaayeeee"
+c.push("pfkwe")
+c[2].push("noice!")
+c[2].push("noice!")
 
-c = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+print(c)
 
-print(c[2][0])
+`
+c = [1, 2, [3, 5, 7]]
+c[2][0] = "yaaayeeee"
+c.push("pfkwe")
+c[2].push("noice!")
+c[2].push("noice!")
+
+print(c)

@@ -79,6 +79,9 @@ class ElementNode(ASTNode):
         super().visit(context)
         return context.builder.call(self.element.visit(context).get_var("get"), self.index.visit(context))
 
+    def assign_visit(self, context, value):
+
+        return context.builder.call(self.element.visit(context).get_var("set"), self.index.visit(context), value.visit(context))
 
 
 class AttributeNode(ASTNode):
