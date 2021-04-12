@@ -20,7 +20,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc"]
 
     def __init__(self, platform):
         self.map_bindings()
@@ -139,6 +139,7 @@ class LLVMBuilder:
 
         if not hasattr(callee, "built_in"):
             func_scope = self.get_var("@context", callee)
+            #self.log(func_scope)
             new_scope = dreamLib.init_scope(self.context, func_scope, 1)
 
             args.insert(0, new_scope)

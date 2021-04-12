@@ -255,6 +255,7 @@ class Dream:
         elif platform == "System":
             self.ast = parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
             #print(self.ast)
+            #print(self.ast)
             result = self.ast.visit(self.context)
 
 

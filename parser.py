@@ -632,16 +632,18 @@ class Parser:
         if token.is_literal:
             return LiteralNode(token.value)
 
+        # index node - var[i] or var = [1, 2, 3]
         if token.type == "Index":
+            #print(token)
             value = Parser(token.value, parse_as_list=True).get_ast()
-            if parent_type is not IdentifierNode and parent_type is not AttributeNode:
+            if not (parent_type is IdentifierNode or parent_type is AttributeNode or parent_type is ElementNode ):
                 return LiteralNode(value)
             else:
                 return ElementNode(node, value)
 
         # function call
         if token.type == "Set":
-            if parent_type == IdentifierNode or parent_type == AttributeNode or parent_type == ClassNode:
+            if parent_type == IdentifierNode or parent_type == AttributeNode or parent_type == ClassNode or parent_type == CallNode:
                 return CallNode(node, token.value)
             else:
                 # precedence ex: (5+5) * 2
