@@ -20,7 +20,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc", "app"]
 
     def __init__(self, platform):
         self.map_bindings()
@@ -332,7 +332,8 @@ class LLVMBuilder:
         command = ""
 
         if platform == "System":
-            os.system(f'gcc -o {file_name[:-4]} lib/hopes.o lib/dream_output.o {command} ')
+            #pass
+            os.system(f'gcc -std=c++17 -lstdc++ -framework Foundation -framework Cocoa /Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/window.mm -o {file_name[:-4]} lib/hopes.o lib/dream_output.o {command} ')
         elif platform == "Android":
             os.system("bash scripts/build_android.bash")
 
