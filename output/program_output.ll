@@ -12,6 +12,7 @@ target triple = "x86_64-apple-macosx11.0.0"
 @2 = private unnamed_addr constant [7 x i8] c"window\00", align 1
 @3 = private unnamed_addr constant [6 x i8] c"start\00", align 1
 @4 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
+@5 = private unnamed_addr constant [12 x i8] c"finished!!!\00", align 1
 
 define i32 @main() {
 EntryBlock:
@@ -46,6 +47,19 @@ EntryBlock:
   %value_temp2 = load i8*, i8** %memberptr1, align 8
   %10 = bitcast i8* %value_temp2 to %dreamObj* (...)*
   %11 = call %dreamObj* (...) %10(%dreamObj* %new_scope)
+  store i32 4, i32* @line, align 4
+  %str_stack3 = alloca %dreamObj*, align 8
+  %12 = call %dreamObj* @dreamStr(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @5, i32 0, i32 0))
+  store %dreamObj* %12, %dreamObj** %str_stack3, align 8
+  %str4 = load %dreamObj*, %dreamObj** %str_stack3, align 8
+  %func_stack5 = alloca %dreamObj*, align 8
+  %13 = call %dreamObj* @dreamFunc(i8* bitcast (void (i32, %dreamObj*, ...)* @print to i8*))
+  store %dreamObj* %13, %dreamObj** %func_stack5, align 8
+  %func6 = load %dreamObj*, %dreamObj** %func_stack5, align 8, !var_args !1
+  %memberptr7 = getelementptr %dreamObj, %dreamObj* %func6, i32 0, i32 2
+  %value_temp8 = load i8*, i8** %memberptr7, align 8
+  %14 = bitcast i8* %value_temp8 to %dreamObj* (...)*
+  %15 = call %dreamObj* (...) %14(i32 1, %dreamObj* %str4)
   ret i32 0
 }
 
@@ -125,3 +139,4 @@ declare void @llvm.stackprotector(i8*, i8**) #0
 attributes #0 = { nounwind }
 
 !0 = !{!"0"}
+!1 = !{!"1"}

@@ -1,3 +1,5 @@
 
 window = app("Hello world!")
 window.start()
+print("finished!!!")
+
