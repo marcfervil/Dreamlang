@@ -3,8 +3,13 @@ from ctypes import *
 import os
 from pathlib import Path
 
+
 dreamLib = cdll.LoadLibrary('./lib/dream.so')
-hopesLib = cdll.LoadLibrary('./lib/hopes_lib.so')
+
+
+#hopesLib = cdll.LoadLibrary('./lib/hopes_lib.so')
+hopesLib = cdll.LoadLibrary('/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/Build/libdreamlang.dylib')
+
 
 
 def pretty(d, indent=0):
@@ -27,8 +32,11 @@ class LLVMBuilder:
         self.platform = platform
         self.context = dreamLib.llvm_init()
         self.line = 1
-        dreamLib.llvm_link(self.context, self.c_str("hopes_lib.so"))
-        #
+
+        #dreamLib.llvm_link(self.context, self.c_str("hopes_lib.so"))
+        dreamLib.llvm_link(self.context, self.c_str("/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/Build/libdreamlang.dylib"))
+
+
         self.scope = self.init_obj()
 
         self.scopes = []
