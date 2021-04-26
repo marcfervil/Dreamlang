@@ -1,0 +1,39 @@
+func split(string, char){
+    result = []
+    part = ""
+    for i in count(string.len()){
+        part = part + string[i]
+        if string[i] is char {
+            result.push(part)
+            part = ""
+        }
+    }
+    result.push(part)
+    return result
+}
+
+
+x = split("Wow look at all these words", " ")
+
+
+class my_iter{
+
+    num = 0
+
+    class test_iter{
+        func next(){
+            num = num + 1
+            if num is 10 {
+                print("here")
+                return null
+            }
+            return num
+        }
+    }
+
+    func iter(){
+        return test_iter()
+
+    }
+
+}

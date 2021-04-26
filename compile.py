@@ -4,8 +4,8 @@ import os
 from pathlib import Path
 
 
-dreamLib = cdll.LoadLibrary('./lib/dream.so')
-
+#dreamLib = cdll.LoadLibrary('./lib/dream.so')
+dreamLib = cdll.LoadLibrary("/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/Build/libcompiler.dylib")
 
 #hopesLib = cdll.LoadLibrary('./lib/hopes_lib.so')
 hopesLib = cdll.LoadLibrary('/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/Build/libdreamlang.dylib')
@@ -25,7 +25,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc", "dict2"]
 
     def __init__(self, platform):
         self.map_bindings()
@@ -201,8 +201,11 @@ class LLVMBuilder:
 
     def end_func(self, func_data):
         self.exit_scope()
-        dreamLib.end_func(self.context, self.scope, func_data)
+        g = dreamLib.end_func(self.context, self.scope, func_data)
 
+        #self.dict(g)
+        #self.call(g)
+        #self.log(g)
         #self.exit_scope()
 
     def init_str(self, value):
@@ -337,6 +340,7 @@ class LLVMBuilder:
         dreamLib.build(self.context)
 
 
+        """
         command = ""
 
         if platform == "System":
@@ -346,7 +350,7 @@ class LLVMBuilder:
 
         if run:
             os.system(f"./{file_name[:-4]}")
-
+        """
 
 
     def add_helpers(self, var):
@@ -424,16 +428,18 @@ class ForBuilder:
         self.context = builder.context
         self.has_return = False
 
-        cond = cond.get_var("next")
+        iter_obj = self.builder.call(cond.get_var("iter"))
+
+        cond = iter_obj.get_var("next")
         iter_func_scope = cond.get_var("@context")
 
         iter_func_call_scope = dreamLib.init_scope(self.context, iter_func_scope, 1)
 
         self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope, 1)
+
         self.for_data = dreamLib.init_for(self.context, self.builder.c_str(var_name), self.scope, cond, iter_func_call_scope)
-
-
         self.builder.enter_scope(self.scope)
+
 
     def __enter__(self):
         return self

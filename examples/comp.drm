@@ -1,15 +1,5 @@
 
-
-`
- class Node{
-
-    value = ""
-
-    func init(_value){
-        value = _value
-    }
-}`
-
+undef = 1
 class List {
     full_name = "swag"
 

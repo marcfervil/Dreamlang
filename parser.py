@@ -379,10 +379,8 @@ class ClassNode(ASTNode):
                     for class_node in self.body.body:
 
                         if not (type(class_node) is FuncNode and class_node.name.value == "init"):
-
                             class_node.in_class = True
                             class_node.visit(context)
-                        
 
                     context.builder.set_var("this", context.builder.scope)
 

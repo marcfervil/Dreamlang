@@ -1,10 +1,18 @@
+func split(string, char){
+    result = []
+    part = ""
+    for i in count(string.len()){
+        part = part + string[i]
+        if string[i] is char {
+            result.push(part)
+            part = ""
+        }
+    }
+    result.push(part)
+    return result
+}
 
 
-
-c = [1, 2, [3, 5, 7]]
-c[2][0] = "yaaayeeee"
-c.push("pfkwe")
-c[2].push("noice!")
-c[2].push("noice!")
-
-print(c)
+for word in split("Wow look at all these words", " "){
+    print(word)
+}
