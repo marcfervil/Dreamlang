@@ -138,8 +138,12 @@ class BinaryNode(ASTNode):
             return context.builder.div(left, right)
         elif self.op.value == "is":
             return context.builder.equals(left, right)
+        elif self.op.value == "is not":
+            return context.builder.nequals(left, right)
         elif self.op.value == "in":
             return context.builder.contains(left, right)
+        elif self.op.value in ["<", ">", ">=", "<="]:
+            return context.builder.math_op(left, right, self.op.value)
 
     def eval(self, context):
         left = self.left.eval(context)
@@ -251,6 +255,7 @@ class LiteralNode(ASTNode):
         if type(self.value) is int:
             primitive = context.builder.init_num(self.value)
         elif type(self.value) is str:
+            self.value = self.value.replace("\\n", "\n")
             primitive = context.builder.init_str(self.value)
         elif type(self.value) is bool:
             primitive = context.builder.init_bool(self.value)
@@ -513,6 +518,8 @@ math_ops = {
     "is": 1,
     "is not": 1,
     "in": 1,
+    ">": 1.5,
+    "<": 1.5,
     "+": 2,
     "-": 2,
     "*": 3,

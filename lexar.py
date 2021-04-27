@@ -1,5 +1,5 @@
-ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", "in", ".", "->", ">", "=>"]
-special_chars = "!#%^&*,-+=/.>="
+ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", "in", ".", "->", ">", "=>", "<"]
+special_chars = "!#%^&*,-+=/.>=<"
 
 
 class Token:
@@ -92,6 +92,7 @@ class Tokenizer:
                     self.token = ""
                     return
 
+                # negation
                 elif new_token.has("Number"):
                     if self.get(-1).has("Operator", "-") and (self.get(-2).has("Operator") or self.get(-2).has("None")):
                         self.tokens.pop()

@@ -1,18 +1,1 @@
-func split(string, char){
-    result = []
-    part = ""
-    for i in count(string.len()){
-        part = part + string[i]
-        if string[i] is char {
-            result.push(part)
-            part = ""
-        }
-    }
-    result.push(part)
-    return result
-}
-
-
-for word in split("Wow look at all these words", " "){
-    print(word)
-}
+print(-100 > -1*2-10, -1*2-10)

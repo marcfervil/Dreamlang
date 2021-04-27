@@ -36,14 +36,10 @@ class LLVMBuilder:
         #dreamLib.llvm_link(self.context, self.c_str("hopes_lib.so"))
         dreamLib.llvm_link(self.context, self.c_str("/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/Build/libdreamlang.dylib"))
 
-
         self.scope = self.init_obj()
 
         self.scopes = []
-        #self.null =
-        #print(hopesLib.get_var)
-        #self.scope = None
-        #self.log(self.null)
+
 
     def run(self, llvm_output=False, build=False):
         dreamLib.llvm_run(self.context, False, llvm_output, build)
@@ -67,7 +63,6 @@ class LLVMBuilder:
         bind(dreamLib.native_sub, ObjPtr)
         bind(dreamLib.native_mul, ObjPtr)
         bind(dreamLib.native_div, ObjPtr)
-        #print(vars(dreamLib))
         bind(dreamLib.num, ObjPtr, ObjPtr, c_int)
         bind(dreamLib.bool_, ObjPtr)
         bind(dreamLib.null_obj_init, ObjPtr)
@@ -90,16 +85,18 @@ class LLVMBuilder:
         bind(dreamLib.init_scope, ObjPtr)
         bind(dreamLib.init_if, ObjPtr)
         bind(dreamLib.init_for, ObjPtr)
+        bind(dreamLib.nequals, ObjPtr)
 
         bind(dreamLib.get_null_val, ObjPtr)
-
+        bind(dreamLib.math_op, ObjPtr)
         bind(dreamLib.set_parent_c, ObjPtr)
         bind(dreamLib.num_llvm, ObjPtr)
         bind(dreamLib.get_pointer_value, ObjPtr)
         #bind(dreamLib.intType, ObjPtr)
         #bind(dreamLib.llvmInt, ObjPtr)
 
-
+    def to_raw(self, string):
+        return fr"{string}"
 
     def c_str(self, value):
         return c_char_p(value.encode('utf-8'))
@@ -111,6 +108,7 @@ class LLVMBuilder:
             py_vals = [py_vals]
         for val in py_vals:
             if type(val) is str:
+
                 string = dreamLib.llvmStr(self.context, self.c_str(val))
                 #string.type = str
                 vals.append(string)
@@ -226,8 +224,10 @@ class LLVMBuilder:
     def init_bool(self, value):
         return dreamLib.bool_(self.context, value)
 
-    def add(self, value1, value2):
+    def math_op(self, value1, value2, op):
+        return dreamLib.math_op(self.context, value1, value2, self.c_str(op))
 
+    def add(self, value1, value2):
         if hasattr(value1, "native_type"):
             if not hasattr(value2, "native_type"):
                 value2 = self.dream_to_native(value2, "int")
@@ -240,8 +240,8 @@ class LLVMBuilder:
             value2 = self.native_to_dream(value2)
         return dreamLib.add(self.context, value1, value2)
 
-    def sub(self, value1, value2):
 
+    def sub(self, value1, value2):
         if hasattr(value1, "native_type"):
             if not hasattr(value2, "native_type"):
                 value2 = self.dream_to_native(value2, "int")
@@ -330,6 +330,9 @@ class LLVMBuilder:
     def equals(self, var1, var2):
         return dreamLib.equals(self.context, var1, var2)
 
+    def nequals(self, var1, var2):
+        return dreamLib.nequals(self.context, var1, var2)
+
     def contains(self, var1, var2):
         return dreamLib.contains(self.context, var1, var2)
 
@@ -340,17 +343,17 @@ class LLVMBuilder:
         dreamLib.build(self.context)
 
 
-        """
+
         command = ""
 
         if platform == "System":
-            os.system(f'gcc -o {file_name[:-4]} lib/hopes.o lib/dream_output.o {command} ')
+            os.system(f'gcc -o {file_name[:-4]} /Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/Build/libdreamlang.dylib lib/dream_output.o {command} ')
         elif platform == "Android":
             os.system("bash scripts/build_android.bash")
 
         if run:
             os.system(f"./{file_name[:-4]}")
-        """
+
 
 
     def add_helpers(self, var):

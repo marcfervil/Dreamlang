@@ -13,7 +13,10 @@ func split(string, char){
 }
 
 
-x = split("Wow look at all these words", " ")
+for word in split("Wow look at all these words", " "){
+    print(word)
+}
+
 
 
 class my_iter{
