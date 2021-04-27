@@ -381,9 +381,11 @@ class ClassNode(ASTNode):
             with context.func(self.name.value+"_obj", is_class=True):
 
                 with context.enter_scope() as obj_scope:
-                    
-                    for class_node in self.body.body:
 
+                    if self.parent is not None:
+                        context.builder.call("inherit", obj_scope, context.builder.get_var(self.parent.value))
+
+                    for class_node in self.body.body:
                         if not (type(class_node) is FuncNode and class_node.name.value == "init"):
                             class_node.in_class = True
                             class_node.visit(context)
@@ -402,9 +404,6 @@ class ClassNode(ASTNode):
                 context.builder.enter_scope(init_scope)
                 context.builder.call("merge", init_scope, og_scope)
 
-                if self.parent is not None:
-                    context.builder.call("inherit", obj_scope_ret, context.builder.get_var(self.parent.value))
-
                 if init is not None:
                     for node in init.body.body:
                         if type(node) is ReturnNode:
@@ -412,15 +411,8 @@ class ClassNode(ASTNode):
 
                         node.visit(context)
 
-
-
                 context.builder.ret(obj_scope_ret)
                 context.builder.exit_scope()
-
-
-
-
-
 
 
 class ReturnNode(ASTNode):

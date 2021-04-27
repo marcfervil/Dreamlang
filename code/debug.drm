@@ -1,23 +1,39 @@
 
 
-class greet {
-    msg = "generic greeting"
+class Greet {
+    msg = "Generic Greeting"
 
-    func init(){
-        print("wow")
+    func get_msg(){
+        return msg
     }
+
     func show(){
-        print(msg)
+        print(get_msg())
     }
 }
 
-class hello extends greet{
-    mhm = "Eee"
+class GenericGreet extends Greet{
+
     func init(){
         super()
     }
 
 }
 
-g = hello()
-g.show()
+class Hello extends Greet{
+
+    func init(){
+        super()
+    }
+
+    func get_msg(){
+        return "Hello"
+    }
+
+}
+
+greet = GenericGreet()
+greet.show()
+
+hello = Hello()
+hello.show()
