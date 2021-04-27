@@ -25,15 +25,15 @@ target triple = "x86_64-apple-darwin20.1.0"
 @15 = private unnamed_addr constant [6 x i8] c"Greet\00", align 1
 @16 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
 @17 = private unnamed_addr constant [5 x i8] c"this\00", align 1
-@18 = private unnamed_addr constant [17 x i8] c"GenericGreet_obj\00", align 1
+@18 = private unnamed_addr constant [16 x i8] c"CustomGreet_obj\00", align 1
 @19 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
 @20 = private unnamed_addr constant [4 x i8] c"msg\00", align 1
-@21 = private unnamed_addr constant [17 x i8] c"GenericGreet_obj\00", align 1
+@21 = private unnamed_addr constant [16 x i8] c"CustomGreet_obj\00", align 1
 @22 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
 @23 = private unnamed_addr constant [6 x i8] c"Greet\00", align 1
 @24 = private unnamed_addr constant [6 x i8] c"super\00", align 1
 @25 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
-@26 = private unnamed_addr constant [13 x i8] c"GenericGreet\00", align 1
+@26 = private unnamed_addr constant [12 x i8] c"CustomGreet\00", align 1
 @27 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
 @28 = private unnamed_addr constant [6 x i8] c"Hello\00", align 1
 @29 = private unnamed_addr constant [8 x i8] c"get_msg\00", align 1
@@ -48,8 +48,8 @@ target triple = "x86_64-apple-darwin20.1.0"
 @38 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
 @39 = private unnamed_addr constant [6 x i8] c"Hello\00", align 1
 @40 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
-@41 = private unnamed_addr constant [3 x i8] c"ff\00", align 1
-@42 = private unnamed_addr constant [13 x i8] c"GenericGreet\00", align 1
+@41 = private unnamed_addr constant [5 x i8] c"Sup!\00", align 1
+@42 = private unnamed_addr constant [12 x i8] c"CustomGreet\00", align 1
 @43 = private unnamed_addr constant [9 x i8] c"@context\00", align 1
 @44 = private unnamed_addr constant [6 x i8] c"greet\00", align 1
 @45 = private unnamed_addr constant [6 x i8] c"greet\00", align 1
@@ -84,16 +84,16 @@ EntryBlock:
   %6 = call %dreamObj* @set_var(%dreamObj* %func, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @16, i32 0, i32 0), %dreamObj* %obj)
   store i32 15, i32* @line, align 4
   %obj_stack3 = alloca %dreamObj*, align 8
-  %7 = call %dreamObj* (i8*, ...) @make_dream(i8* bitcast (%dreamObj* (%dreamObj*)* @GenericGreet_obj to i8*), %dreamObj** null)
+  %7 = call %dreamObj* (i8*, ...) @make_dream(i8* bitcast (%dreamObj* (%dreamObj*)* @CustomGreet_obj to i8*), %dreamObj** null)
   store %dreamObj* %7, %dreamObj** %obj_stack3, align 8
   %obj4 = load %dreamObj*, %dreamObj** %obj_stack3, align 8
-  %8 = call %dreamObj* @set_var(%dreamObj* %obj, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @18, i32 0, i32 0), %dreamObj* %obj4)
+  %8 = call %dreamObj* @set_var(%dreamObj* %obj, i8* getelementptr inbounds ([16 x i8], [16 x i8]* @18, i32 0, i32 0), %dreamObj* %obj4)
   %9 = call %dreamObj* @set_var(%dreamObj* %obj4, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @19, i32 0, i32 0), %dreamObj* %obj)
   %func_stack5 = alloca %dreamObj*, align 8
-  %10 = call %dreamObj* @dreamFunc(i8* bitcast (%dreamObj* (%dreamObj*, %dreamObj*)* @GenericGreet to i8*))
+  %10 = call %dreamObj* @dreamFunc(i8* bitcast (%dreamObj* (%dreamObj*, %dreamObj*)* @CustomGreet to i8*))
   store %dreamObj* %10, %dreamObj** %func_stack5, align 8
   %func6 = load %dreamObj*, %dreamObj** %func_stack5, align 8
-  %11 = call %dreamObj* @set_var(%dreamObj* %obj, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @26, i32 0, i32 0), %dreamObj* %func6)
+  %11 = call %dreamObj* @set_var(%dreamObj* %obj, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @26, i32 0, i32 0), %dreamObj* %func6)
   %12 = call %dreamObj* @set_var(%dreamObj* %func6, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @27, i32 0, i32 0), %dreamObj* %obj)
   store i32 23, i32* @line, align 4
   %obj_stack7 = alloca %dreamObj*, align 8
@@ -110,10 +110,10 @@ EntryBlock:
   %18 = call %dreamObj* @set_var(%dreamObj* %func10, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @40, i32 0, i32 0), %dreamObj* %obj)
   store i32 35, i32* @line, align 4
   %str_stack = alloca %dreamObj*, align 8
-  %19 = call %dreamObj* @dreamStr(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @41, i32 0, i32 0))
+  %19 = call %dreamObj* @dreamStr(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @41, i32 0, i32 0))
   store %dreamObj* %19, %dreamObj** %str_stack, align 8
   %str = load %dreamObj*, %dreamObj** %str_stack, align 8
-  %20 = call %dreamObj* (%dreamObj*, i8*, i32, ...) @get_var(%dreamObj* %obj, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @42, i32 0, i32 0), i32 1)
+  %20 = call %dreamObj* (%dreamObj*, i8*, i32, ...) @get_var(%dreamObj* %obj, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @42, i32 0, i32 0), i32 1)
   %21 = call %dreamObj* (%dreamObj*, i8*, i32, ...) @get_var(%dreamObj* %20, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @43, i32 0, i32 0), i32 1)
   %22 = call %dreamObj* @new_scope(%dreamObj* %21, i32 1)
   %scope_stack = alloca %dreamObj*, align 8
@@ -339,7 +339,7 @@ EntryBlock:
   ret %dreamObj* %4
 }
 
-define %dreamObj* @GenericGreet_obj(%dreamObj* %scope) !arg_names !0 {
+define %dreamObj* @CustomGreet_obj(%dreamObj* %scope) !arg_names !0 {
 EntryBlock:
   %func_stack = alloca %dreamObj*, align 8
   store %dreamObj* %scope, %dreamObj** %func_stack, align 8
@@ -352,7 +352,7 @@ EntryBlock:
   ret %dreamObj* %new_scope
 }
 
-define %dreamObj* @GenericGreet(%dreamObj* %scope, %dreamObj* %msg) !arg_names !3 {
+define %dreamObj* @CustomGreet(%dreamObj* %scope, %dreamObj* %msg) !arg_names !3 {
 EntryBlock:
   %alloctmp = alloca %dreamObj*, align 8
   store %dreamObj* %msg, %dreamObj** %alloctmp, align 8
@@ -361,7 +361,7 @@ EntryBlock:
   %func_stack = alloca %dreamObj*, align 8
   store %dreamObj* %scope, %dreamObj** %func_stack, align 8
   %func = load %dreamObj*, %dreamObj** %func_stack, align 8
-  %1 = call %dreamObj* (%dreamObj*, i8*, i32, ...) @get_var(%dreamObj* %func, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @21, i32 0, i32 0), i32 1)
+  %1 = call %dreamObj* (%dreamObj*, i8*, i32, ...) @get_var(%dreamObj* %func, i8* getelementptr inbounds ([16 x i8], [16 x i8]* @21, i32 0, i32 0), i32 1)
   %2 = call %dreamObj* (%dreamObj*, i8*, i32, ...) @get_var(%dreamObj* %1, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @22, i32 0, i32 0), i32 1)
   %3 = call %dreamObj* @new_scope(%dreamObj* %2, i32 1)
   %scope_stack = alloca %dreamObj*, align 8

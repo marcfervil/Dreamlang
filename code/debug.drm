@@ -12,7 +12,7 @@ class Greet {
     }
 }
 
-class GenericGreet extends Greet{
+class CustomGreet extends Greet{
 
     func init(msg){
         super()
@@ -32,7 +32,7 @@ class Hello extends Greet{
 
 }
 
-greet = GenericGreet("ff")
+greet = CustomGreet("Sup!")
 greet.show()
 
 hello = Hello()
