@@ -321,8 +321,9 @@ class LLVMBuilder:
             value = self.native_to_dream(value)
         else:
             value = self.py_to_c(value)
-
-        return dreamLib.save(self.context, obj, self.c_str(key), value)
+        new_var = dreamLib.save(self.context, obj, self.c_str(key), value)
+        self.add_helpers(new_var)
+        return new_var
 
     def reparent(self, obj, new_parent):
         return dreamLib.set_parent_c(self.context, obj, new_parent)

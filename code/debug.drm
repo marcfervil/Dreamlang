@@ -14,7 +14,7 @@ class Greet {
 
 class GenericGreet extends Greet{
 
-    func init(){
+    func init(msg){
         super()
     }
 
@@ -32,8 +32,9 @@ class Hello extends Greet{
 
 }
 
-greet = GenericGreet()
+greet = GenericGreet("ff")
 greet.show()
 
 hello = Hello()
 hello.show()
+
