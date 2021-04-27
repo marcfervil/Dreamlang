@@ -1,1 +1,23 @@
-print(-100 > -1*2-10, -1*2-10)
+
+
+class greet {
+    msg = "generic greeting"
+
+    func init(){
+        print("wow")
+    }
+    func show(){
+        print(msg)
+    }
+}
+
+class hello extends greet{
+    mhm = "Eee"
+    func init(){
+        super()
+    }
+
+}
+
+g = hello()
+g.show()

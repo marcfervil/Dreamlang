@@ -333,9 +333,10 @@ class FuncNode(ASTNode):
 
 class ClassNode(ASTNode):
 
-    def __init__(self, name, body):
+    def __init__(self, name, body, parent):
         self.context = None
         self.name = name
+        self.parent = parent
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
     def init(self, *params):
@@ -378,7 +379,7 @@ class ClassNode(ASTNode):
             init = self.get_init()
             args = [param.name for param in init.params] if init is not None else []
             with context.func(self.name.value+"_obj", is_class=True):
-                #context.builder.ret(context.builder.init_str("ooh"))
+
                 with context.enter_scope() as obj_scope:
                     
                     for class_node in self.body.body:
@@ -389,36 +390,31 @@ class ClassNode(ASTNode):
 
                     context.builder.set_var("this", context.builder.scope)
 
+
                 context.builder.ret(obj_scope)
 
-
-            #with context.func(self.name.value, *args):
             with context.func(self.name.value, *args):
-                #context.builder.get_var("sneaky")
-
-
                 obj_scope_ret = context.builder.call(self.name.value + "_obj")
-
-
                 og_scope = context.builder.scope
-
                 init_scope = context.builder.init_obj()
-
                 init_scope.reparent(obj_scope_ret)
 
                 context.builder.enter_scope(init_scope)
                 context.builder.call("merge", init_scope, og_scope)
+
+                if self.parent is not None:
+                    context.builder.call("inherit", obj_scope_ret, context.builder.get_var(self.parent.value))
+
                 if init is not None:
                     for node in init.body.body:
-
                         if type(node) is ReturnNode:
                             print("You cannot return from a constructor!")
 
                         node.visit(context)
-               
+
+
 
                 context.builder.ret(obj_scope_ret)
-                #context.builder.ret(context.builder.init_str("meme"))
                 context.builder.exit_scope()
 
 
@@ -524,11 +520,7 @@ math_ops = {
     "-": 2,
     "*": 3,
     "/": 3,
-
 }
-
-
-
 
 
 class Parser:
@@ -589,8 +581,12 @@ class Parser:
 
         if token.has("Identifier", "class"):
             name = self.eat_token()
+            parent = None
+            if self.peak_token().has("Identifier", "extends"):
+                self.eat_token()
+                parent = self.eat_token()
             body = self.eat_token()
-            return ClassNode(name, body)
+            return ClassNode(name, body, parent)
 
         if token.has("Identifier", "return"):
             value = self.get_ast()
