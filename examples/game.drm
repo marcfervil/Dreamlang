@@ -2,21 +2,16 @@ world = []
 
 for i in count(10){
     x = []
-    for j in count(10){
-        x.push("#")
-    }
+    for j in count(10) -> x.push("#")
     world.push(x)
 }
 
 func print_world(){
     for y in world {
         line = ""
-        for x in y {
-            line = line + x
-        }
+        for x in y -> line = line + x
         print(line)
     }
-
 }
 
 print_world(world)

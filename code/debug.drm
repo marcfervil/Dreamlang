@@ -1,3 +1,11 @@
-a = 10
-a -= 10
-print(a)
+x = [1, 2, 3]
+
+x.contains = func (item) {
+    for my_item in $self {
+        if my_item is item => true
+    }
+    return false
+}
+
+print(1 in x)
+

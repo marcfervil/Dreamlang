@@ -308,29 +308,17 @@ class FuncNode(ASTNode):
         super().visit(context)
         args = [param.name for param in self.params]
         has_return = False
-        #og_scope = context.builder.scope
 
-        with context.func(self.name.value, *args):
-            #context.builder.log(context.builder.get_null())
+        with context.func(self.name.value, *args) as (builder, scope, new_func):
             for node in self.body.body:
                 if type(node) is ReturnNode:
                     has_return = True
                 node.visit(context)
             if not has_return:
                 # TODO: Break in case of future (returns scope)
-                #context.builder.ret(context.builder.scope)
                 context.builder.ret(context.builder.init_str("<TODO: implement undefined ref>"))
 
-                #context.builder.ret(context.builder.get_null())
-
-        """
-        if self.in_class:
-            func_ir = context.builder.get_var(self.name.value)
-            func_scope = func_ir.get_var("@context")
-            #context.builder.dict(func_ir.get_var("@context"))
-            #context.builder.scope
-            context.builder.reparent(func_scope, context.builder.scope)
-        """
+        return new_func.func_ptr
 
 
 class ClassNode(ASTNode):
@@ -572,7 +560,7 @@ class Parser:
             return ExportNode(self.get_ast())
 
         if token.has("Identifier", "func"):
-            name = self.eat_token()
+            name = self.eat_token() if not self.peak_token().has("Set") else Token("lambda_line_"+str(token.line), token.tokenizer)
             params = self.eat_token()
             if len(self.tokens) == 0 or self.peak_token().type == "Newline":
                 body = Token("{}", token.tokenizer)
@@ -624,17 +612,17 @@ class Parser:
                 # if you're parsing math and you hit an operator w/ a lower precedence - you've gone too far
                 return 0
 
+        # variable assignment
+        if token.has("Operator", "="):
+            value = self.get_ast()
+            return AssignNode(node, value)
+
         # +=, -=, *=, /= assignment operator
         if token.has("Operator",  ["+=", "-=", "*=", "/="]):
             op = Token(token.value[0], tokenizer=token.tokenizer)
             binary_node = BinaryNode(node, op, self.get_ast())
             binary_node.line = token.line
             return AssignNode(node, binary_node)
-
-        # variable assignment
-        if token.has("Operator", "="):
-            value = self.get_ast()
-            return AssignNode(node, value)
 
         # attribute assignment ex: dog.name
         if token.has("Operator", "."):

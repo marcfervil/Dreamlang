@@ -214,7 +214,7 @@ class LLVMBuilder:
         self.exit_scope()
         new_func = dreamLib.end_func(self.context, self.scope, func_data)
         return new_func
-        #self.dict(g)
+        #
         #self.call(g)
         #self.log(g)
         #self.exit_scope()
@@ -505,19 +505,20 @@ class CompileContext:
             self.name = name
             self.is_class = is_class
             self.args = args
-
+            self.func_ptr = None
 
         def __enter__(self):
             self.func = self.builder.init_func(self.name, self.is_class, *self.args)
             self.scope = self.builder.func_scope(self.func)
-            return self.builder, self.scope
+            return self.builder, self.scope, self
 
         def __exit__(self, type, value, traceback):
-            new_func = self.builder.end_func(self.func)
-            self.builder.add_helpers(new_func)
+            self.func_ptr = self.builder.end_func(self.func)
+            #self.builder.dict(self.new_func)
+            self.builder.add_helpers(self.func_ptr)
 
             arg_list = self.builder.call("list", *[self.builder.init_str(arg) for arg in self.args])
-            new_func.set_var("args", arg_list)
+            self.func_ptr.set_var("args", arg_list)
 
 
 
