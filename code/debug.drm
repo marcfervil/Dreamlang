@@ -1,12 +1,38 @@
+class CustomGreet {
 
+    msg = "[greeting goes here]"
 
+    func init(msg)
 
-func hehe(hi){
-    print(hi)
+    func get_msg() => msg
+
+    func show() -> print(get_msg())
+
 }
 
+class Hello extends CustomGreet{
+
+    func init(){
+        super("Hello")
+    }
+
+}
+
+class AdvancedHello extends Hello{
+
+    name = ""
+
+    func init(name){
+        super()
+    }
+
+    func get_msg() => msg + ", " + name
 
 
-hehe(~["zoo"])
+}
 
+hello = Hello()
+hello.show()
 
+new_hello = AdvancedHello("marc")
+new_hello.show()

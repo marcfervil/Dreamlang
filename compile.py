@@ -144,14 +144,21 @@ class LLVMBuilder:
         args = self.py_to_c(args)
 
         has_varg = any(hasattr(arg, "vargs") and arg.vargs for arg in args)
+        if hasattr(callee, "is_super"):
+            callee.set_var("args", self.call("list", self.init_str("msg")))
+            args = [self.call("list", *args)]
+
+
+
         if not hasattr(callee, "built_in"):
             func_scope = self.get_var("@context", callee)
             new_scope = dreamLib.init_scope(self.context, func_scope, 1)
             self.add_helpers(new_scope)
 
             if has_varg:
+                #self.dict(callee)
                 self.call("apply_vargs", new_scope, self.get_var("args", callee), args.pop(0))
-                # this is horrible, I know but theres no other way to determine the number of args @ compile time
+                # this is horrible, but there's no other way to determine the number of args @ compile time
                 for i in range(20):
                     args.append(self.py_to_c(0))
 
@@ -402,6 +409,8 @@ class LLVMBuilder:
             value.built_in = key
 
         self.add_helpers(value)
+        if key == "super":
+            value.is_super = True
         return value
 
     def enter_scope(self, scope):

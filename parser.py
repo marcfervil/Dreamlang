@@ -548,6 +548,12 @@ class Parser:
                     #body.line = self.current_line
                     return body
 
+        vargs = False
+        if token.has("Operator", "~"):
+            token = self.eat_token()
+            vargs = True
+
+
         # if statement
         if token.has("Identifier", "if"):
             test = self.get_ast()
@@ -629,16 +635,9 @@ class Parser:
             attribute = self.eat_token()
             return AttributeNode(node, IdentifierNode(attribute.value))
 
-
-
         # literals like strings, ints, bools
         if token.is_literal:
             return LiteralNode(token.value)
-
-        vargs = False
-        if token.has("Operator", "~"):
-            token = self.eat_token()
-            vargs = True
 
         # index node - var[i] or var = [1, 2, 3]
         if token.type == "Index":
