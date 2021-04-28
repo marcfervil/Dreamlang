@@ -1,4 +1,6 @@
-ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", "in", ".", "->", ">", "=>", "<", "~"]
+
+
+ops = [",", "+", "-", "*", "/", "+=", "=", "==", "is", "is not", "in", ".", "->", ">", "=>", "<", "~", "+=", "-=", "*=", "/="]
 special_chars = "!#%^&*,-+=/.>=<~"
 
 
@@ -57,8 +59,10 @@ class Token:
         newline = "\n" if self.type == 'Newline' else ''
         return f"{newline}({self.type} {self.value}){newline}"
 
-    def has(self, type, value=None):
-        return (value is None and self.type == type) or (self.value == value and self.type == type)
+    def has(self, token_type, value=None):
+        is_type = self.type == token_type
+        is_value = (value is None or self.value == value) if type(value) is not list else self.value in value
+        return is_type and is_value
 
 
 class Tokenizer:
@@ -81,6 +85,7 @@ class Tokenizer:
                 if self.token[0] == "#":
                     self.tokens.append(new_token)
 
+
                 # TODO Make dynamic so that other operators can "merge"
                 if new_token.value == "not" and self.tokens[-1].has("Operator", "is"):
                     self.tokens[-1].value = "is not"
@@ -91,6 +96,8 @@ class Tokenizer:
                     self.tokens[-1].value += new_token.value
                     self.token = ""
                     return
+
+
 
 
                 # negation

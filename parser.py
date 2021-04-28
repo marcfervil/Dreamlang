@@ -553,7 +553,6 @@ class Parser:
             token = self.eat_token()
             vargs = True
 
-
         # if statement
         if token.has("Identifier", "if"):
             test = self.get_ast()
@@ -624,6 +623,13 @@ class Parser:
             elif math_ops[token.value] == prec or math_ops[token.value] < prec:
                 # if you're parsing math and you hit an operator w/ a lower precedence - you've gone too far
                 return 0
+
+        # +=, -=, *=, /= assignment operator
+        if token.has("Operator",  ["+=", "-=", "*=", "/="]):
+            op = Token(token.value[0], tokenizer=token.tokenizer)
+            binary_node = BinaryNode(node, op, self.get_ast())
+            binary_node.line = token.line
+            return AssignNode(node, binary_node)
 
         # variable assignment
         if token.has("Operator", "="):
