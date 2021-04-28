@@ -25,7 +25,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc", "dict2", "inherit"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc", "dict2", "inherit", "apply_vargs"]
 
     def __init__(self, platform):
         self.map_bindings()
@@ -143,10 +143,18 @@ class LLVMBuilder:
             callee = self.get_var(callee)
         args = self.py_to_c(args)
 
+        has_varg = any(hasattr(arg, "vargs") and arg.vargs for arg in args)
         if not hasattr(callee, "built_in"):
             func_scope = self.get_var("@context", callee)
-            #self.log(func_scope)
             new_scope = dreamLib.init_scope(self.context, func_scope, 1)
+            self.add_helpers(new_scope)
+
+            if has_varg:
+                self.call("apply_vargs", new_scope, self.get_var("args", callee), args.pop(0))
+                # this is horrible, I know but theres no other way to determine the number of args @ compile time
+                for i in range(20):
+                    args.append(self.py_to_c(0))
+
 
             args.insert(0, new_scope)
         elif callee.built_in == "print":
@@ -156,10 +164,8 @@ class LLVMBuilder:
                 call_str = "".join(call_name for call_name in call_str)
                 return self.call("printx", call_str, *args)
 
-
         c_args = (LLVMBuilder.ObjPtr * len(args))(*args)
-
-        result = dreamLib.call(self.context, callee, len(c_args), c_args)
+        result = dreamLib.call(self.context, callee, len(c_args), c_args, has_varg)
         self.add_helpers(result)
         return result
 
@@ -199,8 +205,8 @@ class LLVMBuilder:
 
     def end_func(self, func_data):
         self.exit_scope()
-        g = dreamLib.end_func(self.context, self.scope, func_data)
-
+        new_func = dreamLib.end_func(self.context, self.scope, func_data)
+        return new_func
         #self.dict(g)
         #self.call(g)
         #self.log(g)
@@ -498,9 +504,12 @@ class CompileContext:
             return self.builder, self.scope
 
         def __exit__(self, type, value, traceback):
-            #self.builder.ret(self.builder.init_str("nadda"))
-            self.builder.end_func(self.func)
-            #self.builder.ret(self.builder.scope)
+            new_func = self.builder.end_func(self.func)
+            self.builder.add_helpers(new_func)
+
+            arg_list = self.builder.call("list", *[self.builder.init_str(arg) for arg in self.args])
+            new_func.set_var("args", arg_list)
+
 
 
 def test_func():

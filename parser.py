@@ -262,6 +262,8 @@ class LiteralNode(ASTNode):
         elif type(self.value) is list:
             primitive = context.builder.call("list", *[item.visit(context) for item in self.value])
 
+            primitive.vargs = self.vargs
+
         return primitive
 
     def eval(self, context):
@@ -627,16 +629,25 @@ class Parser:
             attribute = self.eat_token()
             return AttributeNode(node, IdentifierNode(attribute.value))
 
+
+
         # literals like strings, ints, bools
         if token.is_literal:
             return LiteralNode(token.value)
 
+        vargs = False
+        if token.has("Operator", "~"):
+            token = self.eat_token()
+            vargs = True
+
         # index node - var[i] or var = [1, 2, 3]
         if token.type == "Index":
-            #print(token)
             value = Parser(token.value, parse_as_list=True).get_ast()
-            if not (parent_type is IdentifierNode or parent_type is AttributeNode or parent_type is ElementNode ):
-                return LiteralNode(value)
+
+            if not (parent_type in [IdentifierNode, AttributeNode, ElementNode]):
+                literal = LiteralNode(value)
+                literal.vargs = vargs
+                return literal
             else:
                 return ElementNode(node, value)
 

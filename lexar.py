@@ -1,5 +1,5 @@
-ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", "in", ".", "->", ">", "=>", "<"]
-special_chars = "!#%^&*,-+=/.>=<"
+ops = [",", "+", "-", "*", "/",  "=", "==", "is", "is not", "in", ".", "->", ">", "=>", "<", "~"]
+special_chars = "!#%^&*,-+=/.>=<~"
 
 
 class Token:
@@ -91,6 +91,7 @@ class Tokenizer:
                     self.tokens[-1].value += new_token.value
                     self.token = ""
                     return
+
 
                 # negation
                 elif new_token.has("Number"):

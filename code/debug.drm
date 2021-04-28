@@ -1,40 +1,12 @@
 
 
-class Greet {
-    msg = "Generic Greeting"
 
-    func get_msg(){
-        return msg
-    }
-
-    func show(){
-        print(get_msg())
-    }
+func hehe(hi){
+    print(hi)
 }
 
-class CustomGreet extends Greet{
 
-    func init(msg){
-        super()
-    }
 
-}
+hehe(~["zoo"])
 
-class Hello extends Greet{
-
-    func init(){
-        super()
-    }
-
-    func get_msg(){
-        return "Hello"
-    }
-
-}
-
-greet = CustomGreet("Sup!")
-greet.show()
-
-hello = Hello()
-hello.show()
 
