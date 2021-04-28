@@ -1,7 +1,7 @@
 x = [1, 2, 3]
 
 x.contains = func (item) {
-    for my_item in $self {
+    for my_item in this {
         if my_item is item => true
     }
     return false
