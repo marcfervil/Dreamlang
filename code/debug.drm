@@ -1,2 +1,16 @@
+print(false or false)
 
-print(true and true and true)
+`
+res = alloc(int )
+
+
+store p1==true res
+#if  p1 goto good else end
+if p1 goto end else end
+
+good:
+    store p2==true res
+
+end:
+    return res
+`

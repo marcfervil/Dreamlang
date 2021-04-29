@@ -142,7 +142,7 @@ class BinaryNode(ASTNode):
             return context.builder.nequals(left, right)
         elif self.op.value == "in":
             return context.builder.contains(left, right)
-        elif self.op.value in ["<", ">", ">=", "<=", "and"]:
+        elif self.op.value in ["<", ">", ">=", "<=", "and", "or"]:
             return context.builder.math_op(left, right, self.op.value)
 
     def eval(self, context):
