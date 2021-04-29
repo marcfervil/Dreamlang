@@ -142,7 +142,7 @@ class BinaryNode(ASTNode):
             return context.builder.nequals(left, right)
         elif self.op.value == "in":
             return context.builder.contains(left, right)
-        elif self.op.value in ["<", ">", ">=", "<="]:
+        elif self.op.value in ["<", ">", ">=", "<=", "and"]:
             return context.builder.math_op(left, right, self.op.value)
 
     def eval(self, context):
@@ -372,16 +372,12 @@ class ClassNode(ASTNode):
 
                 with context.enter_scope() as obj_scope:
 
-
-
                     for class_node in self.body.body:
                         if not (type(class_node) is FuncNode and class_node.name.value == "init"):
                             class_node.in_class = True
                             class_node.visit(context)
 
                     context.builder.set_var("this", context.builder.scope)
-
-
                 context.builder.ret(obj_scope)
 
             with context.func(self.name.value, *args):
@@ -499,6 +495,8 @@ math_ops = {
     "is": 1,
     "is not": 1,
     "in": 1,
+    "and": 1,
+    "or": 1,
     ">": 1.5,
     "<": 1.5,
     "+": 2,
@@ -515,7 +513,7 @@ class Parser:
         self.prec_stack = []
         self.token = ""
         self.parse_as_list = parse_as_list
-        self.current_line = "poop"
+        self.current_line = ""
         #if parse_as_list:
         self.nodes = []
 

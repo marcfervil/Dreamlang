@@ -264,9 +264,11 @@ class Dream:
 
         #if build:
         if build:
+            pass
             self.context.builder.build(file_name, platform=platform)
 
         if platform == "System":
+            #pass
             self.context.builder.run(llvm_output, build)
 
        # print("built")

@@ -34,7 +34,7 @@ class LLVMBuilder:
         self.line = 1
 
         #dreamLib.llvm_link(self.context, self.c_str("hopes_lib.so"))
-        dreamLib.llvm_link(self.context, self.c_str("/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/Build/libdreamlang.dylib"))
+        #dreamLib.llvm_link(self.context, self.c_str("/Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/Build/libdreamlang.dylib"))
 
         self.scope = self.init_obj()
 
@@ -361,7 +361,15 @@ class LLVMBuilder:
         command = ""
 
         if platform == "System":
-            os.system(f'gcc -o {file_name[:-4]} /Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/Build/libdreamlang.dylib lib/dream_output.o {command} ')
+
+            #os.system("touch nothing.c")
+            path = " /Users/marcfervil/Documents/Programming/DreamLLVM/DreamLLVM/Build"
+            os.system(f"gcc -rpath {path} -o {file_name[:-4]} {path}/libdreamlang.dylib lib/dream_output.o  ")
+            #os.system(f'gcc -o  {file_name[:-4]} hopes.o  {command} ')
+            #os.system(f"otool -L {file_name[:-4]}")
+            os.system(f"./{file_name[:-4]}")
+
+            #os.system("cd ./build; cmake .")
         elif platform == "Android":
             os.system("bash scripts/build_android.bash")
 
