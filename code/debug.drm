@@ -1,16 +1,7 @@
-print(false or false)
+c = 0
 
-`
-res = alloc(int )
+for i in ["a", "b", "c"]{
 
-
-store p1==true res
-#if  p1 goto good else end
-if p1 goto end else end
-
-good:
-    store p2==true res
-
-end:
-    return res
-`
+    if c is 1 and i is "b" or c > 1 -> print(i)
+    c+=1
+}

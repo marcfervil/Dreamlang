@@ -489,14 +489,14 @@ class BodyNode(ASTNode):
         # return result  <-- break in case people can't handle the future
         return scoped_context
 
-
+# TODO make precedence not decimal lol
 math_ops = {
     "==": 1,
     "is": 1,
     "is not": 1,
     "in": 1,
-    "and": 1,
-    "or": 1,
+    "and": 0.5,
+    "or": 0.5,
     ">": 1.5,
     "<": 1.5,
     "+": 2,
