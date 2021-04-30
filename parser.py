@@ -185,7 +185,7 @@ class IfNode(ASTNode):
                 node.visit(context)
                 if type(node) in [ReturnNode, ContinueNode, BreakNode]:
                     if_block.has_return = True
-                break
+                    break
 
 
         #context.builder.ret(context.scope)

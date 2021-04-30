@@ -1,10 +1,24 @@
+world = []
 
-func g(){
-    x = input()
-    if x is "exit" => return 0
-    print(x)
-    g()
+for y in count(10){
+    row = []
+    for x in count(10) {
+        if x is 0 or x is 9 or y is 0 or y is 9{
+            row.push("#")
+            continue
+        }
+
+        row.push(".")
+    }
+    world.push(row)
 }
-g()
 
+func print_world(){
+    for y in world {
+        line = ""
+        for x in y -> line = line + x
+        print(line)
+    }
+}
 
+print_world(world)
