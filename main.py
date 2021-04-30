@@ -120,6 +120,7 @@ dream = Dream(hopes)
 #print("")
 #print(dream.tokens)
 dream.compile(False, True)
+
 #print(dream.get_ast())
 
 

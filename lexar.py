@@ -2,7 +2,7 @@
 
 ops = [",", "+", "-", "*", "/", "+=", "=", "==", "is", "is not", "in", ".", "->", ">", "=>", "<", "~", "+=", "-=", "*=", "/=", "and", "or"]
 special_chars = "!#%^&*,-+=/.>=<~"
-
+keywords = ["continue", "break"]
 
 class Token:
 
@@ -86,6 +86,7 @@ class Tokenizer:
                     self.tokens.append(new_token)
 
 
+
                 # TODO Make dynamic so that other operators can "merge"
                 if new_token.value == "not" and self.tokens[-1].has("Operator", "is"):
                     self.tokens[-1].value = "is not"
@@ -96,7 +97,6 @@ class Tokenizer:
                     self.tokens[-1].value += new_token.value
                     self.token = ""
                     return
-
 
 
 
@@ -131,6 +131,7 @@ class Tokenizer:
 
     def linebreak(self):
         self.line += 1
+
         # self.tokens.append(Token(self.line, self, "LineBreak"))
         # print(f"Line #{self.line-1}")
         self.line_text = ""
@@ -143,11 +144,20 @@ class Tokenizer:
         for char in self.data:
             self.line_text += char
 
+            # TODO make single token keywords work properly instead of this weird hack (that doesn't work w semicolons)
+            if char == "\n" or char == ";":
+                if self.line_text.strip() in keywords:
+                    self.add_token()
+                    self.line_text = ""
+
+                    self.newline()
+                    continue
+
             if char == "\n":
                 self.has_linebreak = True
 
-            if match_count == 0:
 
+            if match_count == 0:
                 if char == '#':
                     match_end_token = '\n'
                     match_start_token = ""
@@ -174,6 +184,7 @@ class Tokenizer:
                         self.add_token()
                         self.add_token("\n")
                     else:
+
                         self.linebreak()
 
                     continue

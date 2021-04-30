@@ -39,10 +39,11 @@ class LLVMBuilder:
         self.scope = self.init_obj()
 
         self.scopes = []
+        self.loops = []
 
 
     def run(self, llvm_output=False, build=False):
-        dreamLib.llvm_run(self.context, False, llvm_output, build)
+        dreamLib.llvm_run(self.context, False, False, build)
 
     def get_null(self):
         return dreamLib.get_null_val()
@@ -86,7 +87,7 @@ class LLVMBuilder:
         bind(dreamLib.init_if, ObjPtr)
         bind(dreamLib.init_for, ObjPtr)
         bind(dreamLib.nequals, ObjPtr)
-
+        bind(dreamLib.continue_for, ObjPtr)
         bind(dreamLib.get_null_val, ObjPtr)
         bind(dreamLib.math_op, ObjPtr)
         bind(dreamLib.set_parent_c, ObjPtr)
@@ -338,6 +339,16 @@ class LLVMBuilder:
         self.add_helpers(new_var)
         return new_var
 
+    def cont(self):
+        loop = self.get_loop()
+        if loop.loop_type == "for":
+            dreamLib.continue_for(self.context, loop)
+
+    def brek(self):
+        loop = self.get_loop()
+        if loop.loop_type == "for":
+            dreamLib.break_for(self.context, loop)
+
     def reparent(self, obj, new_parent):
         return dreamLib.set_parent_c(self.context, obj, new_parent)
 
@@ -376,7 +387,8 @@ class LLVMBuilder:
         if run:
             os.system(f"./{file_name[:-4]}")
 
-
+    def get_loop(self):
+        return self.loops[-1]
 
     def add_helpers(self, var):
         outer_self = self
@@ -466,13 +478,15 @@ class ForBuilder:
 
         self.for_data = dreamLib.init_for(self.context, self.builder.c_str(var_name), self.scope, cond, iter_func_call_scope)
         self.builder.enter_scope(self.scope)
-
+        self.for_data.loop_type = "for"
+        self.builder.loops.append(self.for_data)
 
     def __enter__(self):
         return self
 
     def __exit__(self, type_, value, traceback):
         dreamLib.end_for(self.context, self.for_data, self.has_return)
+        self.builder.loops.pop()
         self.builder.exit_scope()
 
 

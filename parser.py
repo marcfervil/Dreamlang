@@ -177,13 +177,15 @@ class IfNode(ASTNode):
         if self.test.eval(context).value:
             return self.body.eval(context)
 
+    # TODO program segfaults if theres code
     def visit(self, context):
         super().visit(context)
         with context.builder.init_if(self.test.visit(context)) as if_block:
             for node in self.body.body:
-                if type(node) is ReturnNode:
-                    if_block.has_return = True
                 node.visit(context)
+                if type(node) in [ReturnNode, ContinueNode, BreakNode]:
+                    if_block.has_return = True
+                break
 
 
         #context.builder.ret(context.scope)
@@ -203,7 +205,6 @@ class ForNode(ASTNode):
                 if type(node) is ReturnNode:
                     for_block.has_return = True
                     return
-
 
     def eval(self, context):
         iterator = self.iterator.eval(context)
@@ -404,6 +405,24 @@ class ClassNode(ASTNode):
                 context.builder.exit_scope()
 
 
+class ContinueNode(ASTNode):
+    def __init__(self):
+        pass
+
+    def visit(self, context):
+        super().visit(context)
+        context.builder.cont()
+
+
+class BreakNode(ASTNode):
+    def __init__(self):
+        pass
+
+    def visit(self, context):
+        super().visit(context)
+        context.builder.brek()
+
+
 class ReturnNode(ASTNode):
     def __init__(self, value):
         self.value = value
@@ -490,6 +509,7 @@ class BodyNode(ASTNode):
         return scoped_context
 
 # TODO make precedence not decimal lol
+
 math_ops = {
     "==": 1,
     "is": 1,
@@ -579,6 +599,12 @@ class Parser:
         if token.has("Identifier", "return"):
             value = self.get_ast()
             return ReturnNode(value)
+
+        if token.has("Identifier", "continue"):
+            return ContinueNode()
+
+        if token.has("Identifier", "break"):
+            return BreakNode()
 
         # return the identifier
         if token.type == "Identifier":
