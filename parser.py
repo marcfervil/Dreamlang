@@ -508,6 +508,7 @@ class BodyNode(ASTNode):
         # return result  <-- break in case people can't handle the future
         return scoped_context
 
+
 # TODO make precedence not decimal lol
 
 math_ops = {
