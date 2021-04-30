@@ -1,4 +1,10 @@
 
+func g(){
+    x = input()
+    if x is "exit" => return 0
+    print(x)
+    g()
+}
+g()
 
-i = 0
-print(i <= 0)
+
