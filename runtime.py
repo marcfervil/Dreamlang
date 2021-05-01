@@ -268,7 +268,7 @@ class Dream:
         #if build:
         if build:
             pass
-            #self.context.builder.build(file_name, platform=platform)
+            self.context.builder.build(file_name, platform=platform)
 
         if platform == "System":
             #pass

@@ -25,7 +25,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc", "dict2", "inherit", "apply_vargs", "input"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc", "dict2", "inherit", "apply_vargs", "input", "clear"]
 
     def __init__(self, platform):
         self.map_bindings()
@@ -378,7 +378,7 @@ class LLVMBuilder:
             os.system(f"gcc -rpath {path} -o {file_name[:-4]} {path}/libdreamlang.dylib lib/dream_output.o  ")
             #os.system(f'gcc -o  {file_name[:-4]} hopes.o  {command} ')
             #os.system(f"otool -L {file_name[:-4]}")
-            os.system(f"./{file_name[:-4]}")
+            #os.system(f"./{file_name[:-4]}")
 
             #os.system("cd ./build; cmake .")
         elif platform == "Android":
