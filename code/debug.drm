@@ -1,1 +1,11 @@
-me(arg1 = 30, arg2 = 80*45-100 + [1, 2, hi :2], hi: 30)
+
+func getGuy(name, age){
+    return {
+        name: name,
+        age: age
+    }
+}
+
+print(getGuy("marc", 21).name)
+
+
