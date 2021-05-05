@@ -1,7 +1,7 @@
 
 
-ops = [",", "+", "-", "*", "/", "+=", "=", "==", "is", "is not", "in", ".", "->", ">", "=>", "<", "~", "+=", "-=", "*=", "/=", "and", "or", ">=", "<="]
-special_chars = "!#%^&*,-+=/.>=<~"
+ops = [",", "+", "-", "*", "/", "+=", "=", "==", "is", "is not", "in", ".", "->", ">", "=>", "<", "~", "+=", "-=", "*=", "/=", "and", "or", ">=", "<=", ":"]
+special_chars = "!#%^&*,-+=/.>=<~:"
 keywords = ["continue", "break"]
 
 class Token:
@@ -54,6 +54,12 @@ class Token:
                 self.type = "Identifier"
         else:
             self.type = type
+
+    def clone(self):
+        token = Token(self.value, self.tokenizer, self.type, self.line)
+        if token.is_literal:
+            self.is_literal = True
+        return token
 
     def __repr__(self):
         newline = "\n" if self.type == 'Newline' else ''
@@ -195,7 +201,7 @@ class Tokenizer:
                     self.add_token()
 
                 elif char == '{':
-                    if self.tokens[-1].has("Newline"):
+                    if len(self.tokens) > 0 and self.tokens[-1].has("Newline"):
 
                         self.tokens.pop(-1)
 

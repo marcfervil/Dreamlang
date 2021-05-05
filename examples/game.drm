@@ -68,6 +68,7 @@ class Game {
     }
 
     func start(){
+        clear()
         world.show()
         handle_input(input())
         start()

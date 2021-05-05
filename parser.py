@@ -15,6 +15,12 @@ class ASTNode:
         #    print(f'{type(self).__name__} on line {self.line} "{self.__repr__()}"')
         context.set_line(self.line)
 
+    def parse_body_node_repr(self, node):
+        body_str = str(self.body)
+        new_body_str = ""
+        for line in body_str.split("\n"):
+            new_body_str += ("\t" + line + "\n")
+        return (new_body_str.replace(" \t:", ":").replace("\t:", ":"))
 
     def __repr__(self):
         return f"({self.__class__.__name__}) {str(self.__dict__)}"
@@ -107,6 +113,9 @@ class AttributeNode(ASTNode):
         #print(value)
         return context.builder.set_var(self.attr.name, value.visit(context), self.obj.visit(context))
 
+    def __repr__(self):
+        return f"{self.obj}.{self.attr}"
+
     def assign(self, context, value):
         if type(self.obj) is AttributeNode:
             self.attr.assign(self.obj.eval(context), value)
@@ -170,8 +179,7 @@ class IfNode(ASTNode):
         self.body = Parser(body.value).get_ast(node=BodyNode())
 
     def __repr__(self):
-        body_str = str(self.body).replace('\t', '\t\t')
-        return f"if {self.test} {body_str}"
+        return f"if {self.test}{self.parse_body_node_repr(self.body)}"
 
     def eval(self, context):
         if self.test.eval(context).value:
@@ -186,9 +194,18 @@ class IfNode(ASTNode):
                 if type(node) in [ReturnNode, ContinueNode, BreakNode]:
                     if_block.has_return = True
                     break
-
+        return if_block.scope
 
         #context.builder.ret(context.scope)
+
+
+class KeyValueNode(ASTNode):
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+
+    def __repr__(self):
+        return f"{self.key}: {self.value}"
 
 
 class ForNode(ASTNode):
@@ -299,6 +316,12 @@ class FuncNode(ASTNode):
 
     def __repr__(self):
         value = f"func {self.name.value}({', '.join([identifier.name for identifier in self.params])})"
+        #body_str = str(self.body).replace('\t', '\t\t')
+        #return f"if {self.test} {body_str}"
+
+        #for node in self.body.body:
+        value += self.parse_body_node_repr(self.body)
+
         return value
 
     def eval(self, context):
@@ -329,6 +352,10 @@ class ClassNode(ASTNode):
         self.name = name
         self.parent = parent
         self.body = Parser(body.value).get_ast(node=BodyNode())
+
+    def __repr__(self):
+        return f"class {self.name.value}{self.parse_body_node_repr(self.body)}"
+
 
     def init(self, *params):
 
@@ -480,7 +507,10 @@ class BodyNode(ASTNode):
     def __repr__(self):
         str_repr = ":\n"
         for node in self.body:
-            str_repr += f"\t{node}\n"
+            line = f"\t{node}\n"
+            if True:
+                #print("line",line)
+                str_repr += line.strip() + "\n"
         return str_repr
 
     def visit(self, context):
@@ -530,7 +560,7 @@ math_ops = {
 
 
 class Parser:
-    def __init__(self, tokens, parse_as_list=False):
+    def __init__(self, tokens, parse_as_list=False, parse_body=True):
         self.tokens = tokens
         self.root_node = BodyNode()
         self.prec_stack = []
@@ -538,6 +568,7 @@ class Parser:
         self.parse_as_list = parse_as_list
         self.current_line = ""
         #if parse_as_list:
+        self.parse_body = parse_body
         self.nodes = []
 
     def token_to_node(self, token, node, prec):
@@ -545,7 +576,7 @@ class Parser:
 
         # if a program node is passed in that means it's going to be a multiline affair
         # collect all of the lines and turn them into an AST
-        if parent_type is BodyNode:
+        if parent_type is BodyNode and self.parse_body:
             self.tokens.insert(0, token)
             program_body = []
             while True:
@@ -622,6 +653,7 @@ class Parser:
 
         # if you're parsing math and you've hit a comma - you've gone too far
         if prec > 0 and token.has("Operator", ","):
+            #print("fekpw")
             # returning 0 essentially stops the evaluation and returns the precedence to it's previous state
             return 0
 
@@ -639,9 +671,17 @@ class Parser:
                 # if you're parsing math and you hit an operator w/ a lower precedence - you've gone too far
                 return 0
 
+        # support for a key value pair example ex: name: "John"
+        if token.has("Operator", ":"):
+            value = self.get_ast(parse_as_list=False)
+            #print(KeyValueNode(key, value))
+            return KeyValueNode(node, value)
+
         # variable assignment
         if token.has("Operator", "="):
-            value = self.get_ast()
+            #self.parse_as_list = False
+            value = self.get_ast(parse_as_list=False)
+            #print(f"op {node} = {value}")
             return AssignNode(node, value)
 
         # +=, -=, *=, /= assignment operator
@@ -662,6 +702,7 @@ class Parser:
 
         # index node - var[i] or var = [1, 2, 3]
         if token.type == "Index":
+            #print("parsing ",token.value)
             value = Parser(token.value, parse_as_list=True).get_ast()
 
             if not (parent_type in [IdentifierNode, AttributeNode, ElementNode]):
@@ -679,12 +720,17 @@ class Parser:
                 # precedence ex: (5+5) * 2
                 return Parser(token.value).get_ast()
 
+        # support for dictionaries / inline objects
+        if token.type == "Block":
+            key_value_nodes = Parser(token.value, parse_as_list=True).get_ast()
+            print(key_value_nodes)
+            return key_value_nodes
+
         return None
 
     def eat_token(self):
         token = self.tokens.pop(0)
-        #self.current_line = token.line
-        #print(f"{token} on line {token.line}")
+
         # the "->" operator returns a body token that consists of all the tokens until newline
         if token.has("Operator", "->") or token.has("Operator", "=>"):
             expression = []
@@ -713,17 +759,35 @@ class Parser:
     def token_is(self, token, token_type, value):
         return token.type == token_type and token.value == value
 
-    def get_ast(self, prec=0, node=None):
+    def get_ast(self, prec=0, node=None, parse_as_list=None):
+
+        parse_as_list = self.parse_as_list if parse_as_list is None else parse_as_list
+        #parse_as_list = self.parse_as_list
+        #print(self.tokens, parse_as_list, "\n")
         while len(self.tokens) > 0:
 
             token = self.eat_token()
 
-            if token.type == "Newline" or token.type == "Block":
+            #if token.type == "Block":
+            #    print("fwefe")
+            if token.type == "Newline" or (token.type == "Block"):
                 if node is not None:
+
                     self.tokens.insert(0, token)
                     return node
+                #elif token.type == "Block":
+                    #pass
+                    #self.tokens.insert(0, token)
+                    #return node
                 else:
                     continue
+
+            """
+            if token.has("Operator", ",") and parse_as_list:
+                print("Efwopk", node)
+                return node
+            """
+                #continue
 
             current_node = self.token_to_node(token, node, prec)
 
@@ -738,23 +802,51 @@ class Parser:
                     node = None
                     continue
             """
+
             if self.token_is(token, "Operator", ","):
+                # print("fpweifjw", prec, self.parse_as_list, node)
+                #print("iioj", prec, parse_as_list)
                 if prec == 0:
-                    #if type(node) is not list:
-                    if not self.parse_as_list:
-                        self.parse_as_list = True
-                        
+                    # if type(node) is not list:
+                    if not parse_as_list:
+                        #print("Fioj", node)
+                        self.tokens.insert(0, token)
+                        return node
+                    #    self.parse_as_list = True
+                    #print("appeneded nodes", node)
                     self.nodes.append(node)
                     node = None
                     continue
-
+            """
+            if self.token_is(token, "Operator", ","):
+                #print("fpweifjw", prec, self.parse_as_list, node)
+                if prec == 0:
+                    #if type(node) is not list:
+                    if not parse_as_list:
+                        #print("Fewofij", node)
+                        #return node
+                    #    self.parse_as_list = True
+                        return node
+                    else:
+                        #print("fewpk")
+                        self.nodes.append(node)
+                        node = None
+                        continue
+                else:
+                    return node
+            """
+            """
+            if self.token_is(token, "Operator", ","):
+                if self.parse_as_list:
+                    return node
+            """
             if prec > 0 and (current_node == 0):
                 self.tokens.insert(0, token)
                 return node
 
             node = current_node
 
-        if self.parse_as_list and prec == 0:
+        if parse_as_list and prec == 0:
             self.nodes.append(node)
             node = self.nodes
             if len(node) == 1 and node[0] is None:

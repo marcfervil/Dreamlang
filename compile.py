@@ -25,7 +25,7 @@ class LLVMBuilder:
 
     ObjPtr = POINTER(c_void_p)
 
-    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc", "dict2", "inherit", "apply_vargs", "input", "clear"]
+    builtins = ["print", "dict", "set_var_c", "ptr", "copy", "deep_copy", "unmerge", "shallow_copy", "medium_copy", "merge", "ctype", "display2", "native_test", "native_int", "check", "printx", "dream_log", "makeText", "list", "count", "gc", "dict2", "inherit", "apply_vargs", "input", "clear", "free"]
 
     def __init__(self, platform):
         self.map_bindings()
@@ -139,6 +139,7 @@ class LLVMBuilder:
 
         return dreamLib.call_standard_c(self.context, self.c_str(name), arg_len, c_args)
 
+    # noinspection PyTypeChecker
     def call(self, callee, *args):
         if type(callee) is str:
             callee = self.get_var(callee)
@@ -148,8 +149,6 @@ class LLVMBuilder:
         if hasattr(callee, "is_super"):
             callee.set_var("args", self.call("list", self.init_str("msg")))
             args = [self.call("list", *args)]
-
-
 
         if not hasattr(callee, "built_in"):
             func_scope = self.get_var("@context", callee)
@@ -447,9 +446,13 @@ class IfBuilder:
     def __init__(self, builder, value):
         self.builder = builder
         self.context = builder.context
-        self.if_data = dreamLib.init_if(self.context, value)
 
-        self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope,  1)
+        # if we create the scope here we can return contexts, but creating it below is more efficient
+        # self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope, 1)
+
+        self.if_data = dreamLib.init_if(self.context, value)
+        self.scope = dreamLib.init_scope(self.builder.context, self.builder.scope, 1)
+
         self.has_return = False
         self.builder.enter_scope(self.scope)
 

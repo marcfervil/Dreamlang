@@ -239,7 +239,9 @@ class Dream:
         return self.ast.eval(self.context)
 
     def get_ast(self):
-        return parser.Parser(self.tokens).get_ast(node=parser.BodyNode())
+        tokens_copy = [token for token in self.tokens]
+
+        return parser.Parser(tokens_copy).get_ast(node=parser.BodyNode())
 
     def compile(self, llvm_output=False, build=False, file_name="benchmarks/math/native_math.drm", platform="System"):
 

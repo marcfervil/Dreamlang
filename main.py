@@ -119,9 +119,12 @@ dream = Dream(hopes)
 #dream.eval()
 #print("")
 #print(dream.tokens)
-dream.compile(False, True)
-
+print(dream.get_ast())
+print("----")
 #print(dream.get_ast())
+#dream.compile(False, True)
+
+
 
 
 
