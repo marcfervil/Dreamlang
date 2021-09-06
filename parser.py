@@ -256,7 +256,6 @@ class LiteralNode(ASTNode):
     def __init__(self, value):
         self.value = value
 
-
     def __repr__(self):
         if type(self.value) == str:
             return f"'{str(self.value)}'"
@@ -284,8 +283,10 @@ class LiteralNode(ASTNode):
             primitive.vargs = self.vargs
         elif type(self.value is tuple):
             primitive = context.builder.init_obj()
+            context.builder.enter_scope(primitive)
             for key_value in self.value:
-                context.builder.set_var(key_value.key.name, key_value.value.visit(context), primitive )
+                context.builder.set_var(key_value.key.name, key_value.value.visit(context), primitive)
+            context.builder.exit_scope()
 
         return primitive
 

@@ -153,6 +153,9 @@ class LLVMBuilder:
         if not hasattr(callee, "built_in"):
             func_scope = self.get_var("@context", callee)
             new_scope = dreamLib.init_scope(self.context, func_scope, 1)
+
+
+
             self.add_helpers(new_scope)
 
             if has_varg:
@@ -252,7 +255,6 @@ class LLVMBuilder:
         if hasattr(value2, "native_type"):
             value2 = self.native_to_dream(value2)
         return dreamLib.add(self.context, value1, value2)
-
 
     def sub(self, value1, value2):
         if hasattr(value1, "native_type"):
